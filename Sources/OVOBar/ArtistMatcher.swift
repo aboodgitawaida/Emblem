@@ -104,6 +104,13 @@ enum ArtistMatcher {
             ("Tyler Childers", "Song", nil),
             ("The Creator", "Song", nil),
             ("Tyler", "Song", nil),
+            // J. Cole
+            ("J. Cole", "No Role Modelz", "cole"),
+            ("J. Cole, Lil Baby", "pride.is.the.devil", "cole"),
+            ("Drake", "First Person Shooter (feat. J. Cole)", "ovo"),
+            ("21 Savage", "a lot (feat. J. Cole)", "cole"),
+            ("Kendrick Lamar", "Like That", nil),
+            ("Cole Swindell", "Song", nil),
         ]
         var ok = true
         for (a, t, want) in cases where brand(artist: a, title: t)?.id != want {
@@ -119,6 +126,7 @@ enum ArtistMatcher {
             ("Someone", [other, kanye, drake], "kanye"),
             ("Kanye West", [kanye, drake], "kanye"),
             ("Kali Uchis", [other, SpotifyCredits.Artist(name: "Tyler, The Creator", uri: Brand.tyler.spotifyURI)], "tyler"),
+            ("Dreamville", [other, SpotifyCredits.Artist(name: "J. Cole", uri: Brand.cole.spotifyURI)], "cole"),
             ("JACKBOYS", [other, SpotifyCredits.Artist(name: "Travis Scott", uri: Brand.travis.spotifyURI)], "travis"),
             ("Ariana Grande", [other, SpotifyCredits.Artist(name: "The Weeknd", uri: Brand.xo.spotifyURI)], "xo"),
             ("Someone", [other], nil),

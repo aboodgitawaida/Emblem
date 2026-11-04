@@ -102,6 +102,21 @@ struct Brand: Equatable {
                          background: Color(red: 0.06, green: 0.04, blue: 0.05),
                          ambient: Color(red: 0xEC / 255, green: 0xB4 / 255, blue: 0xCC / 255).opacity(0.14)))
 
+    /// J. Cole: the Born Sinner crown.
+    static let cole = Brand(
+        id: "cole", names: ["J. Cole", "J Cole"], spotifyURI: "spotify:artist:6l3HvQ5sa6mXTsMTB19rO5",
+        // A line drawing traced from the album cover, about as wide as tall, so it's full height.
+        // 0.3pt extra weight matches the owl; more merges the zigzag points.
+        logo: .crown, iconHeight: 17, iconWeight: 0.3, weightedPaths: Array(CrownPathData.paths.indices),
+        markSize: CGSize(width: 12, height: 12.5),
+        // Fallback only (the album art's colour is used): the crown's gold, #DBC74C.
+        palette: Palette(accent: Color(red: 0xDB / 255, green: 0xC7 / 255, blue: 0x4C / 255),
+                         highlight: Color(red: 1, green: 0.97, blue: 0.8),
+                         knob: Color(red: 0.97, green: 0.93, blue: 0.72),
+                         background: Color(white: 0.04),
+                         ambient: Color(red: 0xDB / 255, green: 0xC7 / 255, blue: 0x4C / 255).opacity(0.12)),
+        markWeight: 0.4)
+
     /// Checked in this order when several brands are credited equally.
-    static let all = [ovo, kanye, xo, travis, tyler]
+    static let all = [ovo, kanye, xo, travis, tyler, cole]
 }
