@@ -67,8 +67,8 @@ final class SpotifyMonitor: NSObject {
             info = nil; onChange?(); return
         }
 
-        let allArtists = creditsCache[trackID].map { $0.map(\.name).joined(separator: ", ") }
-        var new = NowPlayingInfo(bundleID: Self.bundleID, title: title, artist: allArtists ?? artist,
+        // Display the main artist only, like the system player; full credits are just for Drake detection.
+        var new = NowPlayingInfo(bundleID: Self.bundleID, title: title, artist: artist,
                                  album: u["Album"] as? String ?? "", isPlaying: isPlaying,
                                  duration: duration, elapsed: position, elapsedAt: Date(), trackID: trackID)
         new.artwork = artworkCache[trackID] ?? (info?.trackID == trackID ? info?.artwork : nil)
@@ -92,7 +92,6 @@ final class SpotifyMonitor: NSObject {
                 self.creditsCache[trackID] = artists
                 Log.write("Spotify credits: \(artists.map(\.name).joined(separator: ", "))")
                 if self.info?.trackID == trackID {
-                    self.info?.artist = artists.map(\.name).joined(separator: ", ")
                     self.onChange?()
                 }
             }
