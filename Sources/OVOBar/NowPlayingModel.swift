@@ -61,6 +61,12 @@ final class NowPlayingModel: ObservableObject {
     }
 
     func send(_ command: PlaybackCommand) {
+        if command == .skipBack15 || command == .skipForward15, let info = current {
+            let now = info.elapsed(at: Date())
+            let target = command == .skipBack15 ? max(0, now - 15) : min(info.duration > 0 ? info.duration : .infinity, now + 15)
+            seek(to: target)
+            return
+        }
         if currentIsSpotify { spotify.send(command) } else { system?.send(command) }
     }
 }

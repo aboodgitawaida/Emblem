@@ -110,13 +110,15 @@ private struct FullPlayer: View {
             .offset(x: Layout.meter.minX, y: Layout.meter.midY - 6.25)
             .transition(.opacity)
 
-            ControlButton(symbol: "backward.fill", size: 16, theme: theme) { model.send(.previous) }
+            ControlButton(symbol: info.isWebVideo ? "15.arrow.trianglehead.counterclockwise" : "backward.fill", size: info.isWebVideo ? 19 : 16,
+                          theme: theme) { model.send(info.isWebVideo ? .skipBack15 : .previous) }
                 .offset(x: Layout.buttonX[0], y: Layout.buttonY)
             ControlButton(symbol: info.isPlaying ? "pause.fill" : "play.fill", size: 23.5, theme: theme) {
                 model.send(.togglePlayPause)
             }
             .offset(x: Layout.buttonX[1], y: Layout.buttonY)
-            ControlButton(symbol: "forward.fill", size: 16, theme: theme) { model.send(.next) }
+            ControlButton(symbol: info.isWebVideo ? "15.arrow.trianglehead.clockwise" : "forward.fill", size: info.isWebVideo ? 19 : 16,
+                          theme: theme) { model.send(info.isWebVideo ? .skipForward15 : .next) }
                 .offset(x: Layout.buttonX[2], y: Layout.buttonY)
 
             Scrubber(info: info, theme: theme) { model.seek(to: $0) }
@@ -150,7 +152,8 @@ private struct TitleBlock: View {
 
     var subtitle: String {
         let artist = info.artist.isEmpty ? info.appName : info.artist
-        return info.album.isEmpty ? artist : "\(artist) – \(info.album)"
+        // Like the system player: "Artist – Album", and "Artist – " when the source sends an empty album.
+        return info.album.isEmpty && !info.hasAlbum ? artist : "\(artist) – \(info.album)"
     }
 
     var body: some View {
@@ -161,28 +164,54 @@ private struct TitleBlock: View {
     }
 }
 
+/// Square artwork fills the 112pt square. Non-square artwork (video thumbnails) is shown whole,
+/// letterboxed in the square, with the source app's icon in the bottom-right corner, like the system player.
 private struct Artwork: View {
     let info: NowPlayingInfo
     let theme: Theme
     let size: CGFloat
     var glow: Double = 0
 
+    private var aspect: CGFloat? {
+        guard let a = info.artwork, a.size.height > 0 else { return nil }
+        return a.size.width / a.size.height
+    }
+
     var body: some View {
         let shape = RoundedRectangle(cornerRadius: 8, style: .continuous)
-        ZStack {
-            shape.fill(theme.placeholder)
-            if let art = info.artwork {
-                Image(nsImage: art).resizable().interpolation(.high).aspectRatio(contentMode: .fill)
-            } else if theme.ovo {
-                OwlShape().fill(Owl.gold.opacity(0.7)).padding(size * 0.24)
-            } else {
-                Image(systemName: "music.note").font(.system(size: size * 0.36)).foregroundStyle(theme.tertiary)
+        if let art = info.artwork, let aspect, abs(aspect - 1) > 0.05 {
+            let w = aspect > 1 ? size : size * aspect
+            let h = aspect > 1 ? size / aspect : size
+            ZStack(alignment: .bottomTrailing) {
+                Image(nsImage: art).resizable().interpolation(.high)
+                    .frame(width: w, height: h)
+                    .clipShape(shape)
+                    .overlay { if theme.ovo { shape.strokeBorder(Owl.gold.opacity(0.35), lineWidth: 0.5) } }
+                    .shadow(color: Owl.gold.opacity(glow), radius: 11)
+                    .frame(width: size, height: size)
+                if let icon = info.appIcon {
+                    // 19pt frame (icon art ~16pt) overhanging the square's corner by 3pt, as measured.
+                    Image(nsImage: icon).resizable().interpolation(.high).frame(width: 19, height: 19)
+                        .offset(x: 3, y: 3)
+                }
             }
+            .frame(width: size, height: size)
+        } else {
+            ZStack {
+                shape.fill(theme.placeholder)
+                if let art = info.artwork {
+                    Image(nsImage: art).resizable().interpolation(.high).aspectRatio(contentMode: .fill)
+                } else if theme.ovo {
+                    OwlShape().fill(Owl.gold.opacity(0.7)).padding(size * 0.24)
+                } else {
+                    Image(systemName: "music.note").font(.system(size: size * 0.36)).foregroundStyle(theme.tertiary)
+                }
+            }
+            .frame(width: size, height: size)
+            .clipShape(shape)
+            .overlay { if theme.ovo { shape.strokeBorder(Owl.gold.opacity(0.35), lineWidth: 0.5) } }
+            .shadow(color: Owl.gold.opacity(glow), radius: 11)
         }
-        .frame(width: size, height: size)
-        .clipShape(shape)
-        .overlay { if theme.ovo { shape.strokeBorder(Owl.gold.opacity(0.35), lineWidth: 0.5) } }
-        .shadow(color: Owl.gold.opacity(glow), radius: 11)
     }
 }
 
@@ -244,7 +273,7 @@ private struct Scrubber: View {
 
     static func format(_ t: TimeInterval) -> String {
         let s = max(0, Int(t.rounded()))
-        return s >= 3600 ? String(format: "%d:%02d:%02d", s / 3600, s / 60 % 60, s % 60)
+        return s >= 3600 ? String(format: "%02d:%02d:%02d", s / 3600, s / 60 % 60, s % 60)
                          : String(format: "%02d:%02d", s / 60, s % 60)
     }
 }
@@ -325,7 +354,7 @@ private struct LevelMeter: View {
             HStack(alignment: .center, spacing: 1.5) {
                 ForEach(0..<5, id: \.self) { i in
                     let phase = sin(t * (4.6 + Double(i) * 1.3) + Double(i) * 1.9)
-                    let h = playing ? 4 + 7 * (0.5 + 0.5 * phase) : 4
+                    let h = playing ? 4 + 7 * (0.5 + 0.5 * phase) : 1.5   // paused: a row of dots
                     Capsule().fill(color).frame(width: 1.5, height: h)
                 }
             }
