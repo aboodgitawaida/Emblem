@@ -8,7 +8,7 @@ import Combine
 @MainActor
 final class NowPlayingModel: ObservableObject {
     @Published private(set) var current: NowPlayingInfo?
-    @Published private(set) var isDrakeMode = false
+    @Published private(set) var brand: Brand?
 
     let spotify = SpotifyMonitor()
     let system = MediaRemoteMonitor()
@@ -35,16 +35,16 @@ final class NowPlayingModel: ObservableObject {
             pick = sp
         }
         currentIsSpotify = pick?.bundleID == SpotifyMonitor.bundleID
-        let drake = currentIsSpotify && spotify.isDrakeTrack
+        let newBrand = currentIsSpotify ? spotify.brand : nil
         if pick != current { current = pick }
-        if drake != isDrakeMode {
-            Log.write("Drake mode \(drake ? "ON" : "OFF") — \(pick?.artist ?? "-") / \(pick?.title ?? "-")")
-            isDrakeMode = drake
+        if newBrand != brand {
+            Log.write("Brand \(newBrand?.id ?? "off") — \(pick?.artist ?? "-") / \(pick?.title ?? "-")")
+            brand = newBrand
         }
     }
 
     /// For DebugRender only.
-    func preview(_ info: NowPlayingInfo?, drake: Bool) { current = info; isDrakeMode = drake }
+    func preview(_ info: NowPlayingInfo?, brand: Brand?) { current = info; self.brand = brand }
 
     /// Brings the playing app forward (Spotify, Music, the browser…), like clicking the system player's artwork.
     func openSource() {

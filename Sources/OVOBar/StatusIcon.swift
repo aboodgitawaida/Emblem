@@ -1,14 +1,10 @@
 import AppKit
 import SwiftUI
 
-/// Draws the menu bar icon at any point of the circle → owl morph.
-/// progress 0 = play.circle, 1 = owl. Images are templates, so macOS tints them for light/dark menu bars.
+/// Draws the menu bar icon at any point of the circle → logo morph.
+/// progress 0 = play.circle, 1 = the brand's logo. Images are templates, so macOS tints them for light/dark menu bars.
 enum StatusIconRenderer {
     static let canvas = NSSize(width: 18, height: 18)
-    // Tuned so the owl sits with SF Symbols in the menu bar: lines thickened to roughly
-    // their stroke weight, height matched to play.circle.
-    static let owlHeight: CGFloat = 16.5
-    static let owlWeight: CGFloat = 0.4   // extra outline stroke, in points
 
     static let circleSymbol: NSImage = {
         let config = NSImage.SymbolConfiguration(pointSize: 15, weight: .regular)
@@ -18,18 +14,26 @@ enum StatusIconRenderer {
         return img
     }()
 
-    private static let owlPaths: [CGPath] = {
-        let w = owlHeight * Owl.aspect
-        let rect = CGRect(x: (canvas.width - w) / 2, y: (canvas.height - owlHeight) / 2, width: w, height: owlHeight)
-        return Owl.paths(in: rect).map(\.cgPath)
-    }()
+    /// Each brand's logo at menu bar size, centred on the canvas. Heights are tuned so the logos sit
+    /// with SF Symbols: the owl matches play.circle's height, the wider bear sits a little smaller.
+    @MainActor private static var pathCache: [String: [CGPath]] = [:]
 
-    static func image(progress raw: CGFloat) -> NSImage {
+    @MainActor private static func iconPaths(_ brand: Brand) -> [CGPath] {
+        if let p = pathCache[brand.id] { return p }
+        let h = brand.iconHeight, w = h * brand.logo.aspect
+        let rect = CGRect(x: (canvas.width - w) / 2, y: (canvas.height - h) / 2, width: w, height: h)
+        let p = brand.logo.paths(in: rect).map(\.cgPath)
+        pathCache[brand.id] = p
+        return p
+    }
+
+    @MainActor static func image(progress raw: CGFloat, brand: Brand?) -> NSImage {
         let p = min(max(raw, 0), 1)
-        if p == 0 { return circleSymbol }
+        guard p > 0, let brand else { return circleSymbol }
+        let paths = iconPaths(brand)
         let img = NSImage(size: canvas, flipped: true) { _ in
             guard let ctx = NSGraphicsContext.current?.cgContext else { return false }
-            draw(progress: p, in: ctx)
+            draw(progress: p, brand: brand, paths: paths, in: ctx)
             return true
         }
         img.isTemplate = true
@@ -37,7 +41,7 @@ enum StatusIconRenderer {
         return img
     }
 
-    private static func draw(progress p: CGFloat, in ctx: CGContext) {
+    private static func draw(progress p: CGFloat, brand: Brand, paths: [CGPath], in ctx: CGContext) {
         // Circle: shrinks toward the centre and fades out over the first ~60%.
         let circleT = smooth(p / 0.6)
         if circleT < 1 {
@@ -49,8 +53,8 @@ enum StatusIconRenderer {
                               respectFlipped: true, hints: nil)
         }
 
-        // Owl: its lines are revealed along their own outlines, like a pen tracing them in.
-        // The reveal mask is a wide stroke of the trimmed outlines; the owl fill shows through it.
+        // Logo: its lines are revealed along their own outlines, like a pen tracing them in.
+        // The reveal mask is a wide stroke of the trimmed outlines; the logo fill shows through it.
         let trace = smooth((p - 0.15) / 0.85)
         guard trace > 0 else { return }
         ctx.saveGState()
@@ -58,21 +62,18 @@ enum StatusIconRenderer {
             ctx.setLineWidth(1.8)
             ctx.setLineCap(.round)
             ctx.setLineJoin(.round)
-            for path in owlPaths { ctx.addPath(Path(path).trimmedPath(from: 0, to: trace).cgPath) }
+            for path in paths { ctx.addPath(Path(path).trimmedPath(from: 0, to: trace).cgPath) }
             ctx.replacePathWithStrokedPath()
             ctx.clip()
         }
         ctx.setFillColor(NSColor.black.cgColor)
-        let paths = owlPaths
         for path in paths { ctx.addPath(path) }
-        ctx.fillPath(using: .winding)
-        if owlWeight > 0 {
+        ctx.fillPath(using: brand.logo.evenOdd ? .evenOdd : .winding)
+        if brand.iconWeight > 0, let i = brand.weightedPath, paths.indices.contains(i) {
             ctx.setStrokeColor(NSColor.black.cgColor)
-            ctx.setLineWidth(owlWeight)
+            ctx.setLineWidth(brand.iconWeight)
             ctx.setLineJoin(.round)
-            // Only the body outline (last path) gets weight; the eyes and beak stay crisp,
-            // since thickening them fills in the face at menu bar size.
-            if let body = paths.last { ctx.addPath(body) }
+            ctx.addPath(paths[i])
             ctx.strokePath()
         }
         ctx.restoreGState()
@@ -85,31 +86,37 @@ enum StatusIconRenderer {
     }
 }
 
-/// Animates the status item's image between circle and owl.
+/// Animates the status item's image between the circle and a brand's logo.
+/// Switching straight from one brand to another traces the old logo out to the circle, then the new one in.
 @MainActor
 final class StatusIconAnimator {
     private weak var button: NSStatusBarButton?
     private(set) var progress: CGFloat = 0
     private var target: CGFloat = 0
+    private var shown: Brand?    // the logo being drawn
+    private var wanted: Brand?   // the logo we're heading to (nil = circle)
     private var timer: Timer?
     private var lastTick = Date()
     let duration: TimeInterval = 0.75
 
     init(button: NSStatusBarButton) {
         self.button = button
-        button.image = StatusIconRenderer.image(progress: 0)
+        button.image = StatusIconRenderer.image(progress: 0, brand: nil)
     }
 
-    func setOwl(_ owl: Bool, animated: Bool = true) {
-        let newTarget: CGFloat = owl ? 1 : 0
-        guard newTarget != target || (timer == nil && progress != newTarget) else { return }
-        target = newTarget
+    func show(_ brand: Brand?, animated: Bool = true) {
+        wanted = brand
         guard animated else {
-            progress = target; timer?.invalidate(); timer = nil
-            button?.image = StatusIconRenderer.image(progress: progress)
+            if let brand { shown = brand }
+            progress = brand == nil ? 0 : 1
+            target = progress
+            timer?.invalidate(); timer = nil
+            redraw()
             return
         }
-        guard timer == nil else { return }   // a running animation simply reverses toward the new target
+        retarget()
+        // A running animation simply heads toward the new target.
+        guard timer == nil, progress != target else { return }
         lastTick = Date()
         let t = Timer(timeInterval: 1.0 / 60, repeats: true) { [weak self] _ in
             MainActor.assumeIsolated { self?.tick() }
@@ -118,12 +125,26 @@ final class StatusIconAnimator {
         timer = t
     }
 
+    private func retarget() {
+        if let wanted, wanted != shown, progress > 0 {
+            target = 0   // trace the old logo out first
+        } else {
+            if let wanted { shown = wanted }
+            target = wanted == nil ? 0 : 1
+        }
+    }
+
     private func tick() {
         let now = Date()
         let step = CGFloat(now.timeIntervalSince(lastTick) / duration)
         lastTick = now
         progress = target > progress ? min(progress + step, target) : max(progress - step, target)
-        button?.image = StatusIconRenderer.image(progress: progress)
+        if progress == target { retarget() }
+        redraw()
         if progress == target { timer?.invalidate(); timer = nil }
+    }
+
+    private func redraw() {
+        button?.image = StatusIconRenderer.image(progress: progress, brand: shown)
     }
 }

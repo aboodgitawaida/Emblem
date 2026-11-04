@@ -1,8 +1,8 @@
 import SwiftUI
 
 /// The menu bar player, modelled on macOS's own Now Playing module.
-/// Drake mode keeps the exact layout and swaps in the OVO palette (black, gold, owl);
-/// when a Drake track starts, a gold shimmer sweeps across once and the cover's glow swells.
+/// For a brand's artist (Drake, Kanye) it keeps the exact layout and swaps in that brand's palette and logo;
+/// when such a track starts, a shimmer sweeps across once and the cover's glow swells.
 struct PlayerView: View {
     @ObservedObject var model: NowPlayingModel
     @Environment(\.colorScheme) private var systemScheme
@@ -17,23 +17,23 @@ struct PlayerView: View {
     static let width: CGFloat = 308
 
     var body: some View {
-        let theme = Theme(ovo: model.isDrakeMode)
+        let theme = Theme(brand: model.brand)
         Group {
             if let info = model.current {
-                FullPlayer(info: info, theme: theme, model: model, glow: theme.ovo ? (swell ? 0.7 : 0.38) : 0)
+                FullPlayer(info: info, theme: theme, model: model, glow: theme.branded ? (swell ? 0.7 : 0.38) : 0)
             } else { NotPlaying(theme: theme) }
         }
         .frame(width: Self.width)
         .background { PanelBackground(theme: theme) }
-        .overlay { ShimmerBand(position: shimmer).allowsHitTesting(false) }
+        .overlay { ShimmerBand(position: shimmer, palette: (model.brand ?? .ovo).palette).allowsHitTesting(false) }
         .clipShape(RoundedRectangle(cornerRadius: PanelMetrics.cornerRadius, style: .continuous))
-        .environment(\.colorScheme, theme.ovo ? .dark : systemScheme)
-        .animation(.easeInOut(duration: 0.35), value: theme.ovo)
-        .onChange(of: model.isDrakeMode) { _, drake in if drake { celebrate() } }
-        .onChange(of: model.current?.trackID) { _, _ in if model.isDrakeMode { celebrate() } }
+        .environment(\.colorScheme, theme.branded ? .dark : systemScheme)
+        .animation(.easeInOut(duration: 0.35), value: model.brand?.id)
+        .onChange(of: model.brand?.id) { _, id in if id != nil { celebrate() } }
+        .onChange(of: model.current?.trackID) { _, _ in if model.brand != nil { celebrate() } }
     }
 
-    /// Runs alongside the menu bar owl tracing in (~0.75s).
+    /// Runs alongside the menu bar logo tracing in (~0.75s).
     private func celebrate() {
         var t = Transaction(); t.disablesAnimations = true
         withTransaction(t) { shimmer = -1 }
@@ -43,17 +43,18 @@ struct PlayerView: View {
     }
 }
 
-/// A soft diagonal band of gold light, swept across the player once.
+/// A soft diagonal band of the brand's light, swept across the player once.
 private struct ShimmerBand: View {
     var position: CGFloat
+    var palette: Brand.Palette
     var body: some View {
         GeometryReader { geo in
             let band = geo.size.width * 0.45
             LinearGradient(stops: [
                 .init(color: .clear, location: 0),
-                .init(color: Owl.gold.opacity(0.22), location: 0.35),
-                .init(color: Color(red: 1, green: 0.95, blue: 0.82).opacity(0.38), location: 0.5),
-                .init(color: Owl.gold.opacity(0.22), location: 0.65),
+                .init(color: palette.accent.opacity(0.22), location: 0.35),
+                .init(color: palette.highlight.opacity(0.38), location: 0.5),
+                .init(color: palette.accent.opacity(0.22), location: 0.65),
                 .init(color: .clear, location: 1),
             ], startPoint: .leading, endPoint: .trailing)
             .frame(width: band, height: geo.size.height * 2)
@@ -100,8 +101,9 @@ private struct FullPlayer: View {
                 .offset(x: Layout.text.minX, y: Layout.text.minY)
 
             Group {
-                if theme.ovo {
-                    OwlShape().fill(Owl.gold).frame(width: 10, height: 12.5)
+                if let brand = theme.brand {
+                    LogoMark(logo: brand.logo, color: theme.accent)
+                        .frame(width: brand.markSize.width, height: brand.markSize.height)
                 } else {
                     LevelMeter(playing: info.isPlaying, color: theme.meter)
                 }
@@ -186,8 +188,8 @@ private struct Artwork: View {
                 Image(nsImage: art).resizable().interpolation(.high)
                     .frame(width: w, height: h)
                     .clipShape(shape)
-                    .overlay { if theme.ovo { shape.strokeBorder(Owl.gold.opacity(0.35), lineWidth: 0.5) } }
-                    .shadow(color: Owl.gold.opacity(glow), radius: 11)
+                    .overlay { if theme.branded { shape.strokeBorder(theme.accent.opacity(0.35), lineWidth: 0.5) } }
+                    .shadow(color: theme.accent.opacity(glow), radius: 11)
                     .frame(width: size, height: size)
                 if let icon = info.appIcon {
                     // 19pt frame (icon art ~16pt) overhanging the square's corner by 3pt, as measured.
@@ -201,16 +203,16 @@ private struct Artwork: View {
                 shape.fill(theme.placeholder)
                 if let art = info.artwork {
                     Image(nsImage: art).resizable().interpolation(.high).aspectRatio(contentMode: .fill)
-                } else if theme.ovo {
-                    OwlShape().fill(Owl.gold.opacity(0.7)).padding(size * 0.24)
+                } else if let brand = theme.brand {
+                    LogoMark(logo: brand.logo, color: theme.accent.opacity(0.7)).padding(size * 0.24)
                 } else {
                     Image(systemName: "music.note").font(.system(size: size * 0.36)).foregroundStyle(theme.tertiary)
                 }
             }
             .frame(width: size, height: size)
             .clipShape(shape)
-            .overlay { if theme.ovo { shape.strokeBorder(Owl.gold.opacity(0.35), lineWidth: 0.5) } }
-            .shadow(color: Owl.gold.opacity(glow), radius: 11)
+            .overlay { if theme.branded { shape.strokeBorder(theme.accent.opacity(0.35), lineWidth: 0.5) } }
+            .shadow(color: theme.accent.opacity(glow), radius: 11)
         }
     }
 }
@@ -380,7 +382,7 @@ private struct ControlButton: View {
                 .contentTransition(.symbolEffect(.replace))
         }
         .buttonStyle(PressStyle())
-        .brightness(hover ? (theme.ovo ? 0.12 : 0.08) : 0)
+        .brightness(hover ? (theme.branded ? 0.12 : 0.08) : 0)
         .onHover { hover = $0 }
     }
 }
@@ -399,12 +401,12 @@ private struct PanelBackground: View {
     var body: some View {
         let shape = RoundedRectangle(cornerRadius: PanelMetrics.cornerRadius, style: .continuous)
         ZStack {
-            if theme.ovo {
-                shape.fill(Color(white: 0.035))
-                // A faint gold glow from the top corner, like light catching a black OVO box.
-                shape.fill(RadialGradient(colors: [Owl.gold.opacity(0.10), .clear],
+            if let p = theme.brand?.palette {
+                shape.fill(p.background)
+                // A faint glow from the top corner, like light catching a black OVO box.
+                shape.fill(RadialGradient(colors: [p.ambient, .clear],
                                           center: .topLeading, startRadius: 0, endRadius: 260))
-                shape.strokeBorder(Owl.gold.opacity(0.28), lineWidth: 0.5)
+                shape.strokeBorder(p.accent.opacity(0.28), lineWidth: 0.5)
             } else if #available(macOS 26.0, *) {
                 Color.clear.glassEffect(.regular, in: shape)
             } else {
@@ -417,16 +419,19 @@ private struct PanelBackground: View {
 // MARK: - Theme
 
 struct Theme {
-    let ovo: Bool
-    var primary: Color { ovo ? .white : .primary }
-    var secondary: Color { ovo ? Owl.gold : .secondary }
-    var tertiary: Color { ovo ? Owl.gold.opacity(0.7) : Color.secondary.opacity(0.75) }
-    var control: Color { ovo ? Owl.gold : Color.primary.opacity(0.42) }
-    var track: Color { ovo ? Color.white.opacity(0.12) : Color.primary.opacity(0.14) }
-    var progress: Color { ovo ? Owl.gold : .accentColor }
-    var knob: Color { ovo ? Color(red: 0.93, green: 0.86, blue: 0.68) : .white }
-    var meter: Color { ovo ? Owl.gold.opacity(0.55) : Color.primary.opacity(0.3) }
-    var placeholder: Color { ovo ? Color(white: 0.1) : Color.primary.opacity(0.08) }
+    let brand: Brand?
+    var branded: Bool { brand != nil }
+    private var p: Brand.Palette? { brand?.palette }
+    var accent: Color { p?.accent ?? .accentColor }
+    var primary: Color { branded ? .white : .primary }
+    var secondary: Color { p?.accent ?? .secondary }
+    var tertiary: Color { p.map { $0.accent.opacity(0.7) } ?? Color.secondary.opacity(0.75) }
+    var control: Color { p?.accent ?? Color.primary.opacity(0.42) }
+    var track: Color { branded ? Color.white.opacity(0.12) : Color.primary.opacity(0.14) }
+    var progress: Color { p?.accent ?? .accentColor }
+    var knob: Color { p?.knob ?? .white }
+    var meter: Color { p.map { $0.accent.opacity(0.55) } ?? Color.primary.opacity(0.3) }
+    var placeholder: Color { branded ? Color(white: 0.1) : Color.primary.opacity(0.08) }
 }
 
 enum PanelMetrics { static let cornerRadius: CGFloat = 16 }

@@ -1,13 +1,13 @@
 # OVOBar: context for Claude
 
-A personal macOS menu bar app that replaces the system Now Playing item. It works like the system item, except it morphs into the OVO owl while Spotify plays a Drake track (lead or featured). It's for the owner's own Mac only and is never shared. The repo is private: the OVO owl and name are OVO's trademarks.
+A personal macOS menu bar app that replaces the system Now Playing item. It works like the system item, except it morphs into an artist's logo while Spotify plays their track (lead or featured): the OVO owl for Drake, the College Dropout bear for Kanye. It's for the owner's own Mac only and is never shared. The repo is private: the logos and names are their owners' trademarks.
 
 ## Build and run
 
 - **Build and install:** `./scripts/build-app.sh --install` builds with SwiftPM, installs to `~/Applications/OVOBar.app` and relaunches it. Xcode isn't installed (Command Line Tools only), so there's no `xcodebuild`.
 - **Signing:** the script signs with the self-signed **OVOBar Local Signing** identity in the login Keychain, so macOS permissions (Automation for Spotify) survive rebuilds. Don't switch to ad-hoc signing.
 - **Log:** `~/Library/Logs/OVOBar.log`.
-- **Checks:** `.build/release/OVOBar --selftest` runs the Drake matcher cases. `--render-frames <dir>` writes the morph strip and player previews.
+- **Checks:** `.build/release/OVOBar --selftest` runs the artist matcher cases. `--render-frames <dir>` writes the morph strip and player previews.
 - **Login item:** registered via SMAppService on first launch.
 
 ## Owner's preferences
@@ -45,25 +45,28 @@ Screenshots the owner pastes are usually scaled. Calibrate pixel measurements ag
   - **Timing:** it appears instantly on mouse release, because macOS draws its own ~57pt press pill while the mouse is held.
   - **Item width:** the status item uses its natural variable length. A fixed length makes macOS's press pill much wider.
 - **Menu bar owl:** 16.5pt tall. Only the body outline is thickened (0.4pt); the face is left crisp.
+- **Menu bar bear:** 15.5pt tall, since it's nearly as wide as tall. It's an outline traced from a black-and-white College Dropout bear sticker (no official vector exists): 1.4pt head line and 0.9pt face lines at 16.5pt, filled even-odd, with the ear marks dropped. `Resources/bear_template.svg` is the source.
 
 ## Behaviour notes
 
 - **Spotify:**
   - **Updates:** the `com.spotify.client.PlaybackStateChanged` distributed notification, observed with `.deliverImmediately`. Without it, a menu bar app gets nothing.
   - **Display:** the player shows the notification's main artist only, as Apple does.
-- **Drake detection:**
-  - **Name and title check:** `DrakeMatcher` checks the artist field and "feat./ft./with" in the title, by whole artist name. "Drake Bell" doesn't count.
-  - **Full credits:** `SpotifyCredits` reads the track's public embed page and matches Drake's artist ID, `spotify:artist:3TVXtAsR1Inumwj472S9r4`.
+- **Brands:** `Brand` lists each artist: names, Spotify artist ID, logo, icon size and palette. Drake is `ovo` (`spotify:artist:3TVXtAsR1Inumwj472S9r4`), Kanye is `kanye` (`spotify:artist:5K4W6rqBFWDnAN6FQUkS6x`, names "Kanye West", "Kanye", "Ye"). Adding an artist means adding a `Brand` and its path data.
+- **Artist detection** (`ArtistMatcher`): whole artist names only, so "Drake Bell" and "Yeat" don't count. The lead artist wins: the artist field first, then Spotify's full credits, then "feat./ft./with" in the title.
+  - **Full credits:** `SpotifyCredits` reads the track's public embed page, since the notification only names the first artist.
+- **Switching brands:** the menu bar traces the old logo out to the circle, then the new one in.
 - **Other sources:** `mediaremote-adapter` (git submodule) via `/usr/bin/perl`. If it breaks, only non-Spotify sources are lost.
 - **Panel:**
   - **Window:** a borderless panel with `hidesOnDeactivate = false`.
   - **Icon clicks:** handled by a local mouse-down monitor, so the button's own tracking doesn't fight the pill.
-- **Drake moment:** when a Drake track starts, a gold shimmer sweeps across the player once and the cover's glow swells.
+- **Artist moment:** when a brand's track starts, a shimmer in its color sweeps across the player once and the cover's glow swells.
+- **Kanye palette:** near-black maroon background, College Dropout gold `#D9A441` accent, and a maroon glow from the top corner. Picked by Claude, not the owner; open to change.
 
 ## Open ideas, not done
 
 - **Hide when idle:** hide the icon until something has played, as Apple does.
 - **Other menu bars:** scale the pill and positions for 24pt menu bars on external displays and non-notch Macs.
-- **Light mode:** check the light menu bar and the OVO gold in light mode.
+- **Light mode:** check the light menu bar and the brand colors in light mode.
 - **Unchecked Apple behaviour:** button hover and press states, the progress bar while dragging, and the 2pt longer bar on hour-long videos.
 - **Queue end:** the last song in the queue finishing is untested.
