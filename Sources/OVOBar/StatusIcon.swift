@@ -15,7 +15,7 @@ enum StatusIconRenderer {
     }()
 
     /// Each brand's logo at menu bar size, centred on the canvas. Heights are tuned so the logos sit
-    /// with SF Symbols: the owl matches play.circle's height, the wider bear sits a little smaller.
+    /// with SF Symbols: the owl matches play.circle's height, the solid bear sits a touch bigger.
     @MainActor private static var pathCache: [String: [CGPath]] = [:]
 
     @MainActor private static func iconPaths(_ brand: Brand) -> [CGPath] {
@@ -58,6 +58,24 @@ enum StatusIconRenderer {
         let trace = smooth((p - 0.15) / 0.85)
         guard trace > 0 else { return }
         ctx.saveGState()
+        if trace < 1, brand.logo.solid {
+            // A pen traces the outline, then the shape fills in as the pen line fades away.
+            let fill = smooth((trace - 0.45) / 0.55)
+            if fill > 0 {
+                ctx.setAlpha(fill)
+                for path in paths { ctx.addPath(path) }
+                ctx.fillPath(using: brand.logo.evenOdd ? .evenOdd : .winding)
+            }
+            ctx.setAlpha(1 - fill)
+            ctx.setStrokeColor(NSColor.black.cgColor)
+            ctx.setLineWidth(1.2)
+            ctx.setLineCap(.round)
+            ctx.setLineJoin(.round)
+            for path in paths { ctx.addPath(Path(path).trimmedPath(from: 0, to: min(trace / 0.6, 1)).cgPath) }
+            ctx.strokePath()
+            ctx.restoreGState()
+            return
+        }
         if trace < 1 {
             ctx.setLineWidth(1.8)
             ctx.setLineCap(.round)

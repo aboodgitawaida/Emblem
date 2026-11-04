@@ -5,14 +5,19 @@ struct Logo {
     /// Each SVG path, translated so the bounding box starts at (0,0).
     let rawPaths: [Path]
     let size: CGSize
-    /// The bear's lines are rings (a contour plus its hole), so it fills even-odd.
+    /// The bear is a solid head with holes cut in, so it fills even-odd.
     /// The owl's pieces don't overlap, so non-zero is fine there.
     let evenOdd: Bool
+    /// Solid shapes, unlike line art, can't be revealed by tracing their outlines alone,
+    /// so the morph traces the outline and then fades the fill in.
+    let solid: Bool
 
-    init(paths: [String], bounds b: (x: Double, y: Double, width: Double, height: Double), evenOdd: Bool) {
+    init(paths: [String], bounds b: (x: Double, y: Double, width: Double, height: Double),
+         evenOdd: Bool, solid: Bool = false) {
         rawPaths = paths.map { SVGPath.parse($0).applying(CGAffineTransform(translationX: -b.x, y: -b.y)) }
         size = CGSize(width: b.width, height: b.height)
         self.evenOdd = evenOdd
+        self.solid = solid
     }
 
     /// width / height of the bounding box.
@@ -27,7 +32,7 @@ struct Logo {
     }
 
     static let owl = Logo(paths: OwlPathData.paths, bounds: OwlPathData.bounds, evenOdd: false)
-    static let bear = Logo(paths: BearPathData.paths, bounds: BearPathData.bounds, evenOdd: true)
+    static let bear = Logo(paths: BearPathData.paths, bounds: BearPathData.bounds, evenOdd: true, solid: true)
 }
 
 /// A logo filled with one color, fitted to its frame.
