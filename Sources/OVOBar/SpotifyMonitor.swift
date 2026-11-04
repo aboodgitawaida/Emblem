@@ -1,7 +1,7 @@
 import AppKit
 
 /// Tracks Spotify through its `PlaybackStateChanged` distributed notification (no polling).
-/// Independent of MediaRemote, so Spotify + Drake mode keep working if the adapter breaks.
+/// Independent of MediaRemote, so Spotify and the artist looks keep working if the adapter breaks.
 @MainActor
 final class SpotifyMonitor: NSObject {
     static let bundleID = "com.spotify.client"
@@ -14,11 +14,11 @@ final class SpotifyMonitor: NSObject {
     private var artworkCache: [String: NSImage] = [:]   // trackID → art
     private var creditsCache: [String: [SpotifyCredits.Artist]] = [:]   // trackID → all artists
 
-    var isDrakeTrack: Bool {
-        guard let info else { return false }
-        if DrakeMatcher.isDrake(artist: info.artist, title: info.title) { return true }
-        // The notification only names the first artist; the full credits catch e.g. "Lil Wayne, Drake, Future".
-        return creditsCache[info.trackID]?.contains { $0.uri == SpotifyCredits.drakeURI } ?? false
+    /// The brand of the current track, if any. The notification only names the first artist;
+    /// the full credits catch e.g. "Lil Wayne, Drake, Future".
+    var brand: Brand? {
+        guard let info else { return nil }
+        return ArtistMatcher.brand(artist: info.artist, title: info.title, credits: creditsCache[info.trackID])
     }
 
     var isRunning: Bool {
@@ -67,7 +67,7 @@ final class SpotifyMonitor: NSObject {
             info = nil; onChange?(); return
         }
 
-        // Display the main artist only, like the system player; full credits are just for Drake detection.
+        // Display the main artist only, like the system player; full credits are just for artist detection.
         var new = NowPlayingInfo(bundleID: Self.bundleID, title: title, artist: artist,
                                  album: u["Album"] as? String ?? "", isPlaying: isPlaying,
                                  duration: duration, elapsed: position, elapsedAt: Date(), trackID: trackID)

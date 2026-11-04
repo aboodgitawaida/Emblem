@@ -5,8 +5,6 @@ import Foundation
 enum SpotifyCredits {
     struct Artist: Equatable { let name: String; let uri: String }
 
-    static let drakeURI = "spotify:artist:3TVXtAsR1Inumwj472S9r4"
-
     static func artists(trackID: String) async -> [Artist]? {
         // Only real catalogue tracks ("spotify:track:<id>"); skip local files, ads, episodes.
         let parts = trackID.split(separator: ":")

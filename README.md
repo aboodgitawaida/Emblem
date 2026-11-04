@@ -1,6 +1,6 @@
 # OVOBar
 
-Personal menu bar replacement for macOS's Now Playing item. The icon morphs into the OVO owl when Spotify plays a track with Drake as lead or featured artist.
+Personal menu bar replacement for macOS's Now Playing item. The icon morphs into an artist's logo when Spotify plays their track, as lead or featured artist: the OVO owl for Drake, the College Dropout bear for Kanye.
 
 ## Build & install
 
@@ -14,7 +14,7 @@ Personal menu bar replacement for macOS's Now Playing item. The icon morphs into
 ## Debug
 
 ```bash
-.build/release/OVOBar --selftest              # Drake matcher cases
+.build/release/OVOBar --selftest              # artist matcher cases
 .build/release/OVOBar --render-frames <dir>   # morph strip + player PNGs
 ```
 
@@ -22,11 +22,12 @@ Personal menu bar replacement for macOS's Now Playing item. The icon morphs into
 
 - **Spotify** (`SpotifyMonitor`): listens to the `com.spotify.client.PlaybackStateChanged` distributed notification. AppleScript is used only for artwork, the initial state and controls.
 - **Everything else** (`MediaRemoteMonitor`): uses the mediaremote-adapter stream via `/usr/bin/perl`. If its self-test fails, only non-Spotify sources are lost.
-- **Drake detection** has two checks:
-  - `DrakeMatcher`: "Drake" must be a whole artist credit in the artist field, or after feat./ft./featuring/with in the title. "Drake Bell" doesn't count.
-  - `SpotifyCredits`: Spotify's notification only names the first artist, so the full artist list comes from the track's public embed page (`open.spotify.com/embed/track/<id>`). It matches Drake's artist ID, `spotify:artist:3TVXtAsR1Inumwj472S9r4`.
+- **Brands** (`Brand`): each artist's names, Spotify artist ID, logo and player palette. Drake → OVO owl, Kanye → College Dropout bear.
+- **Artist detection** has two checks:
+  - `ArtistMatcher`: the artist must be a whole credit in the artist field, or after feat./ft./featuring/with in the title. "Drake Bell" doesn't count. The lead artist wins when several brands are credited.
+  - `SpotifyCredits`: Spotify's notification only names the first artist, so the full artist list comes from the track's public embed page (`open.spotify.com/embed/track/<id>`), matched by artist ID.
 - **Log**: `~/Library/Logs/OVOBar.log`.
-- **Morph** (`StatusIcon`): renders template images frame by frame. The circle shrinks and fades while the owl's lines are revealed along their outlines.
+- **Morph** (`StatusIcon`): renders template images frame by frame. The circle shrinks and fades while the logo's lines are revealed along their outlines.
 - **Menu**: right-click the icon for Open at Login and Quit.
 
 ## Signing

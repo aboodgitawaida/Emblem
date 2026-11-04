@@ -31,8 +31,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }
 
-        model.$isDrakeMode.removeDuplicates().sink { [weak self] drake in
-            self?.animator.setOwl(drake)
+        model.$brand.removeDuplicates().sink { [weak self] brand in
+            self?.animator.show(brand)
         }.store(in: &cancellables)
 
         model.start()
