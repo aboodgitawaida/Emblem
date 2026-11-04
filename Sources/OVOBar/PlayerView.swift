@@ -74,11 +74,11 @@ private enum Layout {
     static let art = CGRect(x: 14, y: 14, width: 112, height: 112)
     static let column: CGFloat = 140, columnWidth: CGFloat = 154
     static let text = CGRect(x: 140, y: 15, width: 136, height: 31.5)
-    static let meter = CGRect(x: 280.5, y: 26.5, width: 13.5, height: 8.5)
+    static let meter = CGRect(x: 281.5, y: 26, width: 13.5, height: 8.5)
     static let buttonY: CGFloat = 63.5, button: CGFloat = 26
     static let buttonX: [CGFloat] = [148, 204, 260]
-    static let slider = CGRect(x: 140, y: 102, width: 154, height: 12)
-    static let timesY: CGFloat = 112.5, timesHeight: CGFloat = 13
+    static let slider = CGRect(x: 140, y: 101, width: 154, height: 12)   // track drawn ~1pt above the AX frame centre
+    static let timesY: CGFloat = 113.2, timesHeight: CGFloat = 13
 }
 
 private struct FullPlayer: View {
@@ -103,7 +103,7 @@ private struct FullPlayer: View {
                 if theme.ovo {
                     OwlShape().fill(Owl.gold).frame(width: 10, height: 12.5)
                 } else {
-                    LevelMeter(playing: info.isPlaying, color: theme.tertiary)
+                    LevelMeter(playing: info.isPlaying, color: theme.meter)
                 }
             }
             .frame(width: Layout.meter.width, height: 12.5)
@@ -112,7 +112,7 @@ private struct FullPlayer: View {
 
             ControlButton(symbol: "backward.fill", size: 16, theme: theme) { model.send(.previous) }
                 .offset(x: Layout.buttonX[0], y: Layout.buttonY)
-            ControlButton(symbol: info.isPlaying ? "pause.fill" : "play.fill", size: 20, theme: theme) {
+            ControlButton(symbol: info.isPlaying ? "pause.fill" : "play.fill", size: 23.5, theme: theme) {
                 model.send(.togglePlayPause)
             }
             .offset(x: Layout.buttonX[1], y: Layout.buttonY)
@@ -204,14 +204,15 @@ private struct Scrubber: View {
             VStack(spacing: Layout.timesY - Layout.slider.maxY) {
                 GeometryReader { geo in
                     let w = geo.size.width
-                    let knob: CGFloat = 14
+                    // The system thumb is a soft capsule, ~15.5×11.5pt (measured from screenshots).
+                    let knob: CGFloat = 15.5, knobHeight: CGFloat = 11.5
                     ZStack(alignment: .leading) {
                         Capsule().fill(theme.track).frame(height: 4)
                         Capsule().fill(theme.progress).frame(width: max(4, w * fraction), height: 4)
-                        Circle()
+                        Capsule()
                             .fill(theme.knob)
-                            .frame(width: knob, height: knob)
-                            .shadow(color: .black.opacity(0.35), radius: 2, y: 1)
+                            .frame(width: knob, height: knobHeight)
+                            .shadow(color: .black.opacity(0.3), radius: 1.5, y: 0.5)
                             .scaleEffect(showKnob ? 1 : 0.2)
                             .opacity(showKnob ? 1 : 0)
                             .offset(x: min(max(w * fraction - knob / 2, 0), w - knob))
@@ -324,11 +325,11 @@ private struct LevelMeter: View {
             HStack(alignment: .center, spacing: 1.5) {
                 ForEach(0..<5, id: \.self) { i in
                     let phase = sin(t * (4.6 + Double(i) * 1.3) + Double(i) * 1.9)
-                    let h = playing ? 3 + 5.5 * (0.5 + 0.5 * phase) : 3
+                    let h = playing ? 4 + 7 * (0.5 + 0.5 * phase) : 4
                     Capsule().fill(color).frame(width: 1.5, height: h)
                 }
             }
-            .frame(height: 8.5)
+            .frame(height: 11)
         }
     }
 }
@@ -395,6 +396,7 @@ struct Theme {
     var track: Color { ovo ? Color.white.opacity(0.12) : Color.primary.opacity(0.14) }
     var progress: Color { ovo ? Owl.gold : .accentColor }
     var knob: Color { ovo ? Color(red: 0.93, green: 0.86, blue: 0.68) : .white }
+    var meter: Color { ovo ? Owl.gold.opacity(0.55) : Color.primary.opacity(0.3) }
     var placeholder: Color { ovo ? Color(white: 0.1) : Color.primary.opacity(0.08) }
 }
 
