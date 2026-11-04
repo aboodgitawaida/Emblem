@@ -89,6 +89,19 @@ struct Brand: Equatable {
                          ambient: Color(red: 0xB9 / 255, green: 0x8E / 255, blue: 0x49 / 255).opacity(0.16)),
         markWeight: 0.6)
 
+    /// Tyler, the Creator: the GOLF le FLEUR* flower, in IGOR pink.
+    static let tyler = Brand(
+        id: "tyler", names: ["Tyler, The Creator"], spotifyURI: "spotify:artist:4V8LLVI7PbaPR0K2TGSxFF",
+        // Solid like the bear. It's wider than tall, so the 18pt canvas width limits it to 16pt tall.
+        logo: .golfFlower, iconHeight: 16, iconWeight: 0, weightedPaths: [],
+        markSize: CGSize(width: 13.5, height: 12.5),
+        // Sampled from the IGOR cover's pink background (#DCA9B8–#EDC8D3).
+        palette: Palette(accent: Color(red: 0xEC / 255, green: 0xB4 / 255, blue: 0xCC / 255),
+                         highlight: Color(red: 1, green: 0.9, blue: 0.95),
+                         knob: Color(red: 0xF8 / 255, green: 0xDC / 255, blue: 0xE6 / 255),
+                         background: Color(red: 0.06, green: 0.04, blue: 0.05),
+                         ambient: Color(red: 0xEC / 255, green: 0xB4 / 255, blue: 0xCC / 255).opacity(0.14)))
+
     /// Checked in this order when several brands are credited equally.
-    static let all = [ovo, kanye, xo, travis]
+    static let all = [ovo, kanye, xo, travis, tyler]
 }

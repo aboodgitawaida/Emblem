@@ -34,6 +34,7 @@ enum DebugRender {
             let model = NowPlayingModel()
             var i = info
             if brand == .kanye { (i.title, i.artist, i.album) = ("Stronger", "Kanye West", "Graduation") }
+            if brand == .tyler { (i.title, i.artist, i.album) = ("EARFQUAKE", "Tyler, The Creator", "IGOR") }
             if brand == .travis { (i.title, i.artist, i.album) = ("goosebumps", "Travis Scott", "Birds in the Trap Sing McKnight") }
             if brand == .xo { (i.title, i.artist, i.album) = ("Blinding Lights", "The Weeknd", "After Hours") }
             model.preview(i, brand: brand)
@@ -51,6 +52,25 @@ enum DebugRender {
                 .frame(width: 300 * b.logo.aspect, height: 300).padding(20).background(b.palette.background))
             r.scale = 2
             if let i = r.nsImage { write(i, to: dir.appendingPathComponent("logo_\(b.id).png")) }
+        }
+    }
+
+    /// The player with real album art, each as `<brand-id>=<image path>`, to check the art-derived colours.
+    static func covers(to dir: URL, _ specs: [String]) {
+        try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        for spec in specs {
+            let parts = spec.split(separator: "=", maxSplits: 1).map(String.init)
+            guard parts.count == 2, let brand = Brand.all.first(where: { $0.id == parts[0] }),
+                  let art = NSImage(contentsOfFile: parts[1]) else { print("skip \(spec)"); continue }
+            let name = ((parts[1] as NSString).lastPathComponent as NSString).deletingPathExtension
+            var info = NowPlayingInfo(bundleID: SpotifyMonitor.bundleID, title: name, artist: parts[0], album: "",
+                                      isPlaying: true, duration: 237, elapsed: 151, elapsedAt: Date())
+            info.artwork = art
+            let model = NowPlayingModel()
+            model.preview(info, brand: brand)
+            let r = ImageRenderer(content: PlayerView(model: model).environment(\.colorScheme, .dark))
+            r.scale = 2
+            if let img = r.nsImage { write(img, to: dir.appendingPathComponent("cover_\(name).png")) }
         }
     }
 

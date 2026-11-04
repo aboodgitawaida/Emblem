@@ -1,7 +1,8 @@
 import SwiftUI
 
 /// The menu bar player, modelled on macOS's own Now Playing module.
-/// For a brand's artist (Drake, Kanye) it keeps the exact layout and swaps in that brand's palette and logo;
+/// For a brand's artist (Drake, Kanye…) it keeps the exact layout and swaps in that brand's logo and
+/// colours taken from the playing album's art (the brand's own palette until the art arrives);
 /// when such a track starts, a shimmer sweeps across once and the cover's glow swells.
 struct PlayerView: View {
     @ObservedObject var model: NowPlayingModel
@@ -17,7 +18,7 @@ struct PlayerView: View {
     static let width: CGFloat = 308
 
     var body: some View {
-        let theme = Theme(brand: model.brand)
+        let theme = Theme(brand: model.brand, palette: model.palette)
         Group {
             if let info = model.current {
                 FullPlayer(info: info, theme: theme, model: model, glow: theme.branded ? (swell ? 0.7 : 0.38) : 0)
@@ -25,10 +26,11 @@ struct PlayerView: View {
         }
         .frame(width: Self.width)
         .background { PanelBackground(theme: theme) }
-        .overlay { ShimmerBand(position: shimmer, palette: (model.brand ?? .ovo).palette).allowsHitTesting(false) }
+        .overlay { ShimmerBand(position: shimmer, palette: model.palette ?? Brand.ovo.palette).allowsHitTesting(false) }
         .clipShape(RoundedRectangle(cornerRadius: PanelMetrics.cornerRadius, style: .continuous))
         .environment(\.colorScheme, theme.branded ? .dark : systemScheme)
         .animation(.easeInOut(duration: 0.35), value: model.brand?.id)
+        .animation(.easeInOut(duration: 0.35), value: model.palette?.accent)
         .onChange(of: model.brand?.id) { _, id in if id != nil { celebrate() } }
         .onChange(of: model.current?.trackID) { _, _ in if model.brand != nil { celebrate() } }
     }
@@ -401,7 +403,7 @@ private struct PanelBackground: View {
     var body: some View {
         let shape = RoundedRectangle(cornerRadius: PanelMetrics.cornerRadius, style: .continuous)
         ZStack {
-            if let p = theme.brand?.palette {
+            if let p = theme.palette {
                 shape.fill(p.background)
                 // A faint glow from the top corner, like light catching a black OVO box.
                 shape.fill(RadialGradient(colors: [p.ambient, .clear],
@@ -420,8 +422,9 @@ private struct PanelBackground: View {
 
 struct Theme {
     let brand: Brand?
+    let palette: Brand.Palette?
     var branded: Bool { brand != nil }
-    private var p: Brand.Palette? { brand?.palette }
+    private var p: Brand.Palette? { palette }
     var accent: Color { p?.accent ?? .accentColor }
     var primary: Color { branded ? .white : .primary }
     var secondary: Color { p?.accent ?? .secondary }

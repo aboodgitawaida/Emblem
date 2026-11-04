@@ -9,6 +9,12 @@ import Combine
 final class NowPlayingModel: ObservableObject {
     @Published private(set) var current: NowPlayingInfo?
     @Published private(set) var brand: Brand?
+    /// Colours from the playing album's art, for brand tracks (nil until art arrives, or for colourless art).
+    @Published private(set) var artworkPalette: Brand.Palette?
+    private var paletteArtwork: NSImage?
+
+    /// The player's colours: the album's when it has some, else the brand's own. nil for other songs.
+    var palette: Brand.Palette? { brand.map { artworkPalette ?? $0.palette } }
 
     let spotify = SpotifyMonitor()
     let system = MediaRemoteMonitor()
@@ -41,10 +47,18 @@ final class NowPlayingModel: ObservableObject {
             Log.write("Brand \(newBrand?.id ?? "off") — \(pick?.artist ?? "-") / \(pick?.title ?? "-")")
             brand = newBrand
         }
+        updateArtworkPalette()
     }
 
     /// For DebugRender only.
-    func preview(_ info: NowPlayingInfo?, brand: Brand?) { current = info; self.brand = brand }
+    func preview(_ info: NowPlayingInfo?, brand: Brand?) { current = info; self.brand = brand; updateArtworkPalette() }
+
+    private func updateArtworkPalette() {
+        let art = brand == nil ? nil : current?.artwork
+        guard art !== paletteArtwork else { return }
+        paletteArtwork = art
+        artworkPalette = art.flatMap(ArtworkPalette.palette(from:))
+    }
 
     /// Brings the playing app forward (Spotify, Music, the browser…), like clicking the system player's artwork.
     func openSource() {

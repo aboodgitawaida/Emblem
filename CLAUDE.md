@@ -1,6 +1,6 @@
 # OVOBar: context for Claude
 
-A personal macOS menu bar app that replaces the system Now Playing item. It works like the system item, except it morphs into an artist's logo while Spotify plays their track (lead or featured): the OVO owl for Drake, the College Dropout bear for Kanye, the XO for The Weeknd, the Cactus Jack face for Travis Scott. It's for the owner's own Mac only and is never shared. The repo is private: the logos and names are their owners' trademarks.
+A personal macOS menu bar app that replaces the system Now Playing item. It works like the system item, except it morphs into an artist's logo while Spotify plays their track (lead or featured): the OVO owl for Drake, the College Dropout bear for Kanye, the XO for The Weeknd, the Cactus Jack face for Travis Scott, the GOLF le FLEUR* flower for Tyler, the Creator. It's for the owner's own Mac only and is never shared. The repo is private: the logos and names are their owners' trademarks.
 
 ## Build and run
 
@@ -48,6 +48,7 @@ Screenshots the owner pastes are usually scaled. Calibrate pixel measurements ag
 - **Menu bar bear:** solid, 17pt tall (17.5 wide). An outline version was too faint to recognise next to the system icons. It's traced from a black-and-white College Dropout bear sticker (no official vector exists), with the eye whites, eye shine and muzzle cut out (even-odd) and the ear marks dropped. `Resources/bear_template.svg` is the source. Solid logos morph differently: the outline is traced, then the fill fades in.
 - **Menu bar XO:** 17pt tall, traced from a black-and-white copy of the XO brush logo and lightly smoothed (`Resources/xo_template.svg`). All its strokes get the 0.4pt extra weight, so they match the owl.
 - **Menu bar Cactus Jack:** 16pt tall (it's wider than tall, so the canvas width limits it), traced from a black-and-white copy of the Cactus Jack face logo (`Resources/cactusjack_template.svg`). All lines get 0.5pt extra weight; more merges the mouth stitches. The CACTUS/JACK cross logo was rejected: its letters turn to dots at this size.
+- **Menu bar flower:** 16pt tall (width-limited), solid, traced from a GOLF le FLEUR* flower image (`Resources/golf_template.svg`). The two-colour centre is a dot inside a thin gap ring.
 - **Faces:** a realistic face (a Lauryn Hill stencil) was tried and dropped. At 17pt the features are 2–3pt and unrecognisable, and a one-color stencil shows as a negative on dark menu bars. Cartoon faces whose features fill the head (the bear, Cactus Jack) work.
 
 ## Behaviour notes
@@ -55,7 +56,7 @@ Screenshots the owner pastes are usually scaled. Calibrate pixel measurements ag
 - **Spotify:**
   - **Updates:** the `com.spotify.client.PlaybackStateChanged` distributed notification, observed with `.deliverImmediately`. Without it, a menu bar app gets nothing.
   - **Display:** the player shows the notification's main artist only, as Apple does.
-- **Brands:** `Brand` lists each artist: names, Spotify artist ID, logo, icon size and palette. Drake is `ovo` (`spotify:artist:3TVXtAsR1Inumwj472S9r4`), Kanye is `kanye` (`spotify:artist:5K4W6rqBFWDnAN6FQUkS6x`, names "Kanye West", "Kanye", "Ye"). The Weeknd is `xo` (`spotify:artist:1Xyo4u8uXC1ZmMpatF05PJ`). Travis Scott is `travis` (`spotify:artist:0Y5tJX1MQlPlqiwlOH1tJY`). Adding an artist means adding a `Brand` and its path data.
+- **Brands:** `Brand` lists each artist: names, Spotify artist ID, logo, icon size and palette. Drake is `ovo` (`spotify:artist:3TVXtAsR1Inumwj472S9r4`), Kanye is `kanye` (`spotify:artist:5K4W6rqBFWDnAN6FQUkS6x`, names "Kanye West", "Kanye", "Ye"). The Weeknd is `xo` (`spotify:artist:1Xyo4u8uXC1ZmMpatF05PJ`). Travis Scott is `travis` (`spotify:artist:0Y5tJX1MQlPlqiwlOH1tJY`). Tyler, the Creator is `tyler` (`spotify:artist:4V8LLVI7PbaPR0K2TGSxFF`); his name has a comma, so `ArtistMatcher.credits` keeps brand names that contain separators whole. Adding an artist means adding a `Brand` and its path data.
 - **Artist detection** (`ArtistMatcher`): whole artist names only, so "Drake Bell" and "Yeat" don't count. The lead artist wins: the artist field first, then Spotify's full credits, then "feat./ft./with" in the title.
   - **Full credits:** `SpotifyCredits` reads the track's public embed page, since the notification only names the first artist.
 - **Switching brands:** the menu bar traces the old logo out to the circle, then the new one in.
@@ -64,9 +65,12 @@ Screenshots the owner pastes are usually scaled. Calibrate pixel measurements ag
   - **Window:** a borderless panel with `hidesOnDeactivate = false`.
   - **Icon clicks:** handled by a local mouse-down monitor, so the button's own tracking doesn't fight the pill.
 - **Artist moment:** when a brand's track starts, a shimmer in its color sweeps across the player once and the cover's glow swells.
-- **Kanye palette:** near-black maroon background, College Dropout gold `#D9A441` accent, and a maroon glow from the top corner. Picked by Claude, not the owner; open to change.
-- **XO palette:** near-black background with After Hours red `#E2323C`. Also picked by Claude.
-- **Travis Scott palette:** warm brown-black with ASTROWORLD gold `#D7B563`, sampled from the cover's gold head. The owner rejected an earlier cactus green: the palette should come from the artist's album art, not the logo's name.
+- **Player colours come from the album that's playing:** for brand tracks, `ArtworkPalette` picks the art's dominant colour (a hue histogram weighted by saturation, brightness and closeness to the centre) and builds the palette from it: ASTROWORLD gold, IGOR pink, Graduation purple, After Hours red, Views steel blue. The owner asked for this: each album gets its own colour, not one per artist. Each brand's fixed palette below is the fallback until the art arrives, or for colourless art. Other songs keep the normal player. `OVOBar --palette <image>…` prints the picked colour; `--render-covers <dir> <brand>=<image>…` renders the player with real art.
+- **Fallback palettes:**
+  - **Kanye:** near-black maroon background, College Dropout gold `#D9A441` accent, and a maroon glow from the top corner. Picked by Claude, not the owner; open to change.
+  - **XO:** near-black background with After Hours red `#E2323C`. Also picked by Claude.
+  - **Travis Scott:** warm brown-black with ASTROWORLD gold `#D7B563`, sampled from the cover's gold head. The owner rejected an earlier cactus green: the palette should come from the artist's album art, not the logo's name.
+  - **Tyler:** near-black with IGOR pink `#ECB4CC`, sampled from the cover.
 
 ## Open ideas, not done
 
