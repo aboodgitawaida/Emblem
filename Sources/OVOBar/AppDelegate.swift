@@ -76,9 +76,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private lazy var pill = PillWindow()
 
-    /// The "open" pill behind the icon. macOS draws its own press pill while the mouse is held but
-    /// none afterwards for a custom panel, so ours copies that press pill's size, place and shade
-    /// and takes over when the button is released: it reads as one pill that stays.
+    /// The "open" pill behind the icon, matching the system Now Playing item's while its module is open.
+    /// macOS draws its own (wider) press pill only while the mouse is held, so ours appears on release.
     private func setPressed(_ pressed: Bool) {
         guard let button = statusItem.button, let itemWindow = button.window else { return }
         if pressed {
@@ -216,11 +215,12 @@ final class PlayerPanel: NSPanel {
     }
 }
 
-/// Slot width of the system Now Playing item, and the macOS press pill (measured from a screenshot
-/// on a 33pt notch menu bar: ~57×23pt, centred on the item, ~15% white over the black bar).
+/// Slot width of the system Now Playing item, and its "open" pill, measured at 2× from screenshots
+/// on a 33pt notch menu bar: 37×23pt, centred on the icon, ~15% white over the black bar.
+/// (macOS's press pill while the mouse is held is wider, ~57pt; ours appears after release.)
 enum Pill {
     static let size = NSSize(width: 37, height: 24)
-    static let press = NSSize(width: 57, height: 23)
+    static let open = NSSize(width: 37, height: 23)
 }
 
 /// A see-through window just behind the status item that draws the pill. It ignores the mouse,
@@ -230,7 +230,7 @@ final class PillWindow: NSPanel {
     private let pill = NSView()
 
     init() {
-        super.init(contentRect: NSRect(origin: .zero, size: Pill.press),
+        super.init(contentRect: NSRect(origin: .zero, size: Pill.open),
                    styleMask: [.borderless, .nonactivatingPanel], backing: .buffered, defer: true)
         isOpaque = false
         backgroundColor = .clear
@@ -240,7 +240,7 @@ final class PillWindow: NSPanel {
         hidesOnDeactivate = false
         collectionBehavior = [.canJoinAllSpaces, .stationary, .ignoresCycle, .fullScreenAuxiliary]
         pill.wantsLayer = true
-        pill.layer?.cornerRadius = Pill.press.height / 2
+        pill.layer?.cornerRadius = Pill.open.height / 2
         pill.layer?.cornerCurve = .continuous
         contentView = pill
     }
@@ -248,8 +248,8 @@ final class PillWindow: NSPanel {
     func show(centeredOn center: NSPoint, behind itemWindow: NSWindow, dark: Bool) {
         pill.layer?.backgroundColor = (dark ? NSColor.white.withAlphaComponent(0.155)
                                             : NSColor.black.withAlphaComponent(0.1)).cgColor
-        setFrame(NSRect(x: center.x - Pill.press.width / 2, y: center.y - Pill.press.height / 2,
-                        width: Pill.press.width, height: Pill.press.height), display: true)
+        setFrame(NSRect(x: center.x - Pill.open.width / 2, y: center.y - Pill.open.height / 2,
+                        width: Pill.open.width, height: Pill.open.height), display: true)
         level = itemWindow.level
         alphaValue = 0
         order(.below, relativeTo: itemWindow.windowNumber)
