@@ -14,6 +14,8 @@ struct Brand: Equatable {
     /// The small logo top-right of the player, where the level meter normally sits.
     let markSize: CGSize
     let palette: Palette
+    /// Extra line weight for the player's small logo (pt), for thin line drawings.
+    var markWeight: CGFloat = 0
 
     struct Palette {
         let accent: Color        // secondary text, controls, progress, logo
@@ -71,6 +73,21 @@ struct Brand: Equatable {
                          background: Color(white: 0.03),
                          ambient: Color(red: 0.89, green: 0.12, blue: 0.16).opacity(0.16)))
 
+    /// Travis Scott: the Cactus Jack face, in cactus green.
+    static let travis = Brand(
+        id: "travis", names: ["Travis Scott"], spotifyURI: "spotify:artist:0Y5tJX1MQlPlqiwlOH1tJY",
+        // A line drawing that's wider than tall, so the 18pt canvas width limits it to 16pt tall.
+        // Its pen lines are thin at this size; 0.5pt extra weight keeps the stitches apart but readable.
+        // (The CACTUS/JACK cross logo was tried too: at menu bar size its letters turn to dots.)
+        logo: .cactusJack, iconHeight: 16, iconWeight: 0.5, weightedPaths: Array(CactusJackPathData.paths.indices),
+        markSize: CGSize(width: 13.5, height: 12.5),
+        palette: Palette(accent: Color(red: 0x8F / 255, green: 0xC4 / 255, blue: 0x5A / 255),
+                         highlight: Color(red: 0.88, green: 1, blue: 0.8),
+                         knob: Color(red: 0.86, green: 0.95, blue: 0.78),
+                         background: Color(red: 0.03, green: 0.045, blue: 0.03),
+                         ambient: Color(red: 0.4, green: 0.7, blue: 0.25).opacity(0.14)),
+        markWeight: 0.6)
+
     /// Checked in this order when several brands are credited equally.
-    static let all = [ovo, kanye, xo]
+    static let all = [ovo, kanye, xo, travis]
 }

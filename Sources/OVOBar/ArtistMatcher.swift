@@ -46,7 +46,8 @@ enum ArtistMatcher {
             ("Drake, 21 Savage", "Rich Flex", "ovo"),
             ("Future", "Life Is Good (feat. Drake)", "ovo"),
             ("Rihanna", "Work (ft. Drake)", "ovo"),
-            ("Travis Scott", "SICKO MODE (with Drake)", "ovo"),
+            ("Travis Scott", "SICKO MODE (with Drake)", "travis"),   // Travis's song, so Travis wins
+            ("Future", "Song (with Drake)", "ovo"),
             ("Lil Wayne", "Right Above It - feat. Drake", "ovo"),
             ("DJ Khaled", "Popstar (feat. Drake) [Explicit]", "ovo"),
             ("Future & Drake", "Jumpman", "ovo"),
@@ -76,6 +77,14 @@ enum ArtistMatcher {
             ("Kanye West", "Hold Tight (feat. The Weeknd)", "kanye"),
             ("The Weekend", "Song", nil),
             ("Weekend Band", "Song", nil),
+            // Travis Scott
+            ("Travis Scott", "goosebumps", "travis"),
+            ("Travis Scott, Kendrick Lamar", "goosebumps", "travis"),
+            ("Kanye West", "Piss On Your Grave (feat. Travis Scott)", "kanye"),
+            ("Drake", "Company (feat. Travis Scott)", "ovo"),
+            ("Don Toliver", "Can't Feel My Legs (feat. Travis Scott)", "travis"),
+            ("Travis Scott Fan", "Song", nil),
+            ("Randy Travis", "Song", nil),
         ]
         var ok = true
         for (a, t, want) in cases where brand(artist: a, title: t)?.id != want {
@@ -88,8 +97,9 @@ enum ArtistMatcher {
         let creditCases: [(String, [SpotifyCredits.Artist], String?)] = [
             ("Lil Wayne", [other, drake], "ovo"),
             ("¥$", [other, kanye], "kanye"),
-            ("Travis Scott", [other, kanye, drake], "kanye"),
+            ("Someone", [other, kanye, drake], "kanye"),
             ("Kanye West", [kanye, drake], "kanye"),
+            ("JACKBOYS", [other, SpotifyCredits.Artist(name: "Travis Scott", uri: Brand.travis.spotifyURI)], "travis"),
             ("Ariana Grande", [other, SpotifyCredits.Artist(name: "The Weeknd", uri: Brand.xo.spotifyURI)], "xo"),
             ("Someone", [other], nil),
         ]
