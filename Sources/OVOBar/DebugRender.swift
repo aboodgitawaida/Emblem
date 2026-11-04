@@ -34,6 +34,7 @@ enum DebugRender {
             let model = NowPlayingModel()
             var i = info
             if brand == .kanye { (i.title, i.artist, i.album) = ("Stronger", "Kanye West", "Graduation") }
+            if brand == .xo { (i.title, i.artist, i.album) = ("Blinding Lights", "The Weeknd", "After Hours") }
             model.preview(i, brand: brand)
             let view = PlayerView(model: model, previewShimmer: name.hasSuffix("shimmer") ? 0.35 : nil)
                 .background(dark ? Color(white: 0.17) : Color(white: 0.93))

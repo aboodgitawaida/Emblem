@@ -33,6 +33,7 @@ struct Logo {
 
     static let owl = Logo(paths: OwlPathData.paths, bounds: OwlPathData.bounds, evenOdd: false)
     static let bear = Logo(paths: BearPathData.paths, bounds: BearPathData.bounds, evenOdd: true, solid: true)
+    static let xo = Logo(paths: XOPathData.paths, bounds: XOPathData.bounds, evenOdd: true)
 }
 
 /// A logo filled with one color, fitted to its frame.
