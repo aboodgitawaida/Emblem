@@ -249,6 +249,10 @@ private struct Scrubber: View {
 }
 
 /// Single-line text that, when too long, scrolls sideways in a loop after a pause (like the system player).
+/// Single-line text that scrolls when too long, timed like the system Now Playing module
+/// (measured via Accessibility): rests 3s, scrolls at 30pt/s until a repeated copy (21pt behind)
+/// lines up, jumps back invisibly, and rests again. The timer starts when the player opens.
+/// The left edge only fades while the text is moving, so the first letter is crisp at rest.
 private struct MarqueeText: View {
     let text: String
     let font: Font
@@ -257,13 +261,14 @@ private struct MarqueeText: View {
     @State private var boxWidth: CGFloat = 0
     @State private var start = Date()
 
-    private let gap: CGFloat = 36
-    private let speed: CGFloat = 28     // points per second
-    private let pause: Double = 2.5     // seconds at rest before each scroll
+    private let gap: CGFloat = 21
+    private let speed: CGFloat = 30     // points per second
+    private let pause: Double = 3.0     // seconds at rest before each scroll
+    private let fade: CGFloat = 10      // edge fade width, points
 
     var body: some View {
         let label = Text(text).font(font).foregroundStyle(color).lineLimit(1).fixedSize()
-        let overflow = textWidth > boxWidth + 1 && boxWidth > 0
+        let overflow = textWidth > boxWidth + 0.5 && boxWidth > 0
         Text(text).font(font).lineLimit(1)
             .opacity(0)   // sizes the row's height without forcing its width
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -271,27 +276,41 @@ private struct MarqueeText: View {
                 .onChange(of: g.size.width) { _, w in boxWidth = w } })
             .overlay(alignment: .leading) {
                 TimelineView(.animation(paused: !overflow)) { ctx in
-                    let travel = textWidth + gap
-                    let scrollTime = Double(travel / speed)
-                    let t = ctx.date.timeIntervalSince(start).truncatingRemainder(dividingBy: pause + scrollTime)
-                    let x = overflow && t > pause ? -CGFloat(t - pause) * speed : 0
+                    let x = offset(at: ctx.date, overflow: overflow)
                     HStack(spacing: gap) {
                         label.background(GeometryReader { g in Color.clear.onAppear { textWidth = g.size.width }
                             .onChange(of: g.size.width) { _, w in textWidth = w } })
                         if overflow { label }
                     }
                     .offset(x: x)
+                    .frame(width: boxWidth, alignment: .leading)
+                    .clipped()
+                    .mask { edgeMask(moving: x < 0, overflow: overflow) }
                 }
             }
-            .clipped()
-            .mask {
-                if overflow {
-                    LinearGradient(stops: [.init(color: .clear, location: 0), .init(color: .black, location: 0.04),
-                                           .init(color: .black, location: 0.9), .init(color: .clear, location: 1)],
-                                   startPoint: .leading, endPoint: .trailing)
-                } else { Color.black }
-            }
             .onChange(of: text) { _, _ in start = Date() }
+    }
+
+    private func offset(at date: Date, overflow: Bool) -> CGFloat {
+        guard overflow else { return 0 }
+        let travel = textWidth + gap
+        let cycle = pause + Double(travel / speed)
+        let t = date.timeIntervalSince(start).truncatingRemainder(dividingBy: cycle)
+        return t > pause ? -CGFloat(t - pause) * speed : 0
+    }
+
+    @ViewBuilder private func edgeMask(moving: Bool, overflow: Bool) -> some View {
+        if overflow && boxWidth > 0 {
+            let f = fade / boxWidth
+            LinearGradient(stops: [
+                .init(color: moving ? .clear : .black, location: 0),
+                .init(color: .black, location: f),
+                .init(color: .black, location: 1 - f),
+                .init(color: .clear, location: 1),
+            ], startPoint: .leading, endPoint: .trailing)
+        } else {
+            Color.black
+        }
     }
 }
 

@@ -81,5 +81,26 @@ case "dump", "ccdump":
         for c in (attr(e, kAXChildrenAttribute) as? [AXUIElement]) ?? [] { walk(c, depth + 1) }
     }
     walk(win, 0)
+case "track":
+    // Samples the frames of an app's text elements over time (seconds = a[2], bundle id = a[3]).
+    let r = NSRunningApplication.runningApplications(withBundleIdentifier: a.count > 3 ? a[3] : "com.apple.controlcenter").first!
+    let app = AXUIElementCreateApplication(r.processIdentifier)
+    func texts(_ e: AXUIElement, _ out: inout [AXUIElement]) {
+        if str(e, kAXRoleAttribute) == "AXStaticText" { out.append(e) }
+        for c in (attr(e, kAXChildrenAttribute) as? [AXUIElement]) ?? [] { texts(c, &out) }
+    }
+    let start = Date()
+    let dur = Double(a[2]) ?? 12
+    while Date().timeIntervalSince(start) < dur {
+        var els: [AXUIElement] = []
+        for w in (attr(app, kAXWindowsAttribute) as? [AXUIElement]) ?? [] { texts(w, &els) }
+        let parts = els.compactMap { e -> String? in
+            guard let f = frame(e) else { return nil }
+            let v = ((attr(e, kAXValueAttribute) as? String) ?? "").prefix(12)
+            return String(format: "%@@x%.1f,y%.1f,w%.1f", String(v), f.minX, f.minY, f.width)
+        }
+        print(String(format: "%.2f ", Date().timeIntervalSince(start)) + parts.joined(separator: " | "))
+        usleep(50_000)
+    }
 default: break
 }

@@ -129,10 +129,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 /// (room for the card's soft shadow; the empty area lets clicks through).
 struct PanelRoot: View {
     @ObservedObject var model: NowPlayingModel
+    var openCount = 0   // a fresh player each open, so scrolling text starts from the beginning
 
     var body: some View {
         VStack(spacing: 0) {
             PlayerView(model: model)
+                .id(openCount)
                 .shadow(color: .black.opacity(0.28), radius: 18, y: 8)
             Spacer(minLength: 0)
         }
@@ -176,8 +178,12 @@ final class PlayerPanel: NSPanel {
 
     override var canBecomeKey: Bool { true }
 
+    private var openCount = 0
+
     func show(below anchor: NSRect, menuBarBottom: CGFloat) {
         self.anchor = anchor
+        openCount += 1
+        hosting.rootView = PanelRoot(model: model, openCount: openCount)
         let size = Self.size
         setContentSize(size)
         let screen = NSScreen.screens.first { $0.frame.intersects(anchor) } ?? NSScreen.main
