@@ -48,9 +48,9 @@ struct Brand: Equatable {
     /// Kanye: the College Dropout bear, maroon and gold.
     static let kanye = Brand(
         id: "kanye", names: ["Kanye West", "Kanye", "Ye"], spotifyURI: "spotify:artist:5K4W6rqBFWDnAN6FQUkS6x",
-        // The bear is an outline already (1.4pt head, 0.9pt face at 16.5pt), so no extra weight.
-        // It's nearly as wide as tall, so it sits a little smaller than the owl to look the same size.
-        logo: .bear, iconHeight: 15.5, iconWeight: 0, weightedPath: nil,
+        // Solid like the original logo: an outline version was too faint to recognise in the menu bar.
+        // 17pt tall (17.5 wide) fills the 18pt canvas a little more than the owl, so the face reads.
+        logo: .bear, iconHeight: 17, iconWeight: 0, weightedPath: nil,
         markSize: CGSize(width: 12.5, height: 12),
         palette: Palette(accent: Color(red: 0xD9 / 255, green: 0xA4 / 255, blue: 0x41 / 255),
                          highlight: Color(red: 1, green: 0.92, blue: 0.74),

@@ -45,7 +45,7 @@ Screenshots the owner pastes are usually scaled. Calibrate pixel measurements ag
   - **Timing:** it appears instantly on mouse release, because macOS draws its own ~57pt press pill while the mouse is held.
   - **Item width:** the status item uses its natural variable length. A fixed length makes macOS's press pill much wider.
 - **Menu bar owl:** 16.5pt tall. Only the body outline is thickened (0.4pt); the face is left crisp.
-- **Menu bar bear:** 15.5pt tall, since it's nearly as wide as tall. It's an outline traced from a black-and-white College Dropout bear sticker (no official vector exists): 1.4pt head line and 0.9pt face lines at 16.5pt, filled even-odd, with the ear marks dropped. `Resources/bear_template.svg` is the source.
+- **Menu bar bear:** solid, 17pt tall (17.5 wide). An outline version was too faint to recognise next to the system icons. It's traced from a black-and-white College Dropout bear sticker (no official vector exists), with the eye whites, eye shine and muzzle cut out (even-odd) and the ear marks dropped. `Resources/bear_template.svg` is the source. Solid logos morph differently: the outline is traced, then the fill fades in.
 
 ## Behaviour notes
 
