@@ -20,11 +20,21 @@ enum ArtistMatcher {
     }
 
     /// Splits "A, B & C", "A x B", "A and B", "A feat. B" into names.
+    /// Brand names that contain a separator themselves ("Tyler, The Creator") are kept whole.
     static func credits(in s: String) -> [String] {
         let pattern = #"\s*(?:,|&|\+|/|\bx\b|\band\b|\bwith\b|\bfeat\.?|\bft\.?|\bfeaturing\b)\s*"#
         guard let re = try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive]) else { return [s] }
+        var s = s
+        let kept = Brand.all.flatMap(\.names).filter { re.firstMatch(in: $0, range: NSRange($0.startIndex..., in: $0)) != nil }
+        for (i, name) in kept.enumerated() {
+            s = s.replacingOccurrences(of: name, with: "\u{1E}\(i)\u{1E}", options: .caseInsensitive)
+        }
         let marked = re.stringByReplacingMatches(in: s, range: NSRange(s.startIndex..., in: s), withTemplate: "\u{1F}")
-        return marked.split(separator: "\u{1F}").map { String($0) }
+        return marked.split(separator: "\u{1F}").map { part in
+            var p = String(part)
+            for (i, name) in kept.enumerated() { p = p.replacingOccurrences(of: "\u{1E}\(i)\u{1E}", with: name) }
+            return p
+        }
     }
 
     /// Credits after "feat."/"ft."/"featuring"/"with" in a title, e.g. "Song (feat. Drake & Future)".
@@ -85,6 +95,15 @@ enum ArtistMatcher {
             ("Don Toliver", "Can't Feel My Legs (feat. Travis Scott)", "travis"),
             ("Travis Scott Fan", "Song", nil),
             ("Randy Travis", "Song", nil),
+            // Tyler, the Creator (his name contains a comma)
+            ("Tyler, The Creator", "EARFQUAKE", "tyler"),
+            ("TYLER, THE CREATOR", "NEW MAGIC WAND", "tyler"),
+            ("Tyler, The Creator, Kali Uchis", "See You Again", "tyler"),
+            ("Kali Uchis", "After The Storm (feat. Tyler, The Creator & Bootsy Collins)", "tyler"),
+            ("Drake", "Song (feat. Tyler, The Creator)", "ovo"),
+            ("Tyler Childers", "Song", nil),
+            ("The Creator", "Song", nil),
+            ("Tyler", "Song", nil),
         ]
         var ok = true
         for (a, t, want) in cases where brand(artist: a, title: t)?.id != want {
@@ -99,6 +118,7 @@ enum ArtistMatcher {
             ("¥$", [other, kanye], "kanye"),
             ("Someone", [other, kanye, drake], "kanye"),
             ("Kanye West", [kanye, drake], "kanye"),
+            ("Kali Uchis", [other, SpotifyCredits.Artist(name: "Tyler, The Creator", uri: Brand.tyler.spotifyURI)], "tyler"),
             ("JACKBOYS", [other, SpotifyCredits.Artist(name: "Travis Scott", uri: Brand.travis.spotifyURI)], "travis"),
             ("Ariana Grande", [other, SpotifyCredits.Artist(name: "The Weeknd", uri: Brand.xo.spotifyURI)], "xo"),
             ("Someone", [other], nil),
