@@ -1,0 +1,217 @@
+import AppKit
+import Combine
+import ServiceManagement
+import SwiftUI
+
+@MainActor
+final class AppDelegate: NSObject, NSApplicationDelegate {
+    private let model = NowPlayingModel()
+    private var statusItem: NSStatusItem!
+    private var animator: StatusIconAnimator!
+    private var panel: PlayerPanel?
+    private var cancellables = Set<AnyCancellable>()
+
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        // Same slot width as the system Now Playing item, so its pressed pill fits.
+        statusItem = NSStatusBar.system.statusItem(withLength: Pill.size.width)
+        statusItem.autosaveName = "OVOBarNowPlaying"
+        let button = statusItem.button!
+        animator = StatusIconAnimator(button: button)
+
+        // Handle presses on the icon ourselves, before the button's own click tracking runs.
+        // That tracking un-highlights the button on mouse-up, which made the "pressed" look
+        // vanish while the player was still open. Like the system item, it opens on press.
+        NSEvent.addLocalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown]) { [weak self] event in
+            MainActor.assumeIsolated {
+                guard let self, let button = self.statusItem.button, event.window === button.window else { return event }
+                if event.type == .rightMouseDown || event.modifierFlags.contains(.control) { self.showMenu() }
+                else { self.togglePanel() }
+                return nil
+            }
+        }
+
+        model.$isDrakeMode.removeDuplicates().sink { [weak self] drake in
+            self?.animator.setOwl(drake)
+        }.store(in: &cancellables)
+
+        model.start()
+        registerLoginItemOnFirstLaunch()
+    }
+
+    private func togglePanel() {
+        if let panel, panel.isVisible { panel.dismiss(); return }
+        // If something else closed it during this same click, don't pop it straight back open.
+        if let panel, Date().timeIntervalSince(panel.lastDismissed) < 0.3 { return }
+        showPanel()
+    }
+
+    private func showPanel() {
+        guard let button = statusItem.button, let window = button.window else { return }
+        let panel = self.panel ?? PlayerPanel(model: model)
+        self.panel = panel
+        panel.onDismiss = { [weak self] in self?.setPressed(false) }
+        let anchor = window.convertToScreen(button.convert(button.bounds, to: nil))
+        panel.show(below: anchor, menuBarBottom: window.frame.minY)
+        setPressed(true)
+    }
+
+    private var pill: NSView?
+
+    /// The rounded "pressed" pill the system draws behind its own items while their module is open.
+    /// macOS doesn't draw it for a custom panel, so a view sits behind the icon at the system's size.
+    private func setPressed(_ pressed: Bool) {
+        guard let button = statusItem.button, let host = button.superview else { return }
+        let view = pill ?? {
+            let v = NSView()
+            v.wantsLayer = true
+            v.layer?.cornerCurve = .continuous
+            host.addSubview(v, positioned: .below, relativeTo: button)
+            pill = v
+            return v
+        }()
+        // Exactly where macOS draws its own press highlight for this item (the item's accessibility
+        // frame), so the system's flash on mouse-down and our held pill are the same shape.
+        if let window = host.window {
+            let screenRect = button.accessibilityFrame()
+            let inWindow = window.convertFromScreen(screenRect)
+            view.frame = host.convert(inWindow, from: nil).intersection(host.bounds)
+        }
+        view.layer?.cornerRadius = view.frame.height / 2
+        let dark = button.effectiveAppearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
+        let color = dark ? NSColor.white.withAlphaComponent(0.2) : NSColor.black.withAlphaComponent(0.1)
+        guard let layer = view.layer else { return }
+        let fade = CABasicAnimation(keyPath: "backgroundColor")
+        fade.duration = pressed ? 0.08 : 0.18
+        fade.fromValue = layer.backgroundColor
+        layer.backgroundColor = pressed ? color.cgColor : NSColor.clear.cgColor
+        layer.add(fade, forKey: "press")
+    }
+
+    // MARK: Right-click menu
+
+    private func showMenu() {
+        let menu = NSMenu()
+        let login = NSMenuItem(title: "Open at Login", action: #selector(toggleLogin), keyEquivalent: "")
+        login.target = self
+        login.state = SMAppService.mainApp.status == .enabled ? .on : .off
+        menu.addItem(login)
+        menu.addItem(.separator())
+        menu.addItem(withTitle: "Quit OVOBar", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        panel?.dismiss()
+        statusItem.menu = menu
+        statusItem.button?.performClick(nil)
+        statusItem.menu = nil   // keep left-click for the player
+    }
+
+    @objc private func toggleLogin() {
+        do {
+            if SMAppService.mainApp.status == .enabled { try SMAppService.mainApp.unregister() }
+            else { try SMAppService.mainApp.register() }
+        } catch { Log.write("login item change failed: \(error)") }
+    }
+
+    private func registerLoginItemOnFirstLaunch() {
+        let key = "didRegisterLoginItem"
+        guard !UserDefaults.standard.bool(forKey: key) else { return }
+        do {
+            try SMAppService.mainApp.register()
+            UserDefaults.standard.set(true, forKey: key)
+        } catch { Log.write("login item registration failed: \(error)") }
+    }
+
+    func applicationWillTerminate(_ notification: Notification) { model.system?.stop() }
+}
+
+/// Root of the panel: the player card pinned to the top of a fixed, transparent canvas
+/// (room for the card's soft shadow; the empty area lets clicks through).
+struct PanelRoot: View {
+    @ObservedObject var model: NowPlayingModel
+
+    var body: some View {
+        VStack(spacing: 0) {
+            PlayerView(model: model)
+                .shadow(color: .black.opacity(0.28), radius: 18, y: 8)
+            Spacer(minLength: 0)
+        }
+        .padding(.top, PlayerPanel.shadowInset / 2)
+        .frame(width: PlayerPanel.size.width, height: PlayerPanel.size.height, alignment: .top)
+    }
+}
+
+/// Borderless panel under the menu bar item, like the system Now Playing module.
+@MainActor
+final class PlayerPanel: NSPanel {
+    static let shadowInset: CGFloat = 40
+    static let size = NSSize(width: PlayerView.width + shadowInset * 2, height: 230)
+
+    var onDismiss: (() -> Void)?
+    private var monitors: [Any] = []
+    private var anchor: NSRect = .zero
+    private(set) var lastDismissed = Date.distantPast
+    private let model: NowPlayingModel
+    private let hosting: NSHostingView<PanelRoot>
+
+    init(model: NowPlayingModel) {
+        self.model = model
+        hosting = NSHostingView(rootView: PanelRoot(model: model))
+        hosting.sizingOptions = []
+        super.init(contentRect: NSRect(origin: .zero, size: Self.size),
+                   styleMask: [.borderless, .nonactivatingPanel], backing: .buffered, defer: true)
+        isFloatingPanel = true
+        level = .popUpMenu
+        backgroundColor = .clear
+        isOpaque = false
+        hasShadow = false          // the card draws its own shadow
+        isReleasedWhenClosed = false
+        hidesOnDeactivate = false   // a menu bar app is never the active app
+        collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .transient]
+        contentView = hosting
+        NotificationCenter.default.addObserver(forName: .dismissPlayer, object: nil, queue: .main) { [weak self] _ in
+            MainActor.assumeIsolated { self?.dismiss() }
+        }
+    }
+
+    override var canBecomeKey: Bool { true }
+
+    func show(below anchor: NSRect, menuBarBottom: CGFloat) {
+        self.anchor = anchor
+        let size = Self.size
+        setContentSize(size)
+        let screen = NSScreen.screens.first { $0.frame.intersects(anchor) } ?? NSScreen.main
+        let visible = screen?.visibleFrame ?? .zero
+        // Like the system module: card's left edge lines up with the icon's, just under the menu bar.
+        // Measured on the system module: 1pt below the menu bar, left edge on the item's slot.
+        let cardTop = menuBarBottom - 1
+        var cardLeft = anchor.minX
+        cardLeft = min(max(cardLeft, visible.minX + 8), visible.maxX - PlayerView.width - 8)
+        setFrameOrigin(NSPoint(x: cardLeft - Self.shadowInset, y: cardTop + Self.shadowInset / 2 - size.height))
+        alphaValue = 0
+        makeKeyAndOrderFront(nil)
+        NSAnimationContext.runAnimationGroup { $0.duration = 0.15; animator().alphaValue = 1 }
+
+        if let m = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown], handler: { [weak self] _ in
+            MainActor.assumeIsolated {
+                // A click on our own menu bar icon is handled by its action (which toggles), not here.
+                guard let self, !self.anchor.insetBy(dx: -2, dy: -2).contains(NSEvent.mouseLocation) else { return }
+                self.dismiss()
+            }
+        }) { monitors.append(m) }
+        if let m = NSEvent.addLocalMonitorForEvents(matching: [.keyDown], handler: { [weak self] e in
+            guard e.keyCode == 53 else { return e }   // Escape
+            MainActor.assumeIsolated { self?.dismiss() }
+            return nil
+        }) { monitors.append(m) }
+    }
+
+    func dismiss() {
+        guard isVisible else { return }
+        lastDismissed = Date()
+        monitors.forEach(NSEvent.removeMonitor)
+        monitors.removeAll()
+        orderOut(nil)
+        onDismiss?()
+    }
+}
+
+/// Slot width of the system Now Playing item, measured on a 33pt (notch) menu bar.
+enum Pill { static let size = NSSize(width: 37, height: 24) }
