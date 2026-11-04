@@ -66,7 +66,7 @@ Screenshots the owner pastes are usually scaled. Calibrate pixel measurements ag
 - **Artist moment:** when a brand's track starts, a shimmer in its color sweeps across the player once and the cover's glow swells.
 - **Kanye palette:** near-black maroon background, College Dropout gold `#D9A441` accent, and a maroon glow from the top corner. Picked by Claude, not the owner; open to change.
 - **XO palette:** near-black background with After Hours red `#E2323C`. Also picked by Claude.
-- **Travis Scott palette:** green-black background with cactus green `#8FC45A`. Also picked by Claude.
+- **Travis Scott palette:** warm brown-black with ASTROWORLD gold `#D7B563`, sampled from the cover's gold head. The owner rejected an earlier cactus green: the palette should come from the artist's album art, not the logo's name.
 
 ## Open ideas, not done
 
