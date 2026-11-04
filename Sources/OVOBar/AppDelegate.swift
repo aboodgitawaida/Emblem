@@ -49,10 +49,29 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         guard let button = statusItem.button, let window = button.window else { return }
         let panel = self.panel ?? PlayerPanel(model: model)
         self.panel = panel
-        panel.onDismiss = { [weak self] in self?.setPressed(false) }
+        panel.onDismiss = { [weak self] in self?.releaseTimer?.invalidate(); self?.setPressed(false) }
         let anchor = window.convertToScreen(button.convert(button.bounds, to: nil))
         panel.show(below: anchor, menuBarBottom: window.frame.minY)
-        setPressed(true)
+        setPressedAfterRelease()
+    }
+
+    private var releaseTimer: Timer?
+
+    /// While the mouse is held, macOS draws its own (larger) press pill over the item. Like the system
+    /// item, show our "open" pill only once the button is released, so the two never overlap.
+    private func setPressedAfterRelease() {
+        releaseTimer?.invalidate()
+        guard NSEvent.pressedMouseButtons != 0 else { setPressed(true); return }
+        let t = Timer(timeInterval: 1.0 / 60, repeats: true) { [weak self] timer in
+            MainActor.assumeIsolated {
+                guard NSEvent.pressedMouseButtons == 0 else { return }
+                timer.invalidate()
+                guard let self, self.panel?.isVisible == true else { return }
+                self.setPressed(true)
+            }
+        }
+        RunLoop.main.add(t, forMode: .common)
+        releaseTimer = t
     }
 
     private var pill: NSView?
@@ -81,7 +100,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let color = dark ? NSColor.white.withAlphaComponent(0.2) : NSColor.black.withAlphaComponent(0.1)
         guard let layer = view.layer else { return }
         let fade = CABasicAnimation(keyPath: "backgroundColor")
-        fade.duration = pressed ? 0.08 : 0.18
+        fade.duration = pressed ? 0.12 : 0.18
         fade.fromValue = layer.backgroundColor
         layer.backgroundColor = pressed ? color.cgColor : NSColor.clear.cgColor
         layer.add(fade, forKey: "press")
