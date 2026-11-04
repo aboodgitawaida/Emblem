@@ -73,7 +73,7 @@ struct Brand: Equatable {
                          background: Color(white: 0.03),
                          ambient: Color(red: 0.89, green: 0.12, blue: 0.16).opacity(0.16)))
 
-    /// Travis Scott: the Cactus Jack face, in cactus green.
+    /// Travis Scott: the Cactus Jack face, in the gold of the ASTROWORLD head.
     static let travis = Brand(
         id: "travis", names: ["Travis Scott"], spotifyURI: "spotify:artist:0Y5tJX1MQlPlqiwlOH1tJY",
         // A line drawing that's wider than tall, so the 18pt canvas width limits it to 16pt tall.
@@ -81,11 +81,12 @@ struct Brand: Equatable {
         // (The CACTUS/JACK cross logo was tried too: at menu bar size its letters turn to dots.)
         logo: .cactusJack, iconHeight: 16, iconWeight: 0.5, weightedPaths: Array(CactusJackPathData.paths.indices),
         markSize: CGSize(width: 13.5, height: 12.5),
-        palette: Palette(accent: Color(red: 0x8F / 255, green: 0xC4 / 255, blue: 0x5A / 255),
-                         highlight: Color(red: 0.88, green: 1, blue: 0.8),
-                         knob: Color(red: 0.86, green: 0.95, blue: 0.78),
-                         background: Color(red: 0.03, green: 0.045, blue: 0.03),
-                         ambient: Color(red: 0.4, green: 0.7, blue: 0.25).opacity(0.14)),
+        // Sampled from the cover's gold head: #B98E49 in shadow to #EBC477 in the highlights.
+        palette: Palette(accent: Color(red: 0xD7 / 255, green: 0xB5 / 255, blue: 0x63 / 255),
+                         highlight: Color(red: 1, green: 0.95, blue: 0.8),
+                         knob: Color(red: 0xF3 / 255, green: 0xDF / 255, blue: 0xA8 / 255),
+                         background: Color(red: 0.07, green: 0.052, blue: 0.03),
+                         ambient: Color(red: 0xB9 / 255, green: 0x8E / 255, blue: 0x49 / 255).opacity(0.16)),
         markWeight: 0.6)
 
     /// Checked in this order when several brands are credited equally.
