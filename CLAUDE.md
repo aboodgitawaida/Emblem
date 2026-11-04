@@ -1,6 +1,6 @@
 # OVOBar: context for Claude
 
-A personal macOS menu bar app that replaces the system Now Playing item. It works like the system item, except it morphs into an artist's logo while Spotify plays their track (lead or featured): the OVO owl for Drake, the College Dropout bear for Kanye, the XO for The Weeknd, the Cactus Jack face for Travis Scott, the GOLF le FLEUR* flower for Tyler, the Creator. It's for the owner's own Mac only and is never shared. The repo is private: the logos and names are their owners' trademarks.
+A personal macOS menu bar app that replaces the system Now Playing item. It works like the system item, except it morphs into an artist's logo while Spotify plays their track (lead or featured): the OVO owl for Drake, the College Dropout bear for Kanye, the XO for The Weeknd, the Cactus Jack face for Travis Scott, the GOLF le FLEUR* flower for Tyler, the Creator, the Born Sinner crown for J. Cole. It's for the owner's own Mac only and is never shared. The repo is private: the logos and names are their owners' trademarks.
 
 ## Build and run
 
@@ -49,6 +49,7 @@ Screenshots the owner pastes are usually scaled. Calibrate pixel measurements ag
 - **Menu bar XO:** 17pt tall, traced from a black-and-white copy of the XO brush logo and lightly smoothed (`Resources/xo_template.svg`). All its strokes get the 0.4pt extra weight, so they match the owl.
 - **Menu bar Cactus Jack:** 16pt tall (it's wider than tall, so the canvas width limits it), traced from a black-and-white copy of the Cactus Jack face logo (`Resources/cactusjack_template.svg`). All lines get 0.5pt extra weight; more merges the mouth stitches. The CACTUS/JACK cross logo was rejected: its letters turn to dots at this size.
 - **Menu bar flower:** 16pt tall (width-limited), solid, traced from a GOLF le FLEUR* flower image (`Resources/golf_template.svg`). The two-colour centre is a dot inside a thin gap ring.
+- **Menu bar crown:** 17pt tall, traced from the gold crown on the Born Sinner deluxe cover (`Resources/crown_template.svg`). A fan sticker was used first, but it was narrower than the album crown, which the owner spotted; trace from the album art when it has the symbol, with 0.3pt extra weight; more merges the zigzag points.
 - **Faces:** a realistic face (a Lauryn Hill stencil) was tried and dropped. At 17pt the features are 2–3pt and unrecognisable, and a one-color stencil shows as a negative on dark menu bars. Cartoon faces whose features fill the head (the bear, Cactus Jack) work.
 
 ## Behaviour notes
@@ -56,7 +57,7 @@ Screenshots the owner pastes are usually scaled. Calibrate pixel measurements ag
 - **Spotify:**
   - **Updates:** the `com.spotify.client.PlaybackStateChanged` distributed notification, observed with `.deliverImmediately`. Without it, a menu bar app gets nothing.
   - **Display:** the player shows the notification's main artist only, as Apple does.
-- **Brands:** `Brand` lists each artist: names, Spotify artist ID, logo, icon size and palette. Drake is `ovo` (`spotify:artist:3TVXtAsR1Inumwj472S9r4`), Kanye is `kanye` (`spotify:artist:5K4W6rqBFWDnAN6FQUkS6x`, names "Kanye West", "Kanye", "Ye"). The Weeknd is `xo` (`spotify:artist:1Xyo4u8uXC1ZmMpatF05PJ`). Travis Scott is `travis` (`spotify:artist:0Y5tJX1MQlPlqiwlOH1tJY`). Tyler, the Creator is `tyler` (`spotify:artist:4V8LLVI7PbaPR0K2TGSxFF`); his name has a comma, so `ArtistMatcher.credits` keeps brand names that contain separators whole. Adding an artist means adding a `Brand` and its path data.
+- **Brands:** `Brand` lists each artist: names, Spotify artist ID, logo, icon size and palette. Drake is `ovo` (`spotify:artist:3TVXtAsR1Inumwj472S9r4`), Kanye is `kanye` (`spotify:artist:5K4W6rqBFWDnAN6FQUkS6x`, names "Kanye West", "Kanye", "Ye"). The Weeknd is `xo` (`spotify:artist:1Xyo4u8uXC1ZmMpatF05PJ`). Travis Scott is `travis` (`spotify:artist:0Y5tJX1MQlPlqiwlOH1tJY`). Tyler, the Creator is `tyler` (`spotify:artist:4V8LLVI7PbaPR0K2TGSxFF`); his name has a comma, so `ArtistMatcher.credits` keeps brand names that contain separators whole. J. Cole is `cole` (`spotify:artist:6l3HvQ5sa6mXTsMTB19rO5`). Adding an artist means adding a `Brand` and its path data.
 - **Artist detection** (`ArtistMatcher`): whole artist names only, so "Drake Bell" and "Yeat" don't count. The lead artist wins: the artist field first, then Spotify's full credits, then "feat./ft./with" in the title.
   - **Full credits:** `SpotifyCredits` reads the track's public embed page, since the notification only names the first artist.
 - **Switching brands:** the menu bar traces the old logo out to the circle, then the new one in.
@@ -71,6 +72,7 @@ Screenshots the owner pastes are usually scaled. Calibrate pixel measurements ag
   - **XO:** near-black background with After Hours red `#E2323C`. Also picked by Claude.
   - **Travis Scott:** warm brown-black with ASTROWORLD gold `#D7B563`, sampled from the cover's gold head. The owner rejected an earlier cactus green: the palette should come from the artist's album art, not the logo's name.
   - **Tyler:** near-black with IGOR pink `#ECB4CC`, sampled from the cover.
+  - **J. Cole:** near-black with the crown's gold `#DBC74C`.
 
 ## Open ideas, not done
 

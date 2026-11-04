@@ -35,6 +35,7 @@ struct Logo {
     static let bear = Logo(paths: BearPathData.paths, bounds: BearPathData.bounds, evenOdd: true, solid: true)
     static let xo = Logo(paths: XOPathData.paths, bounds: XOPathData.bounds, evenOdd: true)
     static let golfFlower = Logo(paths: GolfFlowerPathData.paths, bounds: GolfFlowerPathData.bounds, evenOdd: true, solid: true)
+    static let crown = Logo(paths: CrownPathData.paths, bounds: CrownPathData.bounds, evenOdd: true)
     static let cactusJack = Logo(paths: CactusJackPathData.paths, bounds: CactusJackPathData.bounds, evenOdd: true)
 }
 

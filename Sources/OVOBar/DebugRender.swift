@@ -34,6 +34,7 @@ enum DebugRender {
             let model = NowPlayingModel()
             var i = info
             if brand == .kanye { (i.title, i.artist, i.album) = ("Stronger", "Kanye West", "Graduation") }
+            if brand == .cole { (i.title, i.artist, i.album) = ("No Role Modelz", "J. Cole", "2014 Forest Hills Drive") }
             if brand == .tyler { (i.title, i.artist, i.album) = ("EARFQUAKE", "Tyler, The Creator", "IGOR") }
             if brand == .travis { (i.title, i.artist, i.album) = ("goosebumps", "Travis Scott", "Birds in the Trap Sing McKnight") }
             if brand == .xo { (i.title, i.artist, i.album) = ("Blinding Lights", "The Weeknd", "After Hours") }
