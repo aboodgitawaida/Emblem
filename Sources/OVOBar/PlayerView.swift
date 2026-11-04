@@ -102,7 +102,7 @@ private struct FullPlayer: View {
 
             Group {
                 if let brand = theme.brand {
-                    LogoMark(logo: brand.logo, color: theme.accent)
+                    LogoMark(logo: brand.logo, color: theme.accent, weight: brand.markWeight)
                         .frame(width: brand.markSize.width, height: brand.markSize.height)
                 } else {
                     LevelMeter(playing: info.isPlaying, color: theme.meter)

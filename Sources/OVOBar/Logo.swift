@@ -34,14 +34,17 @@ struct Logo {
     static let owl = Logo(paths: OwlPathData.paths, bounds: OwlPathData.bounds, evenOdd: false)
     static let bear = Logo(paths: BearPathData.paths, bounds: BearPathData.bounds, evenOdd: true, solid: true)
     static let xo = Logo(paths: XOPathData.paths, bounds: XOPathData.bounds, evenOdd: true)
+    static let cactusJack = Logo(paths: CactusJackPathData.paths, bounds: CactusJackPathData.bounds, evenOdd: true)
 }
 
 /// A logo filled with one color, fitted to its frame.
 struct LogoMark: View {
     let logo: Logo
     let color: Color
+    var weight: CGFloat = 0   // extra line weight (pt)
     var body: some View {
         LogoShape(logo: logo).fill(color, style: FillStyle(eoFill: logo.evenOdd))
+            .overlay { if weight > 0 { LogoShape(logo: logo).stroke(color, style: StrokeStyle(lineWidth: weight, lineJoin: .round)) } }
     }
 }
 

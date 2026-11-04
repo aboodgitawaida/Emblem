@@ -1,6 +1,6 @@
 # OVOBar
 
-Personal menu bar replacement for macOS's Now Playing item. The icon morphs into an artist's logo when Spotify plays their track, as lead or featured artist: the OVO owl for Drake, the College Dropout bear for Kanye, the XO for The Weeknd.
+Personal menu bar replacement for macOS's Now Playing item. The icon morphs into an artist's logo when Spotify plays their track, as lead or featured artist: the OVO owl for Drake, the College Dropout bear for Kanye, the XO for The Weeknd, the Cactus Jack face for Travis Scott.
 
 ## Build & install
 
@@ -22,7 +22,7 @@ Personal menu bar replacement for macOS's Now Playing item. The icon morphs into
 
 - **Spotify** (`SpotifyMonitor`): listens to the `com.spotify.client.PlaybackStateChanged` distributed notification. AppleScript is used only for artwork, the initial state and controls.
 - **Everything else** (`MediaRemoteMonitor`): uses the mediaremote-adapter stream via `/usr/bin/perl`. If its self-test fails, only non-Spotify sources are lost.
-- **Brands** (`Brand`): each artist's names, Spotify artist ID, logo and player palette. Drake → OVO owl, Kanye → College Dropout bear, The Weeknd → XO.
+- **Brands** (`Brand`): each artist's names, Spotify artist ID, logo and player palette. Drake → OVO owl, Kanye → College Dropout bear, The Weeknd → XO, Travis Scott → Cactus Jack face.
 - **Artist detection** has two checks:
   - `ArtistMatcher`: the artist must be a whole credit in the artist field, or after feat./ft./featuring/with in the title. "Drake Bell" doesn't count. The lead artist wins when several brands are credited.
   - `SpotifyCredits`: Spotify's notification only names the first artist, so the full artist list comes from the track's public embed page (`open.spotify.com/embed/track/<id>`), matched by artist ID.
