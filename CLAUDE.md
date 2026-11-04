@@ -1,6 +1,6 @@
 # OVOBar: context for Claude
 
-A personal macOS menu bar app that replaces the system Now Playing item. It works like the system item, except it morphs into an artist's logo while Spotify plays their track (lead or featured): the OVO owl for Drake, the College Dropout bear for Kanye. It's for the owner's own Mac only and is never shared. The repo is private: the logos and names are their owners' trademarks.
+A personal macOS menu bar app that replaces the system Now Playing item. It works like the system item, except it morphs into an artist's logo while Spotify plays their track (lead or featured): the OVO owl for Drake, the College Dropout bear for Kanye, the XO for The Weeknd. It's for the owner's own Mac only and is never shared. The repo is private: the logos and names are their owners' trademarks.
 
 ## Build and run
 
@@ -46,13 +46,14 @@ Screenshots the owner pastes are usually scaled. Calibrate pixel measurements ag
   - **Item width:** the status item uses its natural variable length. A fixed length makes macOS's press pill much wider.
 - **Menu bar owl:** 16.5pt tall. Only the body outline is thickened (0.4pt); the face is left crisp.
 - **Menu bar bear:** solid, 17pt tall (17.5 wide). An outline version was too faint to recognise next to the system icons. It's traced from a black-and-white College Dropout bear sticker (no official vector exists), with the eye whites, eye shine and muzzle cut out (even-odd) and the ear marks dropped. `Resources/bear_template.svg` is the source. Solid logos morph differently: the outline is traced, then the fill fades in.
+- **Menu bar XO:** 17pt tall, traced from a black-and-white copy of the XO brush logo and lightly smoothed (`Resources/xo_template.svg`). All its strokes get the 0.4pt extra weight, so they match the owl.
 
 ## Behaviour notes
 
 - **Spotify:**
   - **Updates:** the `com.spotify.client.PlaybackStateChanged` distributed notification, observed with `.deliverImmediately`. Without it, a menu bar app gets nothing.
   - **Display:** the player shows the notification's main artist only, as Apple does.
-- **Brands:** `Brand` lists each artist: names, Spotify artist ID, logo, icon size and palette. Drake is `ovo` (`spotify:artist:3TVXtAsR1Inumwj472S9r4`), Kanye is `kanye` (`spotify:artist:5K4W6rqBFWDnAN6FQUkS6x`, names "Kanye West", "Kanye", "Ye"). Adding an artist means adding a `Brand` and its path data.
+- **Brands:** `Brand` lists each artist: names, Spotify artist ID, logo, icon size and palette. Drake is `ovo` (`spotify:artist:3TVXtAsR1Inumwj472S9r4`), Kanye is `kanye` (`spotify:artist:5K4W6rqBFWDnAN6FQUkS6x`, names "Kanye West", "Kanye", "Ye"). The Weeknd is `xo` (`spotify:artist:1Xyo4u8uXC1ZmMpatF05PJ`). Adding an artist means adding a `Brand` and its path data.
 - **Artist detection** (`ArtistMatcher`): whole artist names only, so "Drake Bell" and "Yeat" don't count. The lead artist wins: the artist field first, then Spotify's full credits, then "feat./ft./with" in the title.
   - **Full credits:** `SpotifyCredits` reads the track's public embed page, since the notification only names the first artist.
 - **Switching brands:** the menu bar traces the old logo out to the circle, then the new one in.
@@ -62,6 +63,7 @@ Screenshots the owner pastes are usually scaled. Calibrate pixel measurements ag
   - **Icon clicks:** handled by a local mouse-down monitor, so the button's own tracking doesn't fight the pill.
 - **Artist moment:** when a brand's track starts, a shimmer in its color sweeps across the player once and the cover's glow swells.
 - **Kanye palette:** near-black maroon background, College Dropout gold `#D9A441` accent, and a maroon glow from the top corner. Picked by Claude, not the owner; open to change.
+- **XO palette:** near-black background with After Hours red `#E2323C`. Also picked by Claude.
 
 ## Open ideas, not done
 

@@ -7,10 +7,10 @@ struct Brand: Equatable {
     let names: [String]
     let spotifyURI: String
     let logo: Logo
-    /// Menu bar logo height and the extra outline stroke on `weightedPath` (pt).
+    /// Menu bar logo height and the extra outline stroke on `weightedPaths` (pt).
     let iconHeight: CGFloat
     let iconWeight: CGFloat
-    let weightedPath: Int?
+    let weightedPaths: [Int]
     /// The small logo top-right of the player, where the level meter normally sits.
     let markSize: CGSize
     let palette: Palette
@@ -37,7 +37,7 @@ struct Brand: Equatable {
         id: "ovo", names: ["Drake"], spotifyURI: "spotify:artist:3TVXtAsR1Inumwj472S9r4",
         logo: .owl, iconHeight: 16.5, iconWeight: 0.4,
         // Only the body outline (last path) gets weight; thickening the eyes and beak fills in the face.
-        weightedPath: OwlPathData.paths.count - 1,
+        weightedPaths: [OwlPathData.paths.count - 1],
         markSize: CGSize(width: 10, height: 12.5),
         palette: Palette(accent: ovoGold,
                          highlight: Color(red: 1, green: 0.95, blue: 0.82),
@@ -50,7 +50,7 @@ struct Brand: Equatable {
         id: "kanye", names: ["Kanye West", "Kanye", "Ye"], spotifyURI: "spotify:artist:5K4W6rqBFWDnAN6FQUkS6x",
         // Solid like the original logo: an outline version was too faint to recognise in the menu bar.
         // 17pt tall (17.5 wide) fills the 18pt canvas a little more than the owl, so the face reads.
-        logo: .bear, iconHeight: 17, iconWeight: 0, weightedPath: nil,
+        logo: .bear, iconHeight: 17, iconWeight: 0, weightedPaths: [],
         markSize: CGSize(width: 12.5, height: 12),
         palette: Palette(accent: Color(red: 0xD9 / 255, green: 0xA4 / 255, blue: 0x41 / 255),
                          highlight: Color(red: 1, green: 0.92, blue: 0.74),
@@ -58,6 +58,19 @@ struct Brand: Equatable {
                          background: Color(red: 0.075, green: 0.025, blue: 0.03),
                          ambient: Color(red: 0.62, green: 0.12, blue: 0.18).opacity(0.28)))
 
+    /// The Weeknd: the XO brush logo, black and After Hours red.
+    static let xo = Brand(
+        id: "xo", names: ["The Weeknd", "Weeknd"], spotifyURI: "spotify:artist:1Xyo4u8uXC1ZmMpatF05PJ",
+        // Brush strokes come out ~1pt at this size; thickening them all by 0.4pt matches the owl's weight,
+        // since a thin bear outline proved too faint next to the system icons.
+        logo: .xo, iconHeight: 17, iconWeight: 0.4, weightedPaths: Array(XOPathData.paths.indices),
+        markSize: CGSize(width: 12, height: 12.5),
+        palette: Palette(accent: Color(red: 0xE2 / 255, green: 0x32 / 255, blue: 0x3C / 255),
+                         highlight: Color(red: 1, green: 0.84, blue: 0.84),
+                         knob: Color(red: 0.98, green: 0.88, blue: 0.88),
+                         background: Color(white: 0.03),
+                         ambient: Color(red: 0.89, green: 0.12, blue: 0.16).opacity(0.16)))
+
     /// Checked in this order when several brands are credited equally.
-    static let all = [ovo, kanye]
+    static let all = [ovo, kanye, xo]
 }

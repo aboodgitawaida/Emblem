@@ -87,11 +87,11 @@ enum StatusIconRenderer {
         ctx.setFillColor(NSColor.black.cgColor)
         for path in paths { ctx.addPath(path) }
         ctx.fillPath(using: brand.logo.evenOdd ? .evenOdd : .winding)
-        if brand.iconWeight > 0, let i = brand.weightedPath, paths.indices.contains(i) {
+        if brand.iconWeight > 0, !brand.weightedPaths.isEmpty {
             ctx.setStrokeColor(NSColor.black.cgColor)
             ctx.setLineWidth(brand.iconWeight)
             ctx.setLineJoin(.round)
-            ctx.addPath(paths[i])
+            for i in brand.weightedPaths where paths.indices.contains(i) { ctx.addPath(paths[i]) }
             ctx.strokePath()
         }
         ctx.restoreGState()

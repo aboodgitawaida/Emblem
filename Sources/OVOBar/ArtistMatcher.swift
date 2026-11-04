@@ -1,7 +1,7 @@
 import Foundation
 
 /// Decides which brand (if any) a track belongs to.
-/// Artists match as whole credits, so e.g. "Drake Bell", "Mandrake" or "Yeat" don't count.
+/// Artists match as whole credits, so e.g. "Drake Bell", "Mandrake", "Yeat" or "The Weekend" don't count.
 enum ArtistMatcher {
     /// The lead artist wins: a Kanye song featuring Drake is Kanye's, and Drake's song featuring Kanye is Drake's.
     /// Order: the artist field (lead first), then Spotify's full credits, then "feat." names in the title.
@@ -68,6 +68,14 @@ enum ArtistMatcher {
             ("Drake", "Glow (feat. Kanye West)", "ovo"),
             ("Kanye West", "Forever (feat. Drake)", "kanye"),
             ("Someone", "Song (feat. Kanye West & Drake)", "kanye"),
+            // The Weeknd
+            ("The Weeknd", "Blinding Lights", "xo"),
+            ("The Weeknd, Daft Punk", "Starboy", "xo"),
+            ("Future", "Low Life (feat. The Weeknd)", "xo"),
+            ("Drake", "Crew Love (feat. The Weeknd)", "ovo"),
+            ("Kanye West", "Hold Tight (feat. The Weeknd)", "kanye"),
+            ("The Weekend", "Song", nil),
+            ("Weekend Band", "Song", nil),
         ]
         var ok = true
         for (a, t, want) in cases where brand(artist: a, title: t)?.id != want {
@@ -82,6 +90,7 @@ enum ArtistMatcher {
             ("¥$", [other, kanye], "kanye"),
             ("Travis Scott", [other, kanye, drake], "kanye"),
             ("Kanye West", [kanye, drake], "kanye"),
+            ("Ariana Grande", [other, SpotifyCredits.Artist(name: "The Weeknd", uri: Brand.xo.spotifyURI)], "xo"),
             ("Someone", [other], nil),
         ]
         for (a, credits, want) in creditCases where brand(artist: a, title: "Song", credits: credits)?.id != want {
