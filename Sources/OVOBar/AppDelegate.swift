@@ -251,9 +251,10 @@ final class PillWindow: NSPanel {
         setFrame(NSRect(x: center.x - Pill.open.width / 2, y: center.y - Pill.open.height / 2,
                         width: Pill.open.width, height: Pill.open.height), display: true)
         level = itemWindow.level
-        alphaValue = 0
+        // Appear instantly: it takes over from macOS's press pill as that fades out on release,
+        // so there's no gap between the two.
+        alphaValue = 1
         order(.below, relativeTo: itemWindow.windowNumber)
-        NSAnimationContext.runAnimationGroup { $0.duration = 0.15; animator().alphaValue = 1 }
     }
 
     func hide() {
