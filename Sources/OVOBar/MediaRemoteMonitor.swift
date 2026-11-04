@@ -125,6 +125,7 @@ final class MediaRemoteMonitor {
         let new = NowPlayingInfo(
             bundleID: parent ?? bundle, title: title,
             artist: payload["artist"] as? String ?? "", album: payload["album"] as? String ?? "",
+            hasAlbum: payload["album"] is String,
             isPlaying: payload["playing"] as? Bool ?? false,
             duration: micros("durationMicros"), elapsed: micros("elapsedTimeMicros"),
             elapsedAt: ts > 0 ? Date(timeIntervalSince1970: ts) : Date(),
@@ -159,6 +160,7 @@ final class MediaRemoteMonitor {
         case .togglePlayPause: id = "2"
         case .next: id = "4"
         case .previous: id = "5"
+        case .skipBack15, .skipForward15: return   // done as a seek by NowPlayingModel
         }
         let p = Process()
         p.executableURL = URL(fileURLWithPath: "/usr/bin/perl")

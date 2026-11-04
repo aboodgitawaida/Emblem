@@ -164,6 +164,7 @@ final class SpotifyMonitor: NSObject {
         case .togglePlayPause: verb = "playpause"
         case .next: verb = "next track"
         case .previous: verb = "previous track"
+        case .skipBack15, .skipForward15: return   // done as a seek by NowPlayingModel
         }
         runScript("tell application \"Spotify\" to \(verb)")
     }
