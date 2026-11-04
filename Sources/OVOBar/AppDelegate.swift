@@ -12,8 +12,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var cancellables = Set<AnyCancellable>()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        // Same slot width as the system Now Playing item, so its pressed pill fits.
-        statusItem = NSStatusBar.system.statusItem(withLength: Pill.size.width)
+        // Natural width: macOS sizes its press pill from the item's slot, and a fixed length made the
+        // slot (and that pill) much wider than the system Now Playing item's.
+        statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         statusItem.autosaveName = "OVOBarNowPlaying"
         let button = statusItem.button!
         animator = StatusIconAnimator(button: button)
@@ -215,11 +216,10 @@ final class PlayerPanel: NSPanel {
     }
 }
 
-/// Slot width of the system Now Playing item, and its "open" pill, measured at 2× from screenshots
+/// The system Now Playing item's "open" pill, measured at 2× from screenshots
 /// on a 33pt notch menu bar: 37×23pt, centred on the icon, ~15% white over the black bar.
 /// (macOS's press pill while the mouse is held is wider, ~57pt; ours appears after release.)
 enum Pill {
-    static let size = NSSize(width: 37, height: 24)
     static let open = NSSize(width: 37, height: 23)
 }
 
