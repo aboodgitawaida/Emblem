@@ -74,36 +74,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         releaseTimer = t
     }
 
-    private var pill: NSView?
+    private lazy var pill = PillWindow()
 
-    /// The rounded "pressed" pill the system draws behind its own items while their module is open.
-    /// macOS doesn't draw it for a custom panel, so a view sits behind the icon at the system's size.
+    /// The "open" pill behind the icon. macOS draws its own press pill while the mouse is held but
+    /// none afterwards for a custom panel, so ours copies that press pill's size, place and shade
+    /// and takes over when the button is released: it reads as one pill that stays.
     private func setPressed(_ pressed: Bool) {
-        guard let button = statusItem.button, let host = button.superview else { return }
-        let view = pill ?? {
-            let v = NSView()
-            v.wantsLayer = true
-            v.layer?.cornerCurve = .continuous
-            host.addSubview(v, positioned: .below, relativeTo: button)
-            pill = v
-            return v
-        }()
-        // Exactly where macOS draws its own press highlight for this item (the item's accessibility
-        // frame), so the system's flash on mouse-down and our held pill are the same shape.
-        if let window = host.window {
-            let screenRect = button.accessibilityFrame()
-            let inWindow = window.convertFromScreen(screenRect)
-            view.frame = host.convert(inWindow, from: nil).intersection(host.bounds)
+        guard let button = statusItem.button, let itemWindow = button.window else { return }
+        if pressed {
+            let item = button.accessibilityFrame()
+            pill.show(centeredOn: NSPoint(x: item.midX, y: itemWindow.frame.midY), behind: itemWindow,
+                      dark: button.effectiveAppearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua)
+        } else {
+            pill.hide()
         }
-        view.layer?.cornerRadius = view.frame.height / 2
-        let dark = button.effectiveAppearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
-        let color = dark ? NSColor.white.withAlphaComponent(0.2) : NSColor.black.withAlphaComponent(0.1)
-        guard let layer = view.layer else { return }
-        let fade = CABasicAnimation(keyPath: "backgroundColor")
-        fade.duration = pressed ? 0.12 : 0.18
-        fade.fromValue = layer.backgroundColor
-        layer.backgroundColor = pressed ? color.cgColor : NSColor.clear.cgColor
-        layer.add(fade, forKey: "press")
     }
 
     // MARK: Right-click menu
@@ -232,5 +216,50 @@ final class PlayerPanel: NSPanel {
     }
 }
 
-/// Slot width of the system Now Playing item, measured on a 33pt (notch) menu bar.
-enum Pill { static let size = NSSize(width: 37, height: 24) }
+/// Slot width of the system Now Playing item, and the macOS press pill (measured from a screenshot
+/// on a 33pt notch menu bar: ~57×23pt, centred on the item, ~15% white over the black bar).
+enum Pill {
+    static let size = NSSize(width: 37, height: 24)
+    static let press = NSSize(width: 57, height: 23)
+}
+
+/// A see-through window just behind the status item that draws the pill. It ignores the mouse,
+/// so clicks still reach the icon.
+@MainActor
+final class PillWindow: NSPanel {
+    private let pill = NSView()
+
+    init() {
+        super.init(contentRect: NSRect(origin: .zero, size: Pill.press),
+                   styleMask: [.borderless, .nonactivatingPanel], backing: .buffered, defer: true)
+        isOpaque = false
+        backgroundColor = .clear
+        hasShadow = false
+        ignoresMouseEvents = true
+        isReleasedWhenClosed = false
+        hidesOnDeactivate = false
+        collectionBehavior = [.canJoinAllSpaces, .stationary, .ignoresCycle, .fullScreenAuxiliary]
+        pill.wantsLayer = true
+        pill.layer?.cornerRadius = Pill.press.height / 2
+        pill.layer?.cornerCurve = .continuous
+        contentView = pill
+    }
+
+    func show(centeredOn center: NSPoint, behind itemWindow: NSWindow, dark: Bool) {
+        pill.layer?.backgroundColor = (dark ? NSColor.white.withAlphaComponent(0.155)
+                                            : NSColor.black.withAlphaComponent(0.1)).cgColor
+        setFrame(NSRect(x: center.x - Pill.press.width / 2, y: center.y - Pill.press.height / 2,
+                        width: Pill.press.width, height: Pill.press.height), display: true)
+        level = itemWindow.level
+        alphaValue = 0
+        order(.below, relativeTo: itemWindow.windowNumber)
+        NSAnimationContext.runAnimationGroup { $0.duration = 0.15; animator().alphaValue = 1 }
+    }
+
+    func hide() {
+        NSAnimationContext.runAnimationGroup({ $0.duration = 0.18; animator().alphaValue = 0 },
+                                             completionHandler: { [weak self] in
+            MainActor.assumeIsolated { if self?.alphaValue == 0 { self?.orderOut(nil) } }
+        })
+    }
+}
