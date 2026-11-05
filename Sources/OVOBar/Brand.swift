@@ -53,6 +53,7 @@ struct Brand: Equatable {
                          knob: Color(red: 0.93, green: 0.86, blue: 0.68),
                          background: Color(white: 0.035),
                          ambient: ovoGold.opacity(0.10)),
+        markWeight: 0.35,
         pathWeights: [2: 0.15])
 
     /// Kanye: the College Dropout bear, maroon and gold.
