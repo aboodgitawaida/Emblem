@@ -77,5 +77,11 @@ jobs:
 
           Needs a Mac with Apple silicon (M1 or later), macOS 14 or later, and Spotify.
           NOTES
-          gh release create "$TAG" dist/Emblem.dmg dist/Emblem.zip dist/install.sh \
-            --title "Emblem $VERSION" --notes-file notes.md --target "$GITHUB_SHA"
+          # A release made on the website already exists: add the files to it instead.
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" dist/Emblem.dmg dist/Emblem.zip dist/install.sh --clobber
+            gh release edit "$TAG" --title "Emblem $VERSION" --notes-file notes.md
+          else
+            gh release create "$TAG" dist/Emblem.dmg dist/Emblem.zip dist/install.sh \
+              --title "Emblem $VERSION" --notes-file notes.md --target "$GITHUB_SHA"
+          fi
