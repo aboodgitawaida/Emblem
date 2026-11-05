@@ -1,0 +1,81 @@
+name: Release
+
+# Builds Emblem.app and publishes it as a GitHub Release with three downloads:
+#   Emblem.dmg  - open it and drag Emblem into Applications
+#   Emblem.zip  - the app on its own
+#   install.sh  - the one-line Terminal installer (see README)
+# Start it by pushing a version tag (git tag v1.0.0 && git push origin v1.0.0),
+# or from the Actions tab with "Run workflow".
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to publish, e.g. 1.0.0"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    # The player uses macOS 26 APIs (glass), so it needs the macOS 26 SDK.
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Work out the version
+        run: |
+          if [[ -n "${{ inputs.version }}" ]]; then V="${{ inputs.version }}"; else V="${GITHUB_REF_NAME}"; fi
+          V="${V#v}"
+          echo "VERSION=$V" >> "$GITHUB_ENV"
+          echo "TAG=v$V" >> "$GITHUB_ENV"
+
+      - name: Stamp the version into Info.plist
+        run: |
+          plutil -replace CFBundleShortVersionString -string "$VERSION" Resources/Info.plist
+          plutil -replace CFBundleVersion -string "${{ github.run_number }}" Resources/Info.plist
+
+      - name: Build Emblem.app
+        run: ./scripts/build-app.sh
+
+      - name: Check the build
+        run: |
+          build/Emblem.app/Contents/MacOS/Emblem --selftest
+          build/Emblem.app/Contents/MacOS/Emblem --check-artists
+          codesign --verify --deep --strict build/Emblem.app
+
+      - name: Package
+        run: |
+          mkdir -p dist
+          ditto -c -k --sequesterRsrc --keepParent build/Emblem.app dist/Emblem.zip
+          # Disk image with an Applications shortcut, so installing is one drag.
+          mkdir -p dmg
+          cp -R build/Emblem.app dmg/
+          ln -s /Applications dmg/Applications
+          hdiutil create -volname Emblem -srcfolder dmg -ov -format UDZO dist/Emblem.dmg
+          cp scripts/install.sh dist/install.sh
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cat > notes.md <<NOTES
+          ## Install
+
+          **Easiest:** open Terminal and paste:
+
+          \`\`\`bash
+          curl -fsSL https://github.com/${{ github.repository }}/releases/latest/download/install.sh | bash
+          \`\`\`
+
+          **Or by hand:** download **Emblem.dmg**, open it and drag Emblem into Applications. The first time you open it, macOS says it can't check the app for malware: click Done, then go to System Settings → Privacy & Security, scroll down and click **Open Anyway**.
+
+          Needs a Mac with Apple silicon (M1 or later), macOS 14 or later, and Spotify.
+          NOTES
+          gh release create "$TAG" dist/Emblem.dmg dist/Emblem.zip dist/install.sh \
+            --title "Emblem $VERSION" --notes-file notes.md --target "$GITHUB_SHA"
