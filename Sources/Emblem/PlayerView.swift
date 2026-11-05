@@ -353,15 +353,17 @@ private struct Scrubber: View {
                     let w = geo.size.width
                     // The system thumb is a soft capsule, ~15.5×11.5pt (measured from screenshots).
                     let knob: CGFloat = 15.5, knobHeight: CGFloat = 11.5
+                    let centre = Self.knobCentre(fraction, width: w)
+                    let fill = Self.fillEnd(fraction, width: w)
                     ZStack(alignment: .leading) {
                         Capsule().fill(theme.track).frame(height: 4)
-                        Capsule().fill(theme.progress).frame(width: max(4, w * fraction), height: 4)
+                        Capsule().fill(theme.progress).frame(width: fill, height: 4).opacity(fill > 0 ? 1 : 0)
                         Capsule()
                             .fill(theme.knob)
                             .frame(width: knob, height: knobHeight)
                             .shadow(color: .black.opacity(0.3), radius: 1.5, y: 0.5)
                             .opacity(showKnob ? 1 : 0)   // the system knob fades in place; it doesn't grow
-                            .offset(x: min(max(w * fraction - knob / 2, 0), w - knob))
+                            .offset(x: centre - knob / 2)
                     }
                     .frame(maxHeight: .infinity)
                     .contentShape(Rectangle().inset(by: -6))   // easier to grab than the thin bar
@@ -386,6 +388,22 @@ private struct Scrubber: View {
                 .foregroundStyle(theme.tertiary)
             }
         }
+    }
+
+    /// Measured on the system bar (154pt wide, at 2×, across a whole song): the knob's centre travels
+    /// from 8pt to width − 8pt, so progress is mapped onto that path, not onto the whole bar.
+    static let knobInset: CGFloat = 8
+
+    static func knobCentre(_ fraction: Double, width: CGFloat) -> CGFloat {
+        knobInset + CGFloat(fraction) * (width - 2 * knobInset)
+    }
+
+    /// Where the played part of the bar ends. It follows the knob's centre, except right at the start:
+    /// at 0 there's no fill, and over the first ~2% it grows at 3.64× the bar's width per unit of
+    /// progress until it meets the knob's centre (system bar: 2.5, 5, 7, 9.5pt at 1–4s of a 3:46 song).
+    static func fillEnd(_ fraction: Double, width: CGFloat) -> CGFloat {
+        guard fraction > 0 else { return 0 }
+        return min(knobCentre(fraction, width: width), CGFloat(fraction) * width * 3.64)
     }
 
     static func format(_ t: TimeInterval) -> String {
