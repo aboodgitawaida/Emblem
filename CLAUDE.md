@@ -33,7 +33,7 @@ Pasted screenshots are usually scaled. Calibrate pixel measurements against a kn
 - **Panel:** 308 × 140pt, 1pt below the menu bar, left edge at the item's slot. The `Layout` enum in `PlayerView.swift` holds every coordinate.
 - **Text:** title 13pt semibold, artist line 11pt regular, times 10pt regular. Times use `00:00`, or `00:00:00` once past an hour, and a real minus sign (U+2212).
 - **Buttons:** 26pt hit areas, 56pt apart. ⏮ ⏭ symbols at 16pt, ⏯ at 23.5pt.
-- **Progress bar:** 4pt track. The knob is a ~15.5 × 11.5pt capsule and only shows on hover.
+- **Progress bar:** 4pt track. The knob is a ~15.5 × 11.5pt capsule and only shows on hover or while dragging. It fades in and out in place (it doesn't grow). The system bar is a custom control (an `AXSlider` with no value-indicator child), so there's no stock slider to reuse.
 - **Scrolling text:** 3s rest, 30pt/s, 21pt gap. It restarts on every open, and the left edge only fades while moving.
 - **Audio meter:** 5 bars, 1.5pt wide, 1.5pt apart, up to ~11pt tall, dim. Dots when paused.
 - **Browser video:**
@@ -41,7 +41,9 @@ Pasted screenshots are usually scaled. Calibrate pixel measurements against a kn
   - **Buttons:** `15.arrow.trianglehead.counterclockwise` / `.clockwise` replace previous/next.
   - **Artist line:** "Artist – " when the source sends an empty album.
 - **Menu bar pill:**
-  - **Size:** the "open" pill is 37 × 23pt, ~15.5% white, centered on the icon. It's drawn by `PillWindow`, a click-through window behind the item.
+  - **Size:** the "open" pill is 37 × 23pt, ~15.2% white, centered on the icon. It's drawn by `PillWindow`, a click-through window behind the item.
+  - **Shape:** continuous corners with an 11pt radius, not a full capsule. Measured from screenshots at 2×, the system pill is 17, 20, 22 and 23pt tall at 3, 5, 7 and 9pt in from its end; a full 11.5pt capsule was 16, 19, 21 and 22pt.
+  - **Why not macOS's own highlight:** `button.highlight(true)` on the status item draws nothing on this menu bar (tested on macOS 27), so the pill has to be drawn.
   - **Timing:** it appears instantly on mouse release, because macOS draws its own ~57pt press pill while the mouse is held.
   - **Item width:** the status item uses its natural variable length. A fixed length makes macOS's press pill much wider.
 - **Menu bar owl:** 17.2pt tall, which with its thicker outline fills the 18pt icon without clipping. The body outline gets 0.65pt extra weight and the face (eye frames and beak) 0.15pt (`Brand.pathWeights`); more on the face fills it in. Made bigger and bolder so it's recognised faster: at a glance the owl reads by its silhouette, since its eyes are only a few pixels across.

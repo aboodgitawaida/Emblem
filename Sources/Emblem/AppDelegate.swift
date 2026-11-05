@@ -232,6 +232,9 @@ final class PlayerPanel: NSPanel {
 /// (macOS's press pill while the mouse is held is wider, ~57pt; ours appears after release.)
 enum Pill {
     static let open = NSSize(width: 37, height: 23)
+    /// Continuous corners, a little under half the height: the system pill's ends are fuller than a
+    /// full capsule (its height 3, 5, 7 and 9pt in from the end measures 17, 20, 22 and 23pt).
+    static let cornerRadius: CGFloat = 11
 }
 
 /// A see-through window just behind the status item that draws the pill. It ignores the mouse,
@@ -251,13 +254,13 @@ final class PillWindow: NSPanel {
         hidesOnDeactivate = false
         collectionBehavior = [.canJoinAllSpaces, .stationary, .ignoresCycle, .fullScreenAuxiliary]
         pill.wantsLayer = true
-        pill.layer?.cornerRadius = Pill.open.height / 2
+        pill.layer?.cornerRadius = Pill.cornerRadius
         pill.layer?.cornerCurve = .continuous
         contentView = pill
     }
 
     func show(centeredOn center: NSPoint, behind itemWindow: NSWindow, dark: Bool) {
-        pill.layer?.backgroundColor = (dark ? NSColor.white.withAlphaComponent(0.155)
+        pill.layer?.backgroundColor = (dark ? NSColor.white.withAlphaComponent(0.152)
                                             : NSColor.black.withAlphaComponent(0.1)).cgColor
         setFrame(NSRect(x: center.x - Pill.open.width / 2, y: center.y - Pill.open.height / 2,
                         width: Pill.open.width, height: Pill.open.height), display: true)
