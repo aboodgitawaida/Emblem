@@ -87,14 +87,18 @@ private enum Layout {
     static let slider = CGRect(x: 140, y: 102, width: 154, height: 12)   // same frame as the system bar; its track is drawn at 106–110
     static let timesY: CGFloat = 113.7, timesHeight: CGFloat = 13   // glyphs centred at 119.6, like the system's
 
-    /// The system player's controls column is 2pt wider (156) whenever the title or the artist line is
-    /// too long and scrolls: the bar and times stretch, and the buttons, centred in it, move 1pt right.
-    /// Checked on five tracks (two that fit, three that scroll).
+    /// The system player's controls column is 2pt wider (156) when the wider of the title and artist
+    /// lines is long: the bar and times stretch 2pt and the buttons, centred in it, move 1pt right.
+    /// It isn't tied to scrolling: "Saint Motel – My Type EP" (133.1pt) widens it without scrolling.
+    /// Six tracks put the cut-off between 125.0pt (stays 154) and 133.1pt (156); 129 is the middle.
+    /// Narrow it with tools/compare when a track whose widest line falls in that range plays.
+    static let wideColumnAbove: CGFloat = 129
+
     static func columnExtra(for info: NowPlayingInfo) -> CGFloat {
         func width(_ s: String, _ font: NSFont) -> CGFloat { (s as NSString).size(withAttributes: [.font: font]).width }
-        let scrolls = width(info.title, .systemFont(ofSize: 13, weight: .semibold)) > text.width
-            || width(TitleBlock.subtitle(for: info), .systemFont(ofSize: 11)) > text.width
-        return scrolls ? 2 : 0
+        let widest = max(width(info.title, .systemFont(ofSize: 13, weight: .semibold)),
+                         width(TitleBlock.subtitle(for: info), .systemFont(ofSize: 11)))
+        return widest > wideColumnAbove ? 2 : 0
     }
 }
 
@@ -354,6 +358,7 @@ private struct Scrubber: View {
     let onSeek: (TimeInterval) -> Void
     @State private var scrub: Double?
     @State private var hover = false
+    @Environment(\.colorScheme) private var scheme
 
     var body: some View {
         TimelineView(.periodic(from: .now, by: 0.5)) { ctx in
@@ -372,8 +377,9 @@ private struct Scrubber: View {
                     ZStack(alignment: .leading) {
                         Capsule().fill(theme.track).frame(height: 4)
                         Capsule().fill(theme.progress).frame(width: fill, height: 4).opacity(fill > 0 ? 1 : 0)
-                            // The system fill is the accent lifted 9/255 in every channel (61,129,255 vs 52,120,246).
-                            .brightness(theme.branded ? 0 : 0.035)
+                            // The system fill is the accent lifted 9/255 per channel in dark mode (61,129,255)
+                            // and lowered 6/255 in light mode (46,114,240).
+                            .brightness(theme.branded ? 0 : (scheme == .dark ? 0.035 : -0.0235))
                         Capsule()
                             .fill(theme.knob)
                             .frame(width: knob, height: knobHeight)
@@ -626,10 +632,11 @@ private struct LivingBackground: View {
 // MARK: - Theme
 
 struct Theme {
-    /// Colours measured from the system player's pixels in dark mode (over its ~58 grey card, at 2×):
-    /// title 236, artist line 130, the bar's empty track 35 (darker than the card), which the general
-    /// .primary/.secondary colours missed (225, 164, 79). Light mode keeps the system's colours until
-    /// it's measured too.
+    /// Colours measured from the system player's pixels (at 2×). Dark mode, over its ~58 grey card:
+    /// title 236, artist line 130, times 141, buttons 133, empty bar 35, meter 101. Light mode, over
+    /// ~248: title 38, artist line 151, times ~149, buttons 150, empty bar 230, meter 200. The general
+    /// .primary/.secondary colours missed most of these. Fixed colours for each mode, never a system
+    /// colour with changed alpha: that one stays in the mode the app launched in.
     static func measured(dark: NSColor, light: NSColor) -> Color {
         Color(nsColor: NSColor(name: nil) { $0.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua ? dark : light })
     }
@@ -640,13 +647,13 @@ struct Theme {
     private var p: Brand.Palette? { palette }
     var accent: Color { p?.accent ?? .accentColor }
     var primary: Color { branded ? .white : Self.measured(dark: NSColor(white: 1, alpha: 0.898), light: .labelColor) }
-    var secondary: Color { p?.accent ?? Self.measured(dark: NSColor(white: 1, alpha: 0.36), light: .secondaryLabelColor) }
-    var tertiary: Color { p.map { $0.accent.opacity(0.7) } ?? Color.secondary.opacity(0.75) }
-    var control: Color { p?.accent ?? Self.measured(dark: NSColor(white: 1, alpha: 0.372), light: NSColor.labelColor.withAlphaComponent(0.42)) }
-    var track: Color { branded ? Color.white.opacity(0.12) : Self.measured(dark: NSColor(white: 0, alpha: 0.35), light: NSColor(white: 0, alpha: 0.14)) }
+    var secondary: Color { p?.accent ?? Self.measured(dark: NSColor(white: 1, alpha: 0.36), light: NSColor(white: 0, alpha: 0.40)) }
+    var tertiary: Color { p.map { $0.accent.opacity(0.7) } ?? Self.measured(dark: NSColor(white: 1, alpha: 0.41), light: NSColor(white: 0, alpha: 0.41)) }
+    var control: Color { p?.accent ?? Self.measured(dark: NSColor(white: 1, alpha: 0.372), light: NSColor(white: 0, alpha: 0.40)) }
+    var track: Color { branded ? Color.white.opacity(0.12) : Self.measured(dark: NSColor(white: 0, alpha: 0.35), light: NSColor(white: 0, alpha: 0.08)) }
     var progress: Color { p?.accent ?? Color(nsColor: .controlAccentColor) }
     var knob: Color { p?.knob ?? Self.measured(dark: NSColor(white: 0.882, alpha: 1), light: .white) }   // system knob peaks at 225
-    var meter: Color { p.map { $0.accent.opacity(0.55) } ?? Color.primary.opacity(0.3) }
+    var meter: Color { p.map { $0.accent.opacity(0.55) } ?? Self.measured(dark: NSColor(white: 1, alpha: 0.22), light: NSColor(white: 0, alpha: 0.20)) }
     var placeholder: Color { branded ? Color(white: 0.1) : Color.primary.opacity(0.08) }
 }
 
