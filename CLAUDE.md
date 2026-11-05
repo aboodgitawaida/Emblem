@@ -1,24 +1,24 @@
-# Emblem: context for Claude
+# Emblem: notes for contributors and coding agents
 
-A personal macOS menu bar app that replaces the system Now Playing item. It works like the system item, except it morphs into an artist's logo while Spotify plays their track (lead or featured): the OVO owl for Drake, the College Dropout bear for Kanye, the XO for The Weeknd, the Cactus Jack face for Travis Scott, the GOLF le FLEUR* flower for Tyler, the Creator, the Born Sinner crown for J. Cole. It began as the owner's personal app (called OVOBar until it was renamed Emblem) and is now a public fan project. The GitHub repo is `aboodgitawaida/Emblem`; the local folder is still named OVOBar. The logos and names belong to their owners (OVO, the artists and their labels); see the disclaimer in README.md.
+A personal macOS menu bar app that replaces the system Now Playing item. It works like the system item, except it morphs into an artist's logo while Spotify plays their track (lead or featured): the OVO owl for Drake, the College Dropout bear for Kanye, the XO for The Weeknd, the Cactus Jack face for Travis Scott, the GOLF le FLEUR* flower for Tyler, the Creator, the Born Sinner crown for J. Cole. It was called OVOBar before it was renamed Emblem. The logos and names belong to their owners (OVO, the artists and their labels); see the disclaimer in README.md.
 
 ## Build and run
 
 - **Build and install:** `./scripts/build-app.sh --install` builds with SwiftPM, installs to `~/Applications/Emblem.app` and relaunches it. Xcode isn't installed (Command Line Tools only), so there's no `xcodebuild`.
-- **Signing:** the script signs with a self-signed certificate in the login Keychain, so macOS permissions (Automation for Spotify) survive rebuilds. It looks for **Emblem Local Signing**, then **OVOBar Local Signing** (the owner's existing certificate, from before the app was renamed; the script still accepts it). Don't switch to ad-hoc signing.
+- **Signing:** the script signs with a self-signed certificate in the login Keychain, so macOS permissions (Automation for Spotify) survive rebuilds. It looks for **Emblem Local Signing**, then **OVOBar Local Signing** (the name from before the rename; still accepted). Don't switch to ad-hoc signing.
 - **Log:** `~/Library/Logs/Emblem.log`.
 - **Checks:** `.build/release/Emblem --selftest` runs the artist matcher cases. `--render-frames <dir>` writes the morph strip and player previews.
 - **Login item:** registered via SMAppService on first launch.
 
-## Owner's preferences
+## Design rules
 
 - **Match Apple exactly:** the player must match the system Now Playing module pixel for pixel. Verify against Apple's live player rather than guessing, and give numbers.
 - **One source:** show one player at a time, never the stacked multi-source view Apple sometimes shows.
-- **Check System Settings changes:** ask the owner before changing System Settings.
+- **System Settings:** ask before changing System Settings.
 
 ## Measuring Apple's player
 
-Read the live system module through Accessibility. The tools are in `tools/` (build with `swiftc -O tools/axat.swift -o tools/axat`). Accessibility must be on for the lowercase `claude` helper (the Claude Code binary), not just the Claude app.
+Read the live system module through Accessibility. The tools are in `tools/` (build with `swiftc -O tools/axat.swift -o tools/axat`). Accessibility must be on for whichever process runs the tools (your terminal, or a coding agent's binary).
 
 - `tools/axat scan`: menu bar items and their frames. Apple's items belong to `com.apple.MenuBarAgent`.
 - `tools/axat press <x> <y>`: opens or closes Apple's player. It's a toggle, so check `tools/axat agent` first.
@@ -26,7 +26,7 @@ Read the live system module through Accessibility. The tools are in `tools/` (bu
 - `tools/axat track <secs> [bundle-id]`: samples text positions over time, used for the marquee timing.
 - `tools/axdump emblem`: dumps Emblem's own panel for comparison.
 
-Screenshots the owner pastes are usually scaled. Calibrate pixel measurements against a known size first: the cover is 112pt, the battery icon 26pt.
+Pasted screenshots are usually scaled. Calibrate pixel measurements against a known size first: the cover is 112pt, the battery icon 26pt.
 
 ## Measured values (macOS 27, 33pt notch menu bar)
 
@@ -44,12 +44,12 @@ Screenshots the owner pastes are usually scaled. Calibrate pixel measurements ag
   - **Size:** the "open" pill is 37 × 23pt, ~15.5% white, centered on the icon. It's drawn by `PillWindow`, a click-through window behind the item.
   - **Timing:** it appears instantly on mouse release, because macOS draws its own ~57pt press pill while the mouse is held.
   - **Item width:** the status item uses its natural variable length. A fixed length makes macOS's press pill much wider.
-- **Menu bar owl:** 17.2pt tall, which with its thicker outline fills the 18pt icon without clipping. The body outline gets 0.65pt extra weight and the face (eye frames and beak) 0.15pt (`Brand.pathWeights`); more on the face fills it in. Made bigger and bolder at the owner's request so it's recognised faster: at a glance the owl reads by its silhouette, since its eyes are only a few pixels across.
+- **Menu bar owl:** 17.2pt tall, which with its thicker outline fills the 18pt icon without clipping. The body outline gets 0.65pt extra weight and the face (eye frames and beak) 0.15pt (`Brand.pathWeights`); more on the face fills it in. Made bigger and bolder so it's recognised faster: at a glance the owl reads by its silhouette, since its eyes are only a few pixels across.
 - **Menu bar bear:** solid, 17pt tall (17.5 wide). An outline version was too faint to recognise next to the system icons. It's traced from a black-and-white College Dropout bear sticker (no official vector exists), with the eye whites, eye shine and muzzle cut out (even-odd) and the ear marks dropped. `Resources/bear_template.svg` is the source. Solid logos morph differently: the outline is traced, then the fill fades in.
 - **Menu bar XO:** 17pt tall, traced from a black-and-white copy of the XO brush logo and lightly smoothed (`Resources/xo_template.svg`). All its strokes get the 0.4pt extra weight, so they match the owl.
 - **Menu bar Cactus Jack:** 16pt tall (it's wider than tall, so the canvas width limits it), traced from a black-and-white copy of the Cactus Jack face logo (`Resources/cactusjack_template.svg`). All lines get 0.5pt extra weight; more merges the mouth stitches. The CACTUS/JACK cross logo was rejected: its letters turn to dots at this size.
 - **Menu bar flower:** 16pt tall (width-limited), solid, traced from a GOLF le FLEUR* flower image (`Resources/golf_template.svg`). The two-colour centre is a dot inside a thin gap ring.
-- **Menu bar crown:** 17pt tall, traced from the gold crown on the Born Sinner deluxe cover (`Resources/crown_template.svg`). A fan sticker was used first, but it was narrower than the album crown, which the owner spotted; trace from the album art when it has the symbol, with 0.3pt extra weight; more merges the zigzag points.
+- **Menu bar crown:** 17pt tall, traced from the gold crown on the Born Sinner deluxe cover (`Resources/crown_template.svg`). A fan sticker was used first, but it was narrower than the album crown; trace from the album art when it has the symbol, with 0.3pt extra weight; more merges the zigzag points.
 - **Faces:** a realistic face (a Lauryn Hill stencil) was tried and dropped. At 17pt the features are 2–3pt and unrecognisable, and a one-color stencil shows as a negative on dark menu bars. Cartoon faces whose features fill the head (the bear, Cactus Jack) work.
 
 ## Behaviour notes
@@ -67,7 +67,7 @@ Screenshots the owner pastes are usually scaled. Calibrate pixel measurements ag
   - **Window:** a borderless panel with `hidesOnDeactivate = false`.
   - **Icon clicks:** handled by a local mouse-down monitor, so the button's own tracking doesn't fight the pill.
 - **Artist moment:** when a brand's track starts, a shimmer in its color sweeps across the player once and the cover's glow swells.
-- **Player colours come from the album that's playing:** for brand tracks, `ArtworkPalette` picks the art's dominant colour (a hue histogram weighted by saturation, brightness and closeness to the centre) and builds the palette from it: ASTROWORLD gold, IGOR pink, Graduation purple, After Hours red, Views steel blue. The owner asked for this: each album gets its own colour, not one per artist. Black-and-white art (House of Balloons, Scorpion, The Idol) gets a silver-on-black player, so the colours always follow the album; the owner was clear about this. Each brand's fixed palette below is only shown until the art arrives. Other songs keep the normal player. `Emblem --palette <image>…` prints the picked colour; `--render-covers <dir> <brand>=<image>…` renders the player with real art.
+- **Player colours come from the album that's playing:** for brand tracks, `ArtworkPalette` picks the art's dominant colour (a hue histogram weighted by saturation, brightness and closeness to the centre) and builds the palette from it: ASTROWORLD gold, IGOR pink, Graduation purple, After Hours red, Views steel blue. Each album gets its own colour, not one per artist. Black-and-white art (House of Balloons, Scorpion, The Idol) gets a silver-on-black player, so the colours always follow the album. Each brand's fixed palette below is only shown until the art arrives. Other songs keep the normal player. `Emblem --palette <image>…` prints the picked colour; `--render-covers <dir> <brand>=<image>…` renders the player with real art.
 - **Living background:** for brand tracks, the player's background is a slowly flowing 3×3 `MeshGradient` of four colours from the album art (`ArtworkPalette.meshColors`: the strongest hues at least 40° apart, padded with shades of the main one; greys for black-and-white art), under a 46% black scrim. Like Apple Music's full-screen player. The accent is lightened and softened so text stands out from the same-hue background. macOS 15+; older systems keep the flat background.
 - **Premium touches (brand tracks only; the normal player still matches Apple exactly):**
   - **Glass:** on macOS 26 the panel is real glass tinted with the album's accent, with the living background inside at 86% opacity.
@@ -76,9 +76,9 @@ Screenshots the owner pastes are usually scaled. Calibrate pixel measurements ag
   - **Menu bar glint:** once a logo finishes tracing in, and on each new track by the same artist, a diagonal streak of light crosses it in 0.9s. The icon is a template, so the glint dims the logo up to 45% outside a full-strength band (`StatusIconRenderer.applyGlint`).
   - **Spring motion:** the menu bar logo grows from 90% with a ~1% overshoot as it traces in, landing at exactly 100% (the resting icon is unchanged). In the player, switching looks, the cover glow and the logo popping in all use springs instead of ease curves. The corner logo pops in around its own centre (`PopIn`): a scale transition grew it from the panel's corner because of its offset.
 - **Fallback palettes:**
-  - **Kanye:** near-black maroon background, College Dropout gold `#D9A441` accent, and a maroon glow from the top corner. Picked by Claude, not the owner; open to change.
-  - **XO:** near-black background with After Hours red `#E2323C`. Also picked by Claude.
-  - **Travis Scott:** warm brown-black with ASTROWORLD gold `#D7B563`, sampled from the cover's gold head. The owner rejected an earlier cactus green: the palette should come from the artist's album art, not the logo's name.
+  - **Kanye:** near-black maroon background, College Dropout gold `#D9A441` accent, and a maroon glow from the top corner.
+  - **XO:** near-black background with After Hours red `#E2323C`.
+  - **Travis Scott:** warm brown-black with ASTROWORLD gold `#D7B563`, sampled from the cover's gold head. An earlier cactus green was dropped: the palette should come from the artist's album art, not the logo's name.
   - **Tyler:** near-black with IGOR pink `#ECB4CC`, sampled from the cover.
   - **J. Cole:** near-black with the crown's gold `#DBC74C`.
 
