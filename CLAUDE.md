@@ -1,6 +1,6 @@
 # OVOBar: context for Claude
 
-A personal macOS menu bar app that replaces the system Now Playing item. It works like the system item, except it morphs into an artist's logo while Spotify plays their track (lead or featured): the OVO owl for Drake, the College Dropout bear for Kanye, the XO for The Weeknd, the Cactus Jack face for Travis Scott, the GOLF le FLEUR* flower for Tyler, the Creator, the Born Sinner crown for J. Cole. It's for the owner's own Mac only and is never shared. The repo is private: the logos and names are their owners' trademarks.
+A personal macOS menu bar app that replaces the system Now Playing item. It works like the system item, except it morphs into an artist's logo while Spotify plays their track (lead or featured): the OVO owl for Drake, the College Dropout bear for Kanye, the XO for The Weeknd, the Cactus Jack face for Travis Scott, the GOLF le FLEUR* flower for Tyler, the Creator, the Born Sinner crown for J. Cole. It began as the owner's personal app and is now a public fan project. The logos and names belong to their owners (OVO, the artists and their labels); see the disclaimer in README.md.
 
 ## Build and run
 
