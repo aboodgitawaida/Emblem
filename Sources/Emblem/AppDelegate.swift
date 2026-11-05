@@ -34,13 +34,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         model.$brand.removeDuplicates().sink { [weak self] brand in
             self?.animator.show(brand)
         }.store(in: &cancellables)
-        // Like the system item with its default "Show When Active": no icon while nothing is playing
-        // (Spotify quit or stopped, nothing else playing). It comes back with the next track.
-        model.$current.map { $0 != nil }.removeDuplicates().sink { [weak self] active in
-            guard let self else { return }
-            if !active { self.panel?.dismiss() }
-            self.statusItem.isVisible = active
-        }.store(in: &cancellables)
         // A new track by the same artist: sweep the light across the logo again.
         model.$current.map { $0?.trackID }.removeDuplicates().dropFirst().sink { [weak self] _ in
             guard let self, self.model.brand != nil else { return }
@@ -137,13 +130,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             try SMAppService.mainApp.register()
             UserDefaults.standard.set(true, forKey: key)
         } catch { Log.write("login item registration failed: \(error)") }
-    }
-
-    /// Opening Emblem again (from Applications or Spotlight) shows the icon even when nothing is
-    /// playing, so its menu (Open at Login, Quit) is always reachable.
-    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
-        statusItem.isVisible = true
-        return false
     }
 
     func applicationWillTerminate(_ notification: Notification) { model.system?.stop() }
