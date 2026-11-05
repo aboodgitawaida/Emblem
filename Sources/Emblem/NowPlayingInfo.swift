@@ -2,6 +2,8 @@ import AppKit
 
 /// A snapshot of what's playing in one app.
 struct NowPlayingInfo: Equatable {
+    static let appleMusicBundleID = "com.apple.Music"
+
     var bundleID: String
     var title: String
     var artist: String
@@ -23,8 +25,14 @@ struct NowPlayingInfo: Equatable {
 
     /// Browsers playing web video get 15-second skip buttons instead of previous/next, like the system player.
     var isWebVideo: Bool {
-        ["com.apple.Safari", "com.google.Chrome", "company.thebrowser.Browser", "org.mozilla.firefox",
-         "com.microsoft.edgemac", "com.brave.Browser", "com.operasoftware.Opera"].contains(bundleID)
+        !isAppleMusic && ["com.apple.Safari", "com.google.Chrome", "company.thebrowser.Browser", "org.mozilla.firefox",
+                          "com.microsoft.edgemac", "com.brave.Browser", "com.operasoftware.Opera"].contains(bundleID)
+    }
+
+    /// Apple Music exposes the same standard transport controls as the system Now Playing item.
+    /// Keeping this explicit prevents future source-specific behavior from treating it like a browser.
+    var isAppleMusic: Bool {
+        bundleID == Self.appleMusicBundleID
     }
 
     var appName: String {
