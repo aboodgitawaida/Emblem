@@ -6,11 +6,11 @@ Emblem replaces the system Now Playing item in the menu bar. When Spotify plays 
 
 ![The menu bar icon morphing from the play button into the OVO owl](docs/morph.png)
 
-| Artist track | Artist track | Any other track |
+| Drake | Travis Scott | The Weeknd |
 | --- | --- | --- |
-| ![The player during a Drake track, with the OVO owl in the corner](docs/player-ovo.png) | ![The player during a Travis Scott track, with the Cactus Jack face in the corner](docs/player-travis.png) | ![The normal player, matching Apple's Now Playing module](docs/player-normal.png) |
+| ![The player during Passionfruit by Drake, tinted from the More Life cover, with the OVO owl in the corner](docs/player-drake.png) | ![The player during SICKO MODE by Travis Scott, tinted gold from the ASTROWORLD cover, with the Cactus Jack face in the corner](docs/player-travis.png) | ![The player during Blinding Lights by The Weeknd, tinted from the After Hours cover, with the XO in the corner](docs/player-weeknd.png) |
 
-<sub>Rendered by the app itself (`Emblem --render-frames`), with placeholder cover art.</sub>
+<sub>Rendered by the app itself (`Emblem --render-covers`). Each player takes its colours from the album cover.</sub>
 
 **Built with:** Swift, SwiftUI and AppKit, Swift Package Manager (no Xcode), AppleScript and distributed notifications for Spotify, a vendored MediaRemote adapter for other sources.
 
@@ -71,7 +71,7 @@ Build the tools first, e.g. `swiftc -O tools/axat.swift -o tools/axat`.
 
 ## Disclaimer
 
-Emblem is an unofficial fan project. It is not affiliated with, endorsed by or sponsored by Apple, Spotify, OVO, or any of the artists or labels it shows. All logos, artwork and names are the property of their respective owners, and the logo files in `Resources/` and `Sources/Emblem/*PathData.swift` are redrawn from publicly circulated images for personal, non-commercial use. If you are a rights holder and want something removed, open an issue.
+Emblem is an unofficial fan project. It is not affiliated with, endorsed by or sponsored by Apple, Spotify, OVO, or any of the artists or labels it shows. All logos, album artwork and names are the property of their respective owners (album covers in the screenshots are shown only to illustrate the app), and the logo files in `Resources/` and `Sources/Emblem/*PathData.swift` are redrawn from publicly circulated images for personal, non-commercial use. If you are a rights holder and want something removed, open an issue.
 
 ## Author
 
@@ -86,4 +86,4 @@ Emblem is an unofficial fan project. It is not affiliated with, endorsed by or s
 
 ## License
 
-The code is [MIT](LICENSE). The artist logos and names are not covered by that licence; see the disclaimer above.
+The code is [MIT](LICENSE). The artist logos, names and album artwork are not covered by that licence; they belong to their respective owners (see the disclaimer above).
