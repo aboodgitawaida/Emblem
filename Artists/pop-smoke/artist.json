@@ -4,7 +4,7 @@
   "spotifyArtistID": "0eDvMgVFoNV3TpwtrVCoTj",
   "logo": {
     "file": "logo.svg",
-    "fill": "evenOdd",
+    "fill": "nonZero",
     "solid": true
   },
   "menuBar": {
