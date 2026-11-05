@@ -167,5 +167,34 @@ final class SpotifyMonitor: NSObject {
         case .skipBack15, .skipForward15: return   // done as a seek by NowPlayingModel
         }
         runScript("tell application \"Spotify\" to \(verb)")
+        // "Previous" partway through a song restarts the same track, and Spotify posts no update for
+        // that (the track didn't change), so the progress bar kept going from the old spot.
+        // Ask Spotify where it actually is once the command has landed.
+        if command == .previous || command == .next {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) { [weak self] in self?.syncPosition() }
+        }
+    }
+
+    /// Re-reads the player position from Spotify and moves our copy if it's drifted (e.g. a restart).
+    func syncPosition() {
+        guard isRunning else { return }
+        let script = """
+        tell application "Spotify"
+            if player state is stopped then return {"stopped"}
+            return {id of current track, (player position) as string}
+        end tell
+        """
+        runScript(script) { [weak self] r in
+            guard let self, let r, r.numberOfItems >= 2,
+                  let id = r.atIndex(1)?.stringValue, id == self.info?.trackID,
+                  let pos = Double((r.atIndex(2)?.stringValue ?? "").replacingOccurrences(of: ",", with: ".")),
+                  let info = self.info else { return }
+            let ours = info.elapsed(at: Date())
+            guard abs(ours - pos) > 1 else { return }
+            Log.write(String(format: "Spotify position synced: %.1fs -> %.1fs", ours, pos))
+            self.info?.elapsed = pos
+            self.info?.elapsedAt = Date()
+            self.onChange?()
+        }
     }
 }
