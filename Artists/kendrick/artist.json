@@ -1,0 +1,25 @@
+{
+  "name": "Kendrick Lamar",
+  "matchNames": ["Kendrick Lamar"],
+  "spotifyArtistID": "2YZyLoL8N0Wb9xBt1NhZWg",
+  "logo": {
+    "file": "logo.svg",
+    "fill": "evenOdd",
+    "solid": false
+  },
+  "menuBar": {
+    "height": 14,
+    "outlineWeight": 0,
+    "outlinedPaths": []
+  },
+  "player": {
+    "markSize": [16, 9]
+  },
+  "colors": {
+    "accent": "#D8352B",
+    "highlight": [1, 0.86, 0.84],
+    "knob": "#F2C1BC",
+    "background": [0.055, 0.03, 0.03],
+    "ambient": [0.85, 0.21, 0.17, 0.14]
+  }
+}

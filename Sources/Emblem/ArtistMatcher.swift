@@ -64,7 +64,6 @@ enum ArtistMatcher {
             ("Drake Bell", "Found a Way", nil),
             ("Mandrake", "Drakeford", nil),
             ("Josh Drake", "Song", nil),
-            ("Kendrick Lamar", "Not Like Us", nil),
             ("Someone", "Song (feat. Drake Bell)", nil),
             ("Someone", "Drake", nil),   // a title *about* Drake isn't a feature
             ("Someone", "Song with Drakeo the Ruler", nil),
@@ -109,7 +108,7 @@ enum ArtistMatcher {
             ("J. Cole, Lil Baby", "pride.is.the.devil", "cole"),
             ("Drake", "First Person Shooter (feat. J. Cole)", "ovo"),
             ("21 Savage", "a lot (feat. J. Cole)", "savage"),      // the lead artist wins
-            ("Kendrick Lamar", "Like That", nil),
+            ("Kendrick Lamar", "Like That", "kendrick"),
             ("Cole Swindell", "Song", nil),
             // MF DOOM, Wu-Tang Clan, 21 Savage, Billie Eilish, Lil Peep
             ("MF DOOM", "Doomsday", "doom"),
@@ -127,6 +126,15 @@ enum ArtistMatcher {
             ("Lil Peep", "Star Shopping", "peep"),
             ("Lil Peep, XXXTENTACION", "Falling Down", "peep"),
             ("Lil Peeps", "Song", nil),
+            ("Kendrick Lamar", "Not Like Us", "kendrick"),
+            ("Kendrick Lamar, SZA", "luther", "kendrick"),
+            ("Kendrick Lamar", "Poetic Justice (feat. Drake)", "kendrick"),
+            ("Future", "Like That (feat. Kendrick Lamar)", "kendrick"),
+            ("Kendrick Lamarr", "Song", nil),
+            ("Lil Yachty", "Poland", "yachty"),
+            ("Concrete Boys", "Bring Em Out", "yachty"),
+            ("Lil Yachty, Drake", "Oprah's Bank Account", "yachty"),
+            ("Drake", "Ice Melts (feat. Lil Yachty)", "ovo"),
         ]
         var ok = true
         for (a, t, want) in cases where brand(artist: a, title: t)?.id != want {
