@@ -74,6 +74,25 @@ final class NowPlayingModel: ObservableObject {
         if currentIsSpotify { spotify.seek(to: seconds) } else { system?.seek(to: seconds) }
     }
 
+    private var positionWatch: Timer?
+
+    /// Spotify posts no notification when its position jumps (scrubbed in Spotify, the system player,
+    /// headphones…), so while the player is open, re-read its position twice a second and follow it.
+    func watchPosition(_ on: Bool) {
+        positionWatch?.invalidate()
+        positionWatch = nil
+        guard on else { return }
+        if currentIsSpotify { spotify.syncPosition() }
+        let t = Timer(timeInterval: 0.5, repeats: true) { [weak self] _ in
+            MainActor.assumeIsolated {
+                guard let self, self.currentIsSpotify else { return }
+                self.spotify.syncPosition()
+            }
+        }
+        RunLoop.main.add(t, forMode: .common)
+        positionWatch = t
+    }
+
     func send(_ command: PlaybackCommand) {
         if command == .skipBack15 || command == .skipForward15, let info = current {
             let now = info.elapsed(at: Date())

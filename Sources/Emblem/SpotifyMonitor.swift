@@ -190,7 +190,9 @@ final class SpotifyMonitor: NSObject {
                   let pos = Double((r.atIndex(2)?.stringValue ?? "").replacingOccurrences(of: ",", with: ".")),
                   let info = self.info else { return }
             let ours = info.elapsed(at: Date())
-            guard abs(ours - pos) > 1 else { return }
+            // Half a second: enough to ignore the script's own delay, small enough that the shown
+            // time (whole seconds) never disagrees with Spotify's after a jump.
+            guard abs(ours - pos) > 0.5 else { return }
             Log.write(String(format: "Spotify position synced: %.1fs -> %.1fs", ours, pos))
             self.info?.elapsed = pos
             self.info?.elapsedAt = Date()
