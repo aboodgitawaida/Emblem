@@ -20,7 +20,9 @@ enum StatusIconRenderer {
 
     @MainActor private static func iconPaths(_ brand: Brand) -> [CGPath] {
         if let p = pathCache[brand.id] { return p }
-        let h = brand.iconHeight, w = h * brand.logo.aspect
+        // A logo wider than the canvas would be clipped at the sides, so it's scaled down to fit.
+        var h = brand.iconHeight, w = h * brand.logo.aspect
+        if w > canvas.width { w = canvas.width; h = w / brand.logo.aspect }
         let rect = CGRect(x: (canvas.width - w) / 2, y: (canvas.height - h) / 2, width: w, height: h)
         let p = brand.logo.paths(in: rect).map(\.cgPath)
         pathCache[brand.id] = p

@@ -8,12 +8,12 @@
     "solid": false
   },
   "menuBar": {
-    "height": 14,
+    "height": 13,
     "outlineWeight": 0,
     "outlinedPaths": []
   },
   "player": {
-    "markSize": [16, 9]
+    "markSize": [15, 10.5]
   },
   "colors": {
     "accent": "#D8352B",
