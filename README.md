@@ -1,4 +1,4 @@
-# OVOBar
+# Emblem
 
 Personal menu bar replacement for macOS's Now Playing item. The icon morphs into an artist's logo when Spotify plays their track, as lead or featured artist: the OVO owl for Drake, the College Dropout bear for Kanye, the XO for The Weeknd, the Cactus Jack face for Travis Scott, the GOLF le FLEUR* flower for Tyler, the Creator, the Born Sinner crown for J. Cole.
 
@@ -14,8 +14,8 @@ Personal menu bar replacement for macOS's Now Playing item. The icon morphs into
 ## Debug
 
 ```bash
-.build/release/OVOBar --selftest              # artist matcher cases
-.build/release/OVOBar --render-frames <dir>   # morph strip + player PNGs
+.build/release/Emblem --selftest              # artist matcher cases
+.build/release/Emblem --render-frames <dir>   # morph strip + player PNGs
 ```
 
 ## How it works
@@ -26,13 +26,13 @@ Personal menu bar replacement for macOS's Now Playing item. The icon morphs into
 - **Artist detection** has two checks:
   - `ArtistMatcher`: the artist must be a whole credit in the artist field, or after feat./ft./featuring/with in the title. "Drake Bell" doesn't count. The lead artist wins when several brands are credited.
   - `SpotifyCredits`: Spotify's notification only names the first artist, so the full artist list comes from the track's public embed page (`open.spotify.com/embed/track/<id>`), matched by artist ID.
-- **Log**: `~/Library/Logs/OVOBar.log`.
+- **Log**: `~/Library/Logs/Emblem.log`.
 - **Morph** (`StatusIcon`): renders template images frame by frame. The circle shrinks and fades while the logo's lines are revealed along their outlines.
 - **Menu**: right-click the icon for Open at Login and Quit.
 
 ## Signing
 
-`build-app.sh` signs with the self-signed **OVOBar Local Signing** certificate in your login Keychain, so macOS permissions such as controlling Spotify survive rebuilds. If that certificate is missing, it falls back to ad-hoc signing.
+`build-app.sh` signs with the self-signed **Emblem Local Signing** certificate in your login Keychain, so macOS permissions such as controlling Spotify survive rebuilds. To make one, open Keychain Access, choose Certificate Assistant → Create a Certificate, pick the "Code Signing" type and name it exactly that. If no such certificate exists, it falls back to ad-hoc signing, and macOS will ask for Spotify access again after every rebuild.
 
 ## Layout reference
 
@@ -40,7 +40,7 @@ The player copies the system Now Playing module's measured layout (see `Layout` 
 - **Find menu bar items:** `tools/axat scan`
 - **Open Apple's player:** `tools/axat press <x> <y>`
 - **Dump its layout:** `tools/axat ccdump`
-- **Dump OVOBar's player:** `tools/axdump ovobar`
+- **Dump Emblem's player:** `tools/axdump emblem`
 
 Build the tools first, e.g. `swiftc -O tools/axat.swift -o tools/axat`.
 
@@ -48,8 +48,8 @@ Build the tools first, e.g. `swiftc -O tools/axat.swift -o tools/axat`.
 
 - macOS 14 or later. Some effects need newer systems: the flowing background needs macOS 15, and the glass panel needs macOS 26. Older systems fall back to a flat panel.
 - Command Line Tools only (no Xcode). Clone with `git clone --recursive` so the `mediaremote-adapter` submodule comes along.
-- Spotify. The first time you play a track, macOS asks whether OVOBar may control Spotify; allow it.
+- Spotify. The first time you play a track, macOS asks whether Emblem may control Spotify; allow it.
 
 ## Disclaimer
 
-OVOBar is an unofficial fan project. It is not affiliated with, endorsed by or sponsored by Apple, Spotify, OVO, or any of the artists or labels it shows. All logos, artwork and names are the property of their respective owners, and the logo files in `Resources/` and `Sources/OVOBar/*PathData.swift` are redrawn from publicly circulated images for personal, non-commercial use. If you are a rights holder and want something removed, open an issue.
+Emblem is an unofficial fan project. It is not affiliated with, endorsed by or sponsored by Apple, Spotify, OVO, or any of the artists or labels it shows. All logos, artwork and names are the property of their respective owners, and the logo files in `Resources/` and `Sources/Emblem/*PathData.swift` are redrawn from publicly circulated images for personal, non-commercial use. If you are a rights holder and want something removed, open an issue.

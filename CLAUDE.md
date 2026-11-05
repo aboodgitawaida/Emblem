@@ -1,13 +1,13 @@
-# OVOBar: context for Claude
+# Emblem: context for Claude
 
-A personal macOS menu bar app that replaces the system Now Playing item. It works like the system item, except it morphs into an artist's logo while Spotify plays their track (lead or featured): the OVO owl for Drake, the College Dropout bear for Kanye, the XO for The Weeknd, the Cactus Jack face for Travis Scott, the GOLF le FLEUR* flower for Tyler, the Creator, the Born Sinner crown for J. Cole. It began as the owner's personal app and is now a public fan project. The logos and names belong to their owners (OVO, the artists and their labels); see the disclaimer in README.md.
+A personal macOS menu bar app that replaces the system Now Playing item. It works like the system item, except it morphs into an artist's logo while Spotify plays their track (lead or featured): the OVO owl for Drake, the College Dropout bear for Kanye, the XO for The Weeknd, the Cactus Jack face for Travis Scott, the GOLF le FLEUR* flower for Tyler, the Creator, the Born Sinner crown for J. Cole. It began as the owner's personal app (called OVOBar until it was renamed Emblem) and is now a public fan project. The GitHub repo is `aboodgitawaida/Emblem`; the local folder is still named OVOBar. The logos and names belong to their owners (OVO, the artists and their labels); see the disclaimer in README.md.
 
 ## Build and run
 
-- **Build and install:** `./scripts/build-app.sh --install` builds with SwiftPM, installs to `~/Applications/OVOBar.app` and relaunches it. Xcode isn't installed (Command Line Tools only), so there's no `xcodebuild`.
-- **Signing:** the script signs with the self-signed **OVOBar Local Signing** identity in the login Keychain, so macOS permissions (Automation for Spotify) survive rebuilds. Don't switch to ad-hoc signing.
-- **Log:** `~/Library/Logs/OVOBar.log`.
-- **Checks:** `.build/release/OVOBar --selftest` runs the artist matcher cases. `--render-frames <dir>` writes the morph strip and player previews.
+- **Build and install:** `./scripts/build-app.sh --install` builds with SwiftPM, installs to `~/Applications/Emblem.app` and relaunches it. Xcode isn't installed (Command Line Tools only), so there's no `xcodebuild`.
+- **Signing:** the script signs with a self-signed certificate in the login Keychain, so macOS permissions (Automation for Spotify) survive rebuilds. It looks for **Emblem Local Signing**, then **OVOBar Local Signing** (the owner's existing certificate, from before the app was renamed; the script still accepts it). Don't switch to ad-hoc signing.
+- **Log:** `~/Library/Logs/Emblem.log`.
+- **Checks:** `.build/release/Emblem --selftest` runs the artist matcher cases. `--render-frames <dir>` writes the morph strip and player previews.
 - **Login item:** registered via SMAppService on first launch.
 
 ## Owner's preferences
@@ -24,7 +24,7 @@ Read the live system module through Accessibility. The tools are in `tools/` (bu
 - `tools/axat press <x> <y>`: opens or closes Apple's player. It's a toggle, so check `tools/axat agent` first.
 - `tools/axat ccdump`: dumps Apple's open player: frames, fonts, values.
 - `tools/axat track <secs> [bundle-id]`: samples text positions over time, used for the marquee timing.
-- `tools/axdump ovobar`: dumps OVOBar's own panel for comparison.
+- `tools/axdump emblem`: dumps Emblem's own panel for comparison.
 
 Screenshots the owner pastes are usually scaled. Calibrate pixel measurements against a known size first: the cover is 112pt, the battery icon 26pt.
 
@@ -67,7 +67,7 @@ Screenshots the owner pastes are usually scaled. Calibrate pixel measurements ag
   - **Window:** a borderless panel with `hidesOnDeactivate = false`.
   - **Icon clicks:** handled by a local mouse-down monitor, so the button's own tracking doesn't fight the pill.
 - **Artist moment:** when a brand's track starts, a shimmer in its color sweeps across the player once and the cover's glow swells.
-- **Player colours come from the album that's playing:** for brand tracks, `ArtworkPalette` picks the art's dominant colour (a hue histogram weighted by saturation, brightness and closeness to the centre) and builds the palette from it: ASTROWORLD gold, IGOR pink, Graduation purple, After Hours red, Views steel blue. The owner asked for this: each album gets its own colour, not one per artist. Black-and-white art (House of Balloons, Scorpion, The Idol) gets a silver-on-black player, so the colours always follow the album; the owner was clear about this. Each brand's fixed palette below is only shown until the art arrives. Other songs keep the normal player. `OVOBar --palette <image>…` prints the picked colour; `--render-covers <dir> <brand>=<image>…` renders the player with real art.
+- **Player colours come from the album that's playing:** for brand tracks, `ArtworkPalette` picks the art's dominant colour (a hue histogram weighted by saturation, brightness and closeness to the centre) and builds the palette from it: ASTROWORLD gold, IGOR pink, Graduation purple, After Hours red, Views steel blue. The owner asked for this: each album gets its own colour, not one per artist. Black-and-white art (House of Balloons, Scorpion, The Idol) gets a silver-on-black player, so the colours always follow the album; the owner was clear about this. Each brand's fixed palette below is only shown until the art arrives. Other songs keep the normal player. `Emblem --palette <image>…` prints the picked colour; `--render-covers <dir> <brand>=<image>…` renders the player with real art.
 - **Living background:** for brand tracks, the player's background is a slowly flowing 3×3 `MeshGradient` of four colours from the album art (`ArtworkPalette.meshColors`: the strongest hues at least 40° apart, padded with shades of the main one; greys for black-and-white art), under a 46% black scrim. Like Apple Music's full-screen player. The accent is lightened and softened so text stands out from the same-hue background. macOS 15+; older systems keep the flat background.
 - **Premium touches (brand tracks only; the normal player still matches Apple exactly):**
   - **Glass:** on macOS 26 the panel is real glass tinted with the album's accent, with the living background inside at 86% opacity.

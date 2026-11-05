@@ -15,7 +15,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         // Natural width: macOS sizes its press pill from the item's slot, and a fixed length made the
         // slot (and that pill) much wider than the system Now Playing item's.
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-        statusItem.autosaveName = "OVOBarNowPlaying"
+        statusItem.autosaveName = "EmblemNowPlaying"
         let button = statusItem.button!
         animator = StatusIconAnimator(button: button)
 
@@ -104,7 +104,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         login.state = SMAppService.mainApp.status == .enabled ? .on : .off
         menu.addItem(login)
         menu.addItem(.separator())
-        menu.addItem(withTitle: "Quit OVOBar", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        menu.addItem(withTitle: "Quit Emblem", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         panel?.dismiss()
         statusItem.menu = menu
         statusItem.button?.performClick(nil)

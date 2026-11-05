@@ -47,7 +47,7 @@ enum ArtistMatcher {
         }
     }
 
-    /// Run with `OVOBar --selftest`.
+    /// Run with `Emblem --selftest`.
     static func selfTest() -> Bool {
         let cases: [(String, String, String?)] = [
             // Drake

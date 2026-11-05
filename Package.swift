@@ -2,9 +2,9 @@
 import PackageDescription
 
 let package = Package(
-    name: "OVOBar",
+    name: "Emblem",
     platforms: [.macOS(.v14)],
     targets: [
-        .executableTarget(name: "OVOBar", path: "Sources/OVOBar"),
+        .executableTarget(name: "Emblem", path: "Sources/Emblem"),
     ]
 )

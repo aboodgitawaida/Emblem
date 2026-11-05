@@ -10,7 +10,7 @@ final class SpotifyMonitor: NSObject {
     private(set) var info: NowPlayingInfo?
     var onChange: (() -> Void)?
 
-    private let scriptQueue = DispatchQueue(label: "OVOBar.spotify-applescript")
+    private let scriptQueue = DispatchQueue(label: "Emblem.spotify-applescript")
     private var artworkCache: [String: NSImage] = [:]   // trackID → art
     private var creditsCache: [String: [SpotifyCredits.Artist]] = [:]   // trackID → all artists
 

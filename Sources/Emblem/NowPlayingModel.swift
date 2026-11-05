@@ -1,6 +1,6 @@
 import AppKit
 
-extension Notification.Name { static let dismissPlayer = Notification.Name("OVOBar.dismissPlayer") }
+extension Notification.Name { static let dismissPlayer = Notification.Name("Emblem.dismissPlayer") }
 import Combine
 
 /// Combines Spotify (notifications) and everything else (MediaRemote adapter)
