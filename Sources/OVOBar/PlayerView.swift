@@ -29,8 +29,9 @@ struct PlayerView: View {
         .overlay { ShimmerBand(position: shimmer, palette: model.palette ?? Brand.ovo.palette).allowsHitTesting(false) }
         .clipShape(RoundedRectangle(cornerRadius: PanelMetrics.cornerRadius, style: .continuous))
         .environment(\.colorScheme, theme.branded ? .dark : systemScheme)
-        .animation(.easeInOut(duration: 0.35), value: model.brand?.id)
-        .animation(.easeInOut(duration: 0.35), value: model.palette?.accent)
+        // Springs, like Apple's own motion: switching looks settles with a little give.
+        .animation(.spring(response: 0.5, dampingFraction: 0.8), value: model.brand?.id)
+        .animation(.spring(response: 0.6, dampingFraction: 0.85), value: model.palette?.accent)
         .onChange(of: model.brand?.id) { _, id in if id != nil { celebrate() } }
         .onChange(of: model.current?.trackID) { _, _ in if model.brand != nil { celebrate() } }
     }
@@ -40,8 +41,9 @@ struct PlayerView: View {
         var t = Transaction(); t.disablesAnimations = true
         withTransaction(t) { shimmer = -1 }
         withAnimation(.easeInOut(duration: 1.15).delay(0.1)) { shimmer = 1.4 }
-        withAnimation(.easeOut(duration: 0.5)) { swell = true }
-        withAnimation(.easeInOut(duration: 1.2).delay(0.9)) { swell = false }
+        // The cover's glow blooms with a bounce, then relaxes slowly.
+        withAnimation(.spring(response: 0.45, dampingFraction: 0.55)) { swell = true }
+        withAnimation(.spring(response: 1.1, dampingFraction: 0.9).delay(0.9)) { swell = false }
     }
 }
 
@@ -115,7 +117,8 @@ private struct FullPlayer: View {
                 FoilMark(logo: brand.logo, palette: palette, weight: brand.markWeight * 1.4, pointer: pointer)
                     .frame(width: Layout.mark.width, height: Layout.mark.height)
                     .offset(x: Layout.mark.minX, y: Layout.mark.minY)
-                    .transition(.opacity)
+                    // Pops in with the look's spring when an artist's song starts.
+                    .transition(.scale(scale: 0.5).combined(with: .opacity))
             } else {
                 LevelMeter(playing: info.isPlaying, color: theme.meter)
                     .frame(width: Layout.meter.width, height: 12.5)

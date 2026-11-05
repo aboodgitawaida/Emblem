@@ -73,6 +73,7 @@ Screenshots the owner pastes are usually scaled. Calibrate pixel measurements ag
   - **Tilting cover:** the cover tilts up to 9° toward the pointer, scales to 102.5% and a soft sheen follows it, like Apple TV posters (`TiltCard`).
   - **Foil logo:** the player's small logo is a metallic gradient in the album's colours whose highlight follows the pointer, or drifts slowly when it's away (`FoilMark`). It sits in a 20pt box in the top-right corner (`Layout.mark`), bigger than the 13.5pt audio-meter slot it used before; the text column stops 4pt short of it.
   - **Menu bar glint:** once a logo finishes tracing in, and on each new track by the same artist, a diagonal streak of light crosses it in 0.9s. The icon is a template, so the glint dims the logo up to 45% outside a full-strength band (`StatusIconRenderer.applyGlint`).
+  - **Spring motion:** the menu bar logo grows from 90% with a ~1% overshoot as it traces in, landing at exactly 100% (the resting icon is unchanged). In the player, switching looks, the cover glow and the logo popping in all use springs instead of ease curves.
 - **Fallback palettes:**
   - **Kanye:** near-black maroon background, College Dropout gold `#D9A441` accent, and a maroon glow from the top corner. Picked by Claude, not the owner; open to change.
   - **XO:** near-black background with After Hours red `#E2323C`. Also picked by Claude.
