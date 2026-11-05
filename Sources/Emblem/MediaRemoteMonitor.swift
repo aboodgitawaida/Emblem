@@ -30,10 +30,10 @@ final class MediaRemoteMonitor {
 
     func start() {
         DispatchQueue.global(qos: .utility).async { [baseArgs] in
-            // Kill adapters orphaned by a previous OVOBar that didn't quit cleanly (reparented to launchd).
+            // Kill adapters orphaned by a previous Emblem that didn't quit cleanly (reparented to launchd).
             let cleanup = Process()
             cleanup.executableURL = URL(fileURLWithPath: "/usr/bin/pkill")
-            cleanup.arguments = ["-P", "1", "-f", "OVOBar.app/Contents/Resources/adapter/mediaremote-adapter.pl"]
+            cleanup.arguments = ["-P", "1", "-f", "Emblem.app/Contents/Resources/adapter/mediaremote-adapter.pl"]
             try? cleanup.run(); cleanup.waitUntilExit()
 
             let p = Process()

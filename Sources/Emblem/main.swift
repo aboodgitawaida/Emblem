@@ -2,7 +2,7 @@ import AppKit
 
 let args = CommandLine.arguments
 
-// Debug helpers: `OVOBar --selftest`, `OVOBar --render-frames <dir>`, `OVOBar --palette <image>…`.
+// Debug helpers: `Emblem --selftest`, `Emblem --render-frames <dir>`, `Emblem --palette <image>…`.
 if args.contains("--selftest") {
     exit(ArtistMatcher.selfTest() ? 0 : 1)
 }

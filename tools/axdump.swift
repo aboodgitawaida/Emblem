@@ -3,7 +3,7 @@ import ApplicationServices
 
 // Dumps the on-screen layout (role, frame, text, font) of a player panel via Accessibility.
 //   axdump apple   – opens the system Now Playing module from the menu bar and dumps it
-//   axdump ovobar  – dumps OVOBar's panel (open it first)
+//   axdump emblem  – dumps Emblem's panel (open it first)
 
 func attr(_ e: AXUIElement, _ name: String) -> AnyObject? {
     var v: AnyObject?
@@ -62,7 +62,8 @@ func windows(of pid: pid_t) -> [AXUIElement] {
 }
 
 let target = CommandLine.arguments.dropFirst().first ?? "apple"
-let outPath = (NSHomeDirectory() as NSString).appendingPathComponent("Projects/OVOBar/reference/ax-\(target).txt")
+// Writes to reference/ in the current directory, so run it from the repo root.
+let outPath = (FileManager.default.currentDirectoryPath as NSString).appendingPathComponent("reference/ax-\(target).txt")
 try? FileManager.default.createDirectory(atPath: (outPath as NSString).deletingLastPathComponent, withIntermediateDirectories: true)
 FileManager.default.createFile(atPath: outPath, contents: nil)
 let outHandle = FileHandle(forWritingAtPath: outPath)!
@@ -114,8 +115,8 @@ if target == "apple" {
     }
     AXUIElementPerformAction(np, kAXPressAction as CFString)   // close it again
 } else {
-    guard let app = NSRunningApplication.runningApplications(withBundleIdentifier: "local.abood.OVOBar").first else {
-        print("OVOBar not running"); exit(1)
+    guard let app = NSRunningApplication.runningApplications(withBundleIdentifier: "io.github.aboodgitawaida.Emblem").first else {
+        print("Emblem not running"); exit(1)
     }
     for w in windows(of: app.processIdentifier) {
         if let f = frame(w) { origin = f.origin; print(String(format: "WINDOW at screen x=%.1f y=%.1f w=%.1f h=%.1f", f.minX, f.minY, f.width, f.height)) }

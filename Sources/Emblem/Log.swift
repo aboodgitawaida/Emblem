@@ -1,13 +1,13 @@
 import Foundation
 
-/// Appends to ~/Library/Logs/OVOBar.log (and the system log).
+/// Appends to ~/Library/Logs/Emblem.log (and the system log).
 enum Log {
     private static let url = FileManager.default.homeDirectoryForCurrentUser
-        .appendingPathComponent("Library/Logs/OVOBar.log")
-    private static let queue = DispatchQueue(label: "OVOBar.log")
+        .appendingPathComponent("Library/Logs/Emblem.log")
+    private static let queue = DispatchQueue(label: "Emblem.log")
 
     static func write(_ message: String) {
-        NSLog("OVOBar: %@", message)
+        NSLog("Emblem: %@", message)
         let line = "\(ISO8601DateFormatter().string(from: Date())) \(message)\n"
         queue.async {
             if let h = try? FileHandle(forWritingTo: url) {
