@@ -43,3 +43,13 @@ The player copies the system Now Playing module's measured layout (see `Layout` 
 - **Dump OVOBar's player:** `tools/axdump ovobar`
 
 Build the tools first, e.g. `swiftc -O tools/axat.swift -o tools/axat`.
+
+## Requirements
+
+- macOS 14 or later. Some effects need newer systems: the flowing background needs macOS 15, and the glass panel needs macOS 26. Older systems fall back to a flat panel.
+- Command Line Tools only (no Xcode). Clone with `git clone --recursive` so the `mediaremote-adapter` submodule comes along.
+- Spotify. The first time you play a track, macOS asks whether OVOBar may control Spotify; allow it.
+
+## Disclaimer
+
+OVOBar is an unofficial fan project. It is not affiliated with, endorsed by or sponsored by Apple, Spotify, OVO, or any of the artists or labels it shows. All logos, artwork and names are the property of their respective owners, and the logo files in `Resources/` and `Sources/OVOBar/*PathData.swift` are redrawn from publicly circulated images for personal, non-commercial use. If you are a rights holder and want something removed, open an issue.
