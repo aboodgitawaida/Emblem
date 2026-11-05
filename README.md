@@ -63,7 +63,7 @@ tools/compare                                 # Emblem's player vs the system's,
 ## How it works
 
 - **Spotify** (`SpotifyMonitor`): listens to the `com.spotify.client.PlaybackStateChanged` distributed notification. AppleScript is used only for artwork, the initial state and controls.
-- **Everything else** (`MediaRemoteMonitor`): uses the mediaremote-adapter stream via `/usr/bin/perl`. If its self-test fails, only non-Spotify sources are lost.
+- **Everything else** (`MediaRemoteMonitor`): uses the mediaremote-adapter stream via `/usr/bin/perl`. This includes Apple Music and browser players such as YouTube Music, SoundCloud, and TIDAL; Apple Music uses the same standard previous/play/next controls as the system Now Playing item, while browser video uses 15-second skip controls. If the adapter self-test fails, only non-Spotify sources are lost.
 - **Artists** (`Artists/<id>/`): each artist is a folder with `artist.json` (names, Spotify artist ID, sizes, fallback palette) and `logo.svg`, loaded at launch by `ArtistLibrary`. The player's colours come from the playing album's art (`ArtworkPalette`). Drake → OVO owl, Kanye → College Dropout bear, The Weeknd → XO, Travis Scott → Cactus Jack face, Tyler, the Creator → GOLF le FLEUR* flower, J. Cole → Born Sinner crown, MF DOOM → his mask, Wu-Tang Clan → the W, 21 Savage → the dagger, Billie Eilish → the Blohsh figure, Lil Peep → the broken heart, Kendrick Lamar → a crown of thorns (drawn for Emblem), Lil Yachty → the Concrete Boys stick figure.
 - **Artist detection** has two checks:
   - `ArtistMatcher`: the artist must be a whole credit in the artist field, or after feat./ft./featuring/with in the title. "Drake Bell" doesn't count. The lead artist wins when several brands are credited.
