@@ -9,6 +9,7 @@ A personal macOS menu bar app that replaces the system Now Playing item. It work
 - **Log:** `~/Library/Logs/Emblem.log`.
 - **Checks:** `.build/release/Emblem --selftest` runs the artist matcher cases. `--render-frames <dir>` writes the morph strip and player previews.
 - **Login item:** registered via SMAppService on first launch.
+- **Idle:** like the system item's default "Show When Active", the icon hides while nothing is playing (Spotify quit or stopped) and comes back with the next track. Opening the app again shows it, so its menu stays reachable.
 
 ## Design rules
 
@@ -93,8 +94,7 @@ Pasted screenshots are usually scaled. Calibrate pixel measurements against a kn
 
 ## Open ideas, not done
 
-- **Hide when idle:** hide the icon until something has played, as Apple does.
-- **Other menu bars:** scale the pill and positions for 24pt menu bars on external displays and non-notch Macs.
+- **Other menu bars:** on a 24pt bar (non-notch Macs, external displays) the pill is capped 1pt short of the bar's top and bottom; Apple's size there isn't measured. The player's position already follows the real bar.
 - **Light mode:** check the light menu bar and the brand colors in light mode.
 - **Unchecked Apple behaviour:** button hover and press states, the progress bar while dragging, and the 2pt longer bar on hour-long videos.
 - **Queue end:** the last song in the queue finishing is untested.

@@ -34,6 +34,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         model.$brand.removeDuplicates().sink { [weak self] brand in
             self?.animator.show(brand)
         }.store(in: &cancellables)
+        // Like the system item with its default "Show When Active": no icon while nothing is playing
+        // (Spotify quit or stopped, nothing else playing). It comes back with the next track.
+        model.$current.map { $0 != nil }.removeDuplicates().sink { [weak self] active in
+            guard let self else { return }
+            if !active { self.panel?.dismiss() }
+            self.statusItem.isVisible = active
+        }.store(in: &cancellables)
         // A new track by the same artist: sweep the light across the logo again.
         model.$current.map { $0?.trackID }.removeDuplicates().dropFirst().sink { [weak self] _ in
             guard let self, self.model.brand != nil else { return }
@@ -130,6 +137,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             try SMAppService.mainApp.register()
             UserDefaults.standard.set(true, forKey: key)
         } catch { Log.write("login item registration failed: \(error)") }
+    }
+
+    /// Opening Emblem again (from Applications or Spotlight) shows the icon even when nothing is
+    /// playing, so its menu (Open at Login, Quit) is always reachable.
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        statusItem.isVisible = true
+        return false
     }
 
     func applicationWillTerminate(_ notification: Notification) { model.system?.stop() }
@@ -267,8 +281,12 @@ final class PillWindow: NSPanel {
     func show(centeredOn center: NSPoint, behind itemWindow: NSWindow, dark: Bool) {
         pill.layer?.backgroundColor = (dark ? NSColor.white.withAlphaComponent(0.152)
                                             : NSColor.black.withAlphaComponent(0.1)).cgColor
-        setFrame(NSRect(x: center.x - Pill.open.width / 2, y: center.y - Pill.open.height / 2,
-                        width: Pill.open.width, height: Pill.open.height), display: true)
+        // Measured on a 33pt notch menu bar. On a shorter bar (24pt on Macs without a notch and most
+        // external displays) it keeps 1pt clear above and below; that size isn't measured yet.
+        let height = min(Pill.open.height, itemWindow.frame.height - 2)
+        pill.layer?.cornerRadius = Pill.cornerRadius * height / Pill.open.height
+        setFrame(NSRect(x: center.x - Pill.open.width / 2, y: center.y - height / 2,
+                        width: Pill.open.width, height: height), display: true)
         level = itemWindow.level
         // Appear instantly: it takes over from macOS's press pill as that fades out on release,
         // so there's no gap between the two.
