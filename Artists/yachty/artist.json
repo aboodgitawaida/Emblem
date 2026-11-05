@@ -1,0 +1,25 @@
+{
+  "name": "Lil Yachty",
+  "matchNames": ["Lil Yachty", "Concrete Boys"],
+  "spotifyArtistID": "6icQOAFXDZKsumw3YXyusw",
+  "logo": {
+    "file": "logo.svg",
+    "fill": "evenOdd",
+    "solid": false
+  },
+  "menuBar": {
+    "height": 18,
+    "outlineWeight": 0,
+    "outlinedPaths": []
+  },
+  "player": {
+    "markSize": [9, 14]
+  },
+  "colors": {
+    "accent": "#E9473F",
+    "highlight": [1, 0.87, 0.85],
+    "knob": "#F6C3BF",
+    "background": [0.055, 0.03, 0.03],
+    "ambient": [0.91, 0.28, 0.25, 0.14]
+  }
+}
