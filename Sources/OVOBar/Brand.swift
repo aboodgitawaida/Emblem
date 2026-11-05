@@ -16,6 +16,8 @@ struct Brand: Equatable {
     let palette: Palette
     /// Extra line weight for the player's small logo (pt), for thin line drawings.
     var markWeight: CGFloat = 0
+    /// Extra menu bar stroke for single paths (pt), on top of `iconWeight`, e.g. a lighter touch on a face.
+    var pathWeights: [Int: CGFloat] = [:]
 
     struct Palette {
         let accent: Color        // secondary text, controls, progress, logo
@@ -37,15 +39,19 @@ struct Brand: Equatable {
     /// Drake: black, OVO gold and the owl.
     static let ovo = Brand(
         id: "ovo", names: ["Drake"], spotifyURI: "spotify:artist:3TVXtAsR1Inumwj472S9r4",
-        logo: .owl, iconHeight: 16.5, iconWeight: 0.4,
-        // Only the body outline (last path) gets weight; thickening the eyes and beak fills in the face.
+        // As big as the 18pt icon allows, with a bolder body outline: at a glance the owl is recognised by
+        // its silhouette (ear tufts, wing, perch); its eyes are only a few pixels across at this size.
+        // The face (eye frames and beak, path 2) gets just 0.15pt so it doesn't fade to grey; more fills it in.
+        // 17.2pt plus the 0.65pt outline fills the 18pt icon without clipping the ear tufts or perch.
+        logo: .owl, iconHeight: 17.2, iconWeight: 0.65,
         weightedPaths: [OwlPathData.paths.count - 1],
         markSize: CGSize(width: 10, height: 12.5),
         palette: Palette(accent: ovoGold,
                          highlight: Color(red: 1, green: 0.95, blue: 0.82),
                          knob: Color(red: 0.93, green: 0.86, blue: 0.68),
                          background: Color(white: 0.035),
-                         ambient: ovoGold.opacity(0.10)))
+                         ambient: ovoGold.opacity(0.10)),
+        pathWeights: [2: 0.15])
 
     /// Kanye: the College Dropout bear, maroon and gold.
     static let kanye = Brand(
