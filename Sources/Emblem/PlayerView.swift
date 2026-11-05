@@ -360,8 +360,7 @@ private struct Scrubber: View {
                             .fill(theme.knob)
                             .frame(width: knob, height: knobHeight)
                             .shadow(color: .black.opacity(0.3), radius: 1.5, y: 0.5)
-                            .scaleEffect(showKnob ? 1 : 0.2)
-                            .opacity(showKnob ? 1 : 0)
+                            .opacity(showKnob ? 1 : 0)   // the system knob fades in place; it doesn't grow
                             .offset(x: min(max(w * fraction - knob / 2, 0), w - knob))
                     }
                     .frame(maxHeight: .infinity)
@@ -374,7 +373,7 @@ private struct Scrubber: View {
                             scrub = nil
                         })
                     .onHover { hover = $0 }
-                    .animation(.spring(response: 0.25, dampingFraction: 0.8), value: showKnob)
+                    .animation(.easeInOut(duration: 0.2), value: showKnob)
                 }
                 .frame(height: Layout.slider.height)
                 HStack {
