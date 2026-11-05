@@ -405,6 +405,9 @@ private struct PanelBackground: View {
         ZStack {
             if let p = theme.palette {
                 shape.fill(p.background)
+                if #available(macOS 15.0, *), p.mesh.count >= 4 {
+                    LivingBackground(colors: p.mesh).clipShape(shape)
+                }
                 // A faint glow from the top corner, like light catching a black OVO box.
                 shape.fill(RadialGradient(colors: [p.ambient, .clear],
                                           center: .topLeading, startRadius: 0, endRadius: 260))
@@ -415,6 +418,41 @@ private struct PanelBackground: View {
                 shape.fill(.regularMaterial)
             }
         }
+    }
+}
+
+/// The album's colours flowing slowly behind the player, like Apple Music's full-screen player:
+/// a 3×3 mesh gradient whose inner points drift on slow, out-of-step cycles (~12–20s), under a dark
+/// scrim so the white title and the accent-coloured controls stay readable.
+@available(macOS 15.0, *)
+private struct LivingBackground: View {
+    let colors: [Color]
+
+    var body: some View {
+        TimelineView(.animation(minimumInterval: 1.0 / 30)) { ctx in
+            let t = ctx.date.timeIntervalSinceReferenceDate
+            let c = colors
+            MeshGradient(
+                width: 3, height: 3,
+                points: Self.points(at: t),
+                colors: [c[0], c[1], c[2],
+                         c[3], c[0], c[1],
+                         c[2], c[3], c[0]],
+                smoothsColors: true)
+        }
+        .overlay(Color.black.opacity(0.46))
+        // A little extra shade behind the text column.
+        .overlay(LinearGradient(colors: [.clear, .black.opacity(0.14)], startPoint: .leading, endPoint: .trailing))
+    }
+
+    /// Corners stay put; edge midpoints slide along their edges and the centre wanders.
+    static func points(at t: TimeInterval) -> [SIMD2<Float>] {
+        func s(_ speed: Double, _ phase: Double) -> Float { Float(sin(t * speed + phase)) }
+        return [
+            [0, 0], [0.5 + 0.2 * s(0.41, 0), 0], [1, 0],
+            [0, 0.5 + 0.22 * s(0.33, 1.7)], [0.5 + 0.22 * s(0.29, 0.6), 0.5 + 0.2 * s(0.37, 2.4)], [1, 0.5 + 0.22 * s(0.45, 4.1)],
+            [0, 1], [0.5 + 0.2 * s(0.38, 3.3), 1], [1, 1],
+        ]
     }
 }
 

@@ -9,7 +9,7 @@ import Combine
 final class NowPlayingModel: ObservableObject {
     @Published private(set) var current: NowPlayingInfo?
     @Published private(set) var brand: Brand?
-    /// Colours from the playing album's art, for brand tracks (nil until art arrives, or for colourless art).
+    /// Colours from the playing album's art, for brand tracks (nil until the art arrives).
     @Published private(set) var artworkPalette: Brand.Palette?
     private var paletteArtwork: NSImage?
 

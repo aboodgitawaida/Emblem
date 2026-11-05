@@ -14,7 +14,7 @@ if let i = args.firstIndex(of: "--palette"), i + 1 < args.count {
             let rgb = NSColor(hue: c.h, saturation: c.s, brightness: c.b, alpha: 1).usingColorSpace(.sRGB)!
             print(String(format: "%@: #%02X%02X%02X", (path as NSString).lastPathComponent,
                          Int(rgb.redComponent * 255), Int(rgb.greenComponent * 255), Int(rgb.blueComponent * 255)))
-        } else { print("\((path as NSString).lastPathComponent): no colour, brand palette") }
+        } else { print("\((path as NSString).lastPathComponent): black and white, silver palette") }
     }
     exit(0)
 }
