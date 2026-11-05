@@ -25,6 +25,8 @@ struct Brand: Equatable {
         let knob: Color
         let background: Color
         let ambient: Color       // soft glow from the panel's top corner
+        /// Colours for the living background, taken from the album art (empty: the flat background).
+        var mesh: [Color] = []
     }
 
     static func == (a: Brand, b: Brand) -> Bool { a.id == b.id }
