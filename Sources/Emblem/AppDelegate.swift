@@ -55,7 +55,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         guard let button = statusItem.button, let window = button.window else { return }
         let panel = self.panel ?? PlayerPanel(model: model)
         self.panel = panel
-        panel.onDismiss = { [weak self] in self?.releaseTimer?.invalidate(); self?.setPressed(false) }
+        panel.onDismiss = { [weak self] in
+            self?.releaseTimer?.invalidate()
+            self?.setPressed(false)
+            self?.model.watchPosition(false)
+        }
+        model.watchPosition(true)
         let anchor = window.convertToScreen(button.convert(button.bounds, to: nil))
         panel.show(below: anchor, menuBarBottom: window.frame.minY)
         setPressedAfterRelease()
