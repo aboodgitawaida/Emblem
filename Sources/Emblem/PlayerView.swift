@@ -270,6 +270,7 @@ private struct FoilMark: View {
 private struct NotPlaying: View {
     let theme: Theme
     let model: NowPlayingModel
+    @Environment(\.colorScheme) private var scheme
     static let height: CGFloat = 76
 
     var body: some View {
@@ -284,7 +285,7 @@ private struct NotPlaying: View {
                 .frame(height: 15)
                 .offset(x: 68, y: 30.5)
             ControlButton(symbol: "play.fill", size: 24, theme: theme, label: "play", box: 30) { model.resumeSpotify() }
-                .brightness(0.02)
+                .brightness(scheme == .dark ? 0.02 : 0)   // dark: 137 vs the player's 133; light already matches
                 .offset(x: 234, y: 23)
             ControlButton(symbol: "forward.fill", size: 16.75, theme: theme, label: "next", box: 30) {}
                 .opacity(0.73)
@@ -674,7 +675,7 @@ struct Theme {
     var knob: Color { p?.knob ?? Self.measured(dark: NSColor(white: 0.882, alpha: 1), light: .white) }   // system knob peaks at 225
     var meter: Color { p.map { $0.accent.opacity(0.55) } ?? Self.measured(dark: NSColor(white: 1, alpha: 0.22), light: NSColor(white: 0, alpha: 0.20)) }
     /// The Not Playing card's blank square: 10% white over the dark card (75 on 55).
-    var emptyArtwork: Color { Self.measured(dark: NSColor(white: 1, alpha: 0.10), light: NSColor(white: 0, alpha: 0.06)) }
+    var emptyArtwork: Color { Self.measured(dark: NSColor(white: 1, alpha: 0.10), light: NSColor(white: 0, alpha: 0.085)) }
     var placeholder: Color { branded ? Color(white: 0.1) : Color.primary.opacity(0.08) }
 }
 
