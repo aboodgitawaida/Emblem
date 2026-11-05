@@ -84,8 +84,8 @@ private enum Layout {
     static let mark = CGRect(x: 295 - 20, y: 30.75 - 10, width: 20, height: 20)
     static let buttonY: CGFloat = 63.5, button: CGFloat = 26
     static let buttonX: [CGFloat] = [148, 204, 260]
-    static let slider = CGRect(x: 140, y: 101, width: 154, height: 12)   // track drawn ~1pt above the AX frame centre
-    static let timesY: CGFloat = 113.2, timesHeight: CGFloat = 13
+    static let slider = CGRect(x: 140, y: 102, width: 154, height: 12)   // same frame as the system bar; its track is drawn at 106–110
+    static let timesY: CGFloat = 113.7, timesHeight: CGFloat = 13   // glyphs centred at 119.6, like the system's
 
     /// The system player's controls column is 2pt wider (156) whenever the title or the artist line is
     /// too long and scrolls: the bar and times stretch, and the buttons, centred in it, move 1pt right.
@@ -365,13 +365,15 @@ private struct Scrubber: View {
             VStack(spacing: Layout.timesY - Layout.slider.maxY) {
                 GeometryReader { geo in
                     let w = geo.size.width
-                    // The system thumb is a soft capsule, ~15.5×11.5pt (measured from screenshots).
-                    let knob: CGFloat = 15.5, knobHeight: CGFloat = 11.5
+                    // The system knob is a 16×12pt capsule (measured at 2× while hovering).
+                    let knob: CGFloat = 16, knobHeight: CGFloat = 12
                     let centre = Self.knobCentre(fraction, width: w)
                     let fill = Self.fillEnd(fraction, width: w)
                     ZStack(alignment: .leading) {
                         Capsule().fill(theme.track).frame(height: 4)
                         Capsule().fill(theme.progress).frame(width: fill, height: 4).opacity(fill > 0 ? 1 : 0)
+                            // The system fill is the accent lifted 9/255 in every channel (61,129,255 vs 52,120,246).
+                            .brightness(theme.branded ? 0 : 0.035)
                         Capsule()
                             .fill(theme.knob)
                             .frame(width: knob, height: knobHeight)
@@ -536,7 +538,8 @@ private struct ControlButton: View {
                 .contentTransition(.symbolEffect(.replace))
         }
         .buttonStyle(PressStyle())
-        .brightness(hover ? (theme.branded ? 0.12 : 0.08) : 0)
+        // The system buttons don't change on hover; the artist player's glow is part of the feature.
+        .brightness(hover && theme.branded ? 0.12 : 0)
         .onHover { hover = $0 }
         .accessibilityLabel(label.map { Text($0) } ?? Text(Image(systemName: symbol)))
     }
@@ -623,18 +626,26 @@ private struct LivingBackground: View {
 // MARK: - Theme
 
 struct Theme {
+    /// Colours measured from the system player's pixels in dark mode (over its ~58 grey card, at 2×):
+    /// title 236, artist line 130, the bar's empty track 35 (darker than the card), which the general
+    /// .primary/.secondary colours missed (225, 164, 79). Light mode keeps the system's colours until
+    /// it's measured too.
+    static func measured(dark: NSColor, light: NSColor) -> Color {
+        Color(nsColor: NSColor(name: nil) { $0.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua ? dark : light })
+    }
+
     let brand: Brand?
     let palette: Brand.Palette?
     var branded: Bool { brand != nil }
     private var p: Brand.Palette? { palette }
     var accent: Color { p?.accent ?? .accentColor }
-    var primary: Color { branded ? .white : .primary }
-    var secondary: Color { p?.accent ?? .secondary }
+    var primary: Color { branded ? .white : Self.measured(dark: NSColor(white: 1, alpha: 0.898), light: .labelColor) }
+    var secondary: Color { p?.accent ?? Self.measured(dark: NSColor(white: 1, alpha: 0.36), light: .secondaryLabelColor) }
     var tertiary: Color { p.map { $0.accent.opacity(0.7) } ?? Color.secondary.opacity(0.75) }
-    var control: Color { p?.accent ?? Color.primary.opacity(0.42) }
-    var track: Color { branded ? Color.white.opacity(0.12) : Color.primary.opacity(0.14) }
-    var progress: Color { p?.accent ?? .accentColor }
-    var knob: Color { p?.knob ?? .white }
+    var control: Color { p?.accent ?? Self.measured(dark: NSColor(white: 1, alpha: 0.372), light: NSColor.labelColor.withAlphaComponent(0.42)) }
+    var track: Color { branded ? Color.white.opacity(0.12) : Self.measured(dark: NSColor(white: 0, alpha: 0.35), light: NSColor(white: 0, alpha: 0.14)) }
+    var progress: Color { p?.accent ?? Color(nsColor: .controlAccentColor) }
+    var knob: Color { p?.knob ?? Self.measured(dark: NSColor(white: 0.882, alpha: 1), light: .white) }   // system knob peaks at 225
     var meter: Color { p.map { $0.accent.opacity(0.55) } ?? Color.primary.opacity(0.3) }
     var placeholder: Color { branded ? Color(white: 0.1) : Color.primary.opacity(0.08) }
 }
