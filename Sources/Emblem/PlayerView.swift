@@ -26,7 +26,7 @@ struct PlayerView: View {
         }
         .frame(width: Self.width)
         .background { PanelBackground(theme: theme) }
-        .overlay { ShimmerBand(position: shimmer, palette: model.palette ?? Brand.ovo.palette).allowsHitTesting(false) }
+        .overlay { if let p = model.palette { ShimmerBand(position: shimmer, palette: p).allowsHitTesting(false) } }
         .clipShape(RoundedRectangle(cornerRadius: PanelMetrics.cornerRadius, style: .continuous))
         .environment(\.colorScheme, theme.branded ? .dark : systemScheme)
         // Springs, like Apple's own motion: switching looks settles with a little give.

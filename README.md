@@ -30,18 +30,27 @@ Emblem replaces the system Now Playing item in the menu bar. When Spotify plays 
 - Built with Swift Package Manager and Command Line Tools (Xcode isn't required).
 - `scripts/build-adapter.sh` builds `vendor/mediaremote-adapter` without CMake. It's bundled into `Contents/Resources/adapter`.
 
+## Adding an artist
+
+Each artist is a folder in `Artists/` with an `artist.json` and a `logo.svg`, so adding one needs no code. You can
+also drop folders into `~/Library/Application Support/Emblem/Artists/` without rebuilding. See
+[ADDING_ARTISTS.md](ADDING_ARTISTS.md).
+
 ## Debug
 
 ```bash
 .build/release/Emblem --selftest              # artist matcher cases
+.build/release/Emblem --check-artists         # loads every artist folder and explains any problem
 .build/release/Emblem --render-frames <dir>   # morph strip + player PNGs
+.build/release/Emblem --fit-logo <svg>        # crops a logo's viewBox tight
+tools/compare                                 # Emblem's player vs the system's, element by element
 ```
 
 ## How it works
 
 - **Spotify** (`SpotifyMonitor`): listens to the `com.spotify.client.PlaybackStateChanged` distributed notification. AppleScript is used only for artwork, the initial state and controls.
 - **Everything else** (`MediaRemoteMonitor`): uses the mediaremote-adapter stream via `/usr/bin/perl`. If its self-test fails, only non-Spotify sources are lost.
-- **Brands** (`Brand`): each artist's names, Spotify artist ID, logo and fallback palette. The player's colours come from the playing album's art (`ArtworkPalette`). Drake → OVO owl, Kanye → College Dropout bear, The Weeknd → XO, Travis Scott → Cactus Jack face, Tyler, the Creator → GOLF le FLEUR* flower, J. Cole → Born Sinner crown.
+- **Artists** (`Artists/<id>/`): each artist is a folder with `artist.json` (names, Spotify artist ID, sizes, fallback palette) and `logo.svg`, loaded at launch by `ArtistLibrary`. The player's colours come from the playing album's art (`ArtworkPalette`). Drake → OVO owl, Kanye → College Dropout bear, The Weeknd → XO, Travis Scott → Cactus Jack face, Tyler, the Creator → GOLF le FLEUR* flower, J. Cole → Born Sinner crown.
 - **Artist detection** has two checks:
   - `ArtistMatcher`: the artist must be a whole credit in the artist field, or after feat./ft./featuring/with in the title. "Drake Bell" doesn't count. The lead artist wins when several brands are credited.
   - `SpotifyCredits`: Spotify's notification only names the first artist, so the full artist list comes from the track's public embed page (`open.spotify.com/embed/track/<id>`), matched by artist ID.
@@ -71,7 +80,7 @@ Build the tools first, e.g. `swiftc -O tools/axat.swift -o tools/axat`.
 
 ## Disclaimer
 
-Emblem is an unofficial fan project. It is not affiliated with, endorsed by or sponsored by Apple, Spotify, OVO, or any of the artists or labels it shows. All logos, album artwork and names are the property of their respective owners (album covers in the screenshots are shown only to illustrate the app), and the logo files in `Resources/` and `Sources/Emblem/*PathData.swift` are redrawn from publicly circulated images for personal, non-commercial use. If you are a rights holder and want something removed, open an issue.
+Emblem is an unofficial fan project. It is not affiliated with, endorsed by or sponsored by Apple, Spotify, OVO, or any of the artists or labels it shows. All logos, album artwork and names are the property of their respective owners (album covers in the screenshots are shown only to illustrate the app), and the logo files in `Resources/` and `Artists/` are redrawn from publicly circulated images for personal, non-commercial use. If you are a rights holder and want something removed, open an issue.
 
 ## Author
 

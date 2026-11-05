@@ -1,0 +1,25 @@
+{
+  "name": "The Weeknd",
+  "matchNames": ["The Weeknd", "Weeknd"],
+  "spotifyArtistID": "1Xyo4u8uXC1ZmMpatF05PJ",
+  "logo": {
+    "file": "logo.svg",
+    "fill": "evenOdd",
+    "solid": false
+  },
+  "menuBar": {
+    "height": 17,
+    "outlineWeight": 0.4,
+    "outlinedPaths": "all"
+  },
+  "player": {
+    "markSize": [12, 12.5]
+  },
+  "colors": {
+    "accent": "#E2323C",
+    "highlight": [1, 0.84, 0.84],
+    "knob": [0.98, 0.88, 0.88],
+    "background": [0.03, 0.03, 0.03],
+    "ambient": [0.89, 0.12, 0.16, 0.16]
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "name": "Drake",
+  "matchNames": ["Drake"],
+  "spotifyArtistID": "3TVXtAsR1Inumwj472S9r4",
+  "logo": {
+    "file": "logo.svg",
+    "fill": "nonZero",
+    "solid": false
+  },
+  "menuBar": {
+    "height": 17.2,
+    "outlineWeight": 0.65,
+    "outlinedPaths": [-1],
+    "extraWeights": {
+      "2": 0.15
+    }
+  },
+  "player": {
+    "markSize": [10, 12.5],
+    "markWeight": 0.35
+  },
+  "colors": {
+    "accent": "#BFA66E",
+    "highlight": [1, 0.95, 0.82],
+    "knob": [0.93, 0.86, 0.68],
+    "background": [0.035, 0.035, 0.035],
+    "ambient": [0.7490196, 0.6509804, 0.4313725, 0.1]
+  }
+}

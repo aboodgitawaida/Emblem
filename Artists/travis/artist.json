@@ -1,0 +1,26 @@
+{
+  "name": "Travis Scott",
+  "matchNames": ["Travis Scott"],
+  "spotifyArtistID": "0Y5tJX1MQlPlqiwlOH1tJY",
+  "logo": {
+    "file": "logo.svg",
+    "fill": "evenOdd",
+    "solid": false
+  },
+  "menuBar": {
+    "height": 16,
+    "outlineWeight": 0.5,
+    "outlinedPaths": "all"
+  },
+  "player": {
+    "markSize": [13.5, 12.5],
+    "markWeight": 0.6
+  },
+  "colors": {
+    "accent": "#D7B563",
+    "highlight": [1, 0.95, 0.8],
+    "knob": "#F3DFA8",
+    "background": [0.07, 0.052, 0.03],
+    "ambient": [0.7254902, 0.5568627, 0.2862745, 0.16]
+  }
+}

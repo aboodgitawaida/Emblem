@@ -27,7 +27,7 @@ enum DebugRender {
         NSColor.white.setFill(); NSRect(origin: .zero, size: glint.size).fill()
         for i in 0...steps {
             let g = CGFloat(i) / CGFloat(steps)
-            StatusIconRenderer.image(progress: 1, brand: .ovo, glint: g == 0 || g == 1 ? nil : g)
+            StatusIconRenderer.image(progress: 1, brand: Brand.named("ovo"), glint: g == 0 || g == 1 ? nil : g)
                 .draw(in: NSRect(x: CGFloat(i) * w, y: 0, width: w, height: h))
         }
         glint.unlockFocus()
@@ -45,11 +45,11 @@ enum DebugRender {
         for (name, brand, dark) in looks {
             let model = NowPlayingModel()
             var i = info
-            if brand == .kanye { (i.title, i.artist, i.album) = ("Stronger", "Kanye West", "Graduation") }
-            if brand == .cole { (i.title, i.artist, i.album) = ("No Role Modelz", "J. Cole", "2014 Forest Hills Drive") }
-            if brand == .tyler { (i.title, i.artist, i.album) = ("EARFQUAKE", "Tyler, The Creator", "IGOR") }
-            if brand == .travis { (i.title, i.artist, i.album) = ("goosebumps", "Travis Scott", "Birds in the Trap Sing McKnight") }
-            if brand == .xo { (i.title, i.artist, i.album) = ("Blinding Lights", "The Weeknd", "After Hours") }
+            if brand?.id == "kanye" { (i.title, i.artist, i.album) = ("Stronger", "Kanye West", "Graduation") }
+            if brand?.id == "cole" { (i.title, i.artist, i.album) = ("No Role Modelz", "J. Cole", "2014 Forest Hills Drive") }
+            if brand?.id == "tyler" { (i.title, i.artist, i.album) = ("EARFQUAKE", "Tyler, The Creator", "IGOR") }
+            if brand?.id == "travis" { (i.title, i.artist, i.album) = ("goosebumps", "Travis Scott", "Birds in the Trap Sing McKnight") }
+            if brand?.id == "xo" { (i.title, i.artist, i.album) = ("Blinding Lights", "The Weeknd", "After Hours") }
             model.preview(i, brand: brand)
             let view = PlayerView(model: model, previewShimmer: name.hasSuffix("shimmer") ? 0.35 : nil)
                 .background(dark ? Color(white: 0.17) : Color(white: 0.93))
