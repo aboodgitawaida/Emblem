@@ -116,9 +116,11 @@ private struct FullPlayer: View {
                 // corner, right-aligned with the controls and centred on the title and artist lines.
                 FoilMark(logo: brand.logo, palette: palette, weight: brand.markWeight * 1.4, pointer: pointer)
                     .frame(width: Layout.mark.width, height: Layout.mark.height)
+                    // Pops in where it sits. (A scale transition here grew it from the panel's corner,
+                    // because the offset below moves it away from its layout box.)
+                    .modifier(PopIn(id: brand.id))
                     .offset(x: Layout.mark.minX, y: Layout.mark.minY)
-                    // Pops in with the look's spring when an artist's song starts.
-                    .transition(.scale(scale: 0.5).combined(with: .opacity))
+                    .transition(.opacity)
             } else {
                 LevelMeter(playing: info.isPlaying, color: theme.meter)
                     .frame(width: Layout.meter.width, height: 12.5)
@@ -151,6 +153,25 @@ private struct FullPlayer: View {
                 pointer = nil
             }
         }
+    }
+}
+
+/// Springs the view in from 60% around its own centre when it appears, and again when `id` changes
+/// (switching straight from one artist to another).
+private struct PopIn: ViewModifier {
+    let id: String
+    @State private var shown = false
+
+    func body(content: Content) -> some View {
+        content
+            .scaleEffect(shown ? 1 : 0.6)
+            .opacity(shown ? 1 : 0)
+            .onAppear { pop() }
+            .onChange(of: id) { _, _ in shown = false; pop() }
+    }
+
+    private func pop() {
+        withAnimation(.spring(response: 0.42, dampingFraction: 0.62).delay(0.05)) { shown = true }
     }
 }
 
