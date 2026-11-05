@@ -34,6 +34,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         model.$brand.removeDuplicates().sink { [weak self] brand in
             self?.animator.show(brand)
         }.store(in: &cancellables)
+        // A new track by the same artist: sweep the light across the logo again.
+        model.$current.map { $0?.trackID }.removeDuplicates().dropFirst().sink { [weak self] _ in
+            guard let self, self.model.brand != nil else { return }
+            self.animator.glint()
+        }.store(in: &cancellables)
 
         model.start()
         registerLoginItemOnFirstLaunch()
