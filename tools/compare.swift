@@ -103,12 +103,16 @@ func collect(in root: AXUIElement, card: CGRect) -> [Element] {
             texts.append((e, rel))
         }
     }
-    // The system player reports title and artist line as one element; split by position instead.
-    let names = ["title", "artist line", "elapsed", "remaining"]
-    for (i, (e, rel)) in texts.sorted(by: { ($0.1.minY, $0.1.minX) < ($1.1.minY, $1.1.minX) }).enumerated() {
+    // Named by where they sit. The system player reports title and artist line as one element
+    // ("Title, Artist – Album"), so it has a title but no separate artist line.
+    var topCount = 0
+    for (e, rel) in texts.sorted(by: { ($0.1.minY, $0.1.minX) < ($1.1.minY, $1.1.minX) }) {
+        let name: String
+        if rel.minY < 60 { name = topCount == 0 ? "title" : "artist line"; topCount += 1 }
+        else { name = rel.minX < 200 ? "elapsed" : "remaining" }
         let style = textStyle(e)
-        out.append(Element(key: "text " + (i < names.count ? names[i] : "\(i)"), frame: rel,
-                           text: attr(e, kAXValueAttribute) as? String, font: style?.font, color: style?.color ?? []))
+        out.append(Element(key: "text " + name, frame: rel, text: attr(e, kAXValueAttribute) as? String,
+                           font: style?.font, color: style?.color ?? []))
     }
     return out
 }
@@ -219,6 +223,10 @@ func report(_ s: Player, _ e: Player) -> Int {
     for k in keys {
         let a = s.elements.first { $0.key == k }, b = e.elements.first { $0.key == k }
         guard let a, let b else {
+            // The system reports "Title, Artist – Album" as one element, so it has no separate artist line.
+            if k == "text artist line", a == nil, (s.elements.first { $0.key == "text title" }?.text ?? "").contains(" – ") {
+                print("✓ \(k) (inside the system's title element)"); continue
+            }
             print("• \(k): only in \(a == nil ? "Emblem" : "the system player")"); problems += 1; continue
         }
         var notes: [String] = []
@@ -228,9 +236,8 @@ func report(_ s: Player, _ e: Player) -> Int {
             notes.append("frame  system \(fmt(a.frame))  emblem \(fmt(b.frame))")
         }
         if let fa = a.font, let fb = b.font, fa != fb, !combinedText { notes.append("font  system \(fa)  emblem \(fb)") }
-        if !a.color.isEmpty, !b.color.isEmpty, zip(a.color, b.color).contains(where: { abs($0 - $1) > 0.01 }), !combinedText {
-            notes.append("colour  system \(fmtColor(a.color))  emblem \(fmtColor(b.color))")
-        }
+        // Colours aren't compared here: the system reports its text colour before Control Center's
+        // vibrancy, so the drawn colour can differ. The pixel check below compares what's on screen.
         if k.hasPrefix("button"), let ta = a.text, let tb = b.text, ta != tb { notes.append("label  system \"\(ta)\"  emblem \"\(tb)\"") }
         if notes.isEmpty { print("✓ \(k)") } else { problems += 1; print("• \(k)"); notes.forEach { print("    \($0)") } }
     }
@@ -276,6 +283,39 @@ func pixelDiff(_ a: String, _ b: String, out: String) -> Double? {
     return Double(differing) / Double(A.w * A.h)
 }
 
+/// Brightness of each part as drawn, in both players and every state: the brightest 3% of a text or
+/// symbol's pixels, or the median of a flat area. Off by more than 4 (of 255) counts as a difference.
+let regions: [(name: String, rect: CGRect, flat: Bool)] = [
+    ("title", CGRect(x: 140, y: 15, width: 130, height: 16), false),
+    ("artist line", CGRect(x: 140, y: 33, width: 130, height: 14), false),
+    ("elapsed", CGRect(x: 140, y: 114, width: 29, height: 13), false),
+    ("previous", CGRect(x: 149, y: 64, width: 26, height: 26), false),
+    ("play/pause", CGRect(x: 205, y: 64, width: 26, height: 26), false),
+    ("next", CGRect(x: 261, y: 64, width: 26, height: 26), false),
+]
+func level(_ img: (w: Int, h: Int, px: [UInt8]), _ r: CGRect, flat: Bool) -> Int {
+    var v: [Int] = []
+    for y in Int(r.minY * 2)..<Int(r.maxY * 2) { for x in Int(r.minX * 2)..<Int(r.maxX * 2) where x < img.w && y < img.h {
+        let i = (y * img.w + x) * 4
+        v.append((Int(img.px[i]) + Int(img.px[i + 1]) + Int(img.px[i + 2])) / 3)
+    } }
+    v.sort()
+    return v.isEmpty ? 0 : v[Int(Double(v.count - 1) * (flat ? 0.5 : 0.97))]
+}
+func drawnReport(_ outDir: String) -> Int {
+    var problems = 0
+    for s in states {
+        guard let a = rgba("\(outDir)/system-\(s.name).png"), let b = rgba("\(outDir)/emblem-\(s.name).png") else { continue }
+        for r in regions {
+            let la = level(a, r.rect, flat: r.flat), lb = level(b, r.rect, flat: r.flat)
+            let ok = abs(la - lb) <= 4
+            if !ok { problems += 1 }
+            print("\(ok ? "✓" : "•") \(s.name) \(r.name): system \(la)  emblem \(lb)")
+        }
+    }
+    return problems
+}
+
 // MARK: Main
 
 guard AXIsProcessTrusted() else { print("Turn on Accessibility for this terminal first."); exit(2) }
@@ -287,6 +327,8 @@ moveMouse(away)
 guard let system = readSystem(outDir: outDir, away: away), let emblem = readEmblem(outDir: outDir, away: away) else { exit(1) }
 print("Elements (relative to the card's top-left, points):")
 let problems = report(system, emblem)
+print("\nAs drawn (brightness 0–255; times and progress move between shots, so they aren't compared here):")
+let drawn = drawnReport(outDir)
 print("\nScreenshots (red = pixels that differ):")
 for s in states {
     let a = "\(outDir)/system-\(s.name).png", b = "\(outDir)/emblem-\(s.name).png"
@@ -294,4 +336,4 @@ for s in states {
         print(String(format: "  %-11@ %.1f%% of pixels differ  → diff-%@.png", s.name as NSString, share * 100, s.name))
     }
 }
-print(problems == 0 ? "\nNo element differences." : "\n\(problems) element difference(s).")
+print(problems + drawn == 0 ? "\nNo differences." : "\n\(problems) layout and \(drawn) drawn difference(s).")

@@ -31,11 +31,14 @@ Pasted screenshots are usually scaled. Calibrate pixel measurements against a kn
 
 ## Measured values (macOS 27, 33pt notch menu bar)
 
+- **Colours (dark mode, as drawn over the ~58 grey card):** title white 89.8% (236), artist line 36% (130), times 41% (141), buttons 37.2% (133), empty bar black 35% (35, darker than the card), fill = accent lifted 9/255 (61,129,255). The general `.primary`/`.secondary` colours drew 225, 164 and 79, so `Theme.measured` sets them. Light mode still uses the system colours and hasn't been measured.
+- **Times:** glyphs centred at y 119.6 (`Layout.timesY` 113.7).
+
 - **Panel:** 308 × 140pt, 1pt below the menu bar, left edge at the item's slot. The `Layout` enum in `PlayerView.swift` holds every coordinate.
 - **Text:** title 13pt semibold, artist line 11pt regular, times 10pt regular. Times use `00:00`, or `00:00:00` once past an hour, and a real minus sign (U+2212).
-- **Buttons:** 26pt hit areas, 56pt apart. ⏮ ⏭ symbols at 16pt, ⏯ at 23.5pt. VoiceOver names: "previous", "pause"/"play", "next".
+- **Buttons:** 26pt hit areas, 56pt apart. They don't change on hover (the artist player's hover glow is part of the feature). ⏮ ⏭ symbols at 16pt, ⏯ at 23.5pt. VoiceOver names: "previous", "pause"/"play", "next".
 - **Controls column:** 154pt wide (buttons at 148, 204, 260), but 156pt whenever the title or the artist line scrolls: the bar and remaining time stretch 2pt and the buttons move 1pt right (`Layout.columnExtra`). Checked on five tracks.
-- **Progress bar:** 4pt track. The knob is a ~15.5 × 11.5pt capsule and only shows on hover or while dragging. It fades in and out in place (it doesn't grow). The system bar is a custom control (an `AXSlider` with no value-indicator child), so there's no stock slider to reuse.
+- **Progress bar:** 4pt track, drawn at y 106–110 (same 102pt frame as the system bar). The knob is a 16 × 12pt capsule, 225 grey in dark mode, and only shows on hover or while dragging. It fades in and out in place (it doesn't grow). The system bar is a custom control (an `AXSlider` with no value-indicator child), so there's no stock slider to reuse.
 - **Progress fill:** progress maps onto the knob's path, not the whole bar: the fill ends at the knob's centre, 8pt + fraction × (width − 16pt). At 0 there's no fill, and over the first ~2% it grows at fraction × width × 3.64 until it meets that line (`Scrubber.fillEnd`). Measured at 2× on a 154pt bar at 14 song positions (Spotify `set player position`, then the slider's `AXValue` and a screenshot); the formula is within 0.5pt of every one. A plain fraction × width was up to 8pt off.
 - **Scrolling text:** 3s rest, 30pt/s, 21pt gap. It restarts on every open, and the left edge only fades while moving.
 - **Audio meter:** 5 bars, 1.5pt wide, 1.5pt apart, up to ~11pt tall, dim. Dots when paused.
