@@ -1,6 +1,25 @@
 # Emblem
 
-Personal menu bar replacement for macOS's Now Playing item. The icon morphs into an artist's logo when Spotify plays their track, as lead or featured artist: the OVO owl for Drake, the College Dropout bear for Kanye, the XO for The Weeknd, the Cactus Jack face for Travis Scott, the GOLF le FLEUR* flower for Tyler, the Creator, the Born Sinner crown for J. Cole.
+**A macOS menu bar Now Playing item that morphs into the artist's logo.**
+
+Emblem replaces the system Now Playing item in the menu bar. When Spotify plays a track by one of its artists, as lead or featured artist, the icon traces itself into their logo: the OVO owl for Drake, the College Dropout bear for Kanye, the XO for The Weeknd, the Cactus Jack face for Travis Scott, the GOLF le FLEUR* flower for Tyler, the Creator, and the Born Sinner crown for J. Cole. For everything else it behaves like Apple's own player.
+
+![The menu bar icon morphing from the play button into the OVO owl](docs/morph.png)
+
+| Artist track | Artist track | Any other track |
+| --- | --- | --- |
+| ![The player during a Drake track, with the OVO owl in the corner](docs/player-ovo.png) | ![The player during a Travis Scott track, with the Cactus Jack face in the corner](docs/player-travis.png) | ![The normal player, matching Apple's Now Playing module](docs/player-normal.png) |
+
+<sub>Rendered by the app itself (`Emblem --render-frames`), with placeholder cover art.</sub>
+
+**Built with:** Swift, SwiftUI and AppKit, Swift Package Manager (no Xcode), AppleScript and distributed notifications for Spotify, a vendored MediaRemote adapter for other sources.
+
+## Highlights
+
+- **Logos drawn as paths and animated stroke by stroke.** Each logo was traced to vector path data, so the morph can shrink the play circle while revealing the logo's lines along their outlines, at any menu bar scale.
+- **Careful artist matching.** "Drake Bell" isn't Drake. Artists must be a whole credit or appear after feat./ft./with, the lead artist wins, and because Spotify's notification names only the first artist, full credits come from the track's public embed page and are matched by Spotify artist ID.
+- **Colours from the album, not the artist.** The player picks the cover's dominant colour (a hue histogram weighted by saturation, brightness and closeness to the centre) and builds a flowing mesh-gradient background from it.
+- **A pixel-matched copy of Apple's player.** Layout, fonts, timings and the marquee were measured from the live system module through the Accessibility API, with small tools in `tools/`.
 
 ## Build & install
 
@@ -36,7 +55,7 @@ Personal menu bar replacement for macOS's Now Playing item. The icon morphs into
 
 ## Layout reference
 
-The player copies the system Now Playing module's measured layout (see `Layout` in `PlayerView.swift`). To re-measure, turn on Accessibility for Claude, then:
+The player copies the system Now Playing module's measured layout (see `Layout` in `PlayerView.swift`). To re-measure, give your terminal Accessibility access (System Settings → Privacy & Security), then:
 - **Find menu bar items:** `tools/axat scan`
 - **Open Apple's player:** `tools/axat press <x> <y>`
 - **Dump its layout:** `tools/axat ccdump`
@@ -53,3 +72,18 @@ Build the tools first, e.g. `swiftc -O tools/axat.swift -o tools/axat`.
 ## Disclaimer
 
 Emblem is an unofficial fan project. It is not affiliated with, endorsed by or sponsored by Apple, Spotify, OVO, or any of the artists or labels it shows. All logos, artwork and names are the property of their respective owners, and the logo files in `Resources/` and `Sources/Emblem/*PathData.swift` are redrawn from publicly circulated images for personal, non-commercial use. If you are a rights holder and want something removed, open an issue.
+
+## Author
+
+**Abood Awaida** · [GitHub](https://github.com/aboodgitawaida) · [LinkedIn](https://www.linkedin.com/in/abood-awaida/)
+
+## More of my work
+
+- **[Courseflix](https://github.com/aboodgitawaida/Courseflix)**: Netflix-style course discovery for UTM students, with reviews, recommendations and 2,600+ courses. [courseflix.ca](https://www.courseflix.ca)
+- **[Vitals](https://github.com/aboodgitawaida/Vitals)**: heart rate from an ordinary webcam, measured entirely in the browser. [vitals-track.vercel.app](https://vitals-track.vercel.app)
+- **[LotPulse](https://github.com/aboodgitawaida/LotPulse)**: live, student-reported parking enforcement alerts for UTM campus lots. [lotpulse-utm.vercel.app](https://lotpulse-utm.vercel.app)
+- **[Basil](https://github.com/aboodgitawaida/Basil)**: a cosy pixel-art kitchen game that suggests recipes from what's in your fridge. [basil-cat.vercel.app](https://basil-cat.vercel.app)
+
+## License
+
+The code is [MIT](LICENSE). The artist logos and names are not covered by that licence; see the disclaimer above.
