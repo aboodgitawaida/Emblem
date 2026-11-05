@@ -60,6 +60,13 @@ enum StatusIconRenderer {
         let trace = smooth((p - 0.15) / 0.85)
         guard trace > 0 else { return }
         ctx.saveGState()
+        // The logo springs into place as it traces in: it grows from 90% with a small overshoot
+        // (~1%, so it still fits the 18pt icon) and settles, like Apple's spring animations.
+        let x = min(max((p - 0.15) / 0.85, 0), 1)
+        let scale = x >= 1 ? 1 : 0.9 + 0.1 * spring(x)   // exactly 100% at rest
+        ctx.translateBy(x: canvas.width / 2, y: canvas.height / 2)
+        ctx.scaleBy(x: scale, y: scale)
+        ctx.translateBy(x: -canvas.width / 2, y: -canvas.height / 2)
         if trace < 1, brand.logo.solid {
             // A pen traces the outline, then the shape fills in as the pen line fades away.
             let fill = smooth((trace - 0.45) / 0.55)
@@ -127,6 +134,12 @@ enum StatusIconRenderer {
         ctx.drawLinearGradient(gradient, start: .zero, end: CGPoint(x: canvas.width, y: canvas.height),
                                options: [.drawsBeforeStartLocation, .drawsAfterEndLocation])
         ctx.restoreGState()
+    }
+
+    /// An underdamped spring over 0…1: rises past 1 by ~12% around 0.35, then settles to 1.
+    private static func spring(_ x: CGFloat) -> CGFloat {
+        let damping: CGFloat = 6, freq: CGFloat = 9
+        return 1 - exp(-damping * x) * (cos(freq * x) + damping / freq * sin(freq * x))
     }
 
     /// Clamped smoothstep.
