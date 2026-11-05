@@ -122,8 +122,12 @@ final class MediaRemoteMonitor {
             }
         } else { artworkKey = nil; artworkImage = nil }
 
+        // Prefer the parent application when the adapter provides one. This identifies Apple Music
+        // as com.apple.Music instead of the MediaRemote helper and lets the normal player path use
+        // its standard previous/play/next controls.
+        let sourceBundleID = parent ?? bundle
         let new = NowPlayingInfo(
-            bundleID: parent ?? bundle, title: title,
+            bundleID: sourceBundleID, title: title,
             artist: payload["artist"] as? String ?? "", album: payload["album"] as? String ?? "",
             hasAlbum: payload["album"] is String,
             isPlaying: payload["playing"] as? Bool ?? false,

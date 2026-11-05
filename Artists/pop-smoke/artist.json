@@ -1,0 +1,26 @@
+{
+  "name": "Pop Smoke",
+  "matchNames": ["Pop Smoke"],
+  "spotifyArtistID": "0eDvMgVFoNV3TpwtrVCoTj",
+  "logo": {
+    "file": "logo.svg",
+    "fill": "evenOdd",
+    "solid": false
+  },
+  "menuBar": {
+    "height": 16,
+    "outlineWeight": 0.45,
+    "outlinedPaths": "all"
+  },
+  "player": {
+    "markSize": [13.5, 12.5],
+    "markWeight": 0.35
+  },
+  "colors": {
+    "accent": "#8DB4D5",
+    "highlight": [0.9, 0.96, 1],
+    "knob": "#D2E5F3",
+    "background": [0.035, 0.05, 0.075],
+    "ambient": [0.35, 0.62, 0.86, 0.16]
+  }
+}
