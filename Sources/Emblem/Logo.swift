@@ -30,13 +30,6 @@ struct Logo {
         let t = CGAffineTransform(translationX: rect.midX - w / 2, y: rect.midY - h / 2).scaledBy(x: scale, y: scale)
         return rawPaths.map { $0.applying(t) }
     }
-
-    static let owl = Logo(paths: OwlPathData.paths, bounds: OwlPathData.bounds, evenOdd: false)
-    static let bear = Logo(paths: BearPathData.paths, bounds: BearPathData.bounds, evenOdd: true, solid: true)
-    static let xo = Logo(paths: XOPathData.paths, bounds: XOPathData.bounds, evenOdd: true)
-    static let golfFlower = Logo(paths: GolfFlowerPathData.paths, bounds: GolfFlowerPathData.bounds, evenOdd: true, solid: true)
-    static let crown = Logo(paths: CrownPathData.paths, bounds: CrownPathData.bounds, evenOdd: true)
-    static let cactusJack = Logo(paths: CactusJackPathData.paths, bounds: CactusJackPathData.bounds, evenOdd: true)
 }
 
 /// A logo filled with one color, fitted to its frame.

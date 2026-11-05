@@ -1,0 +1,25 @@
+{
+  "name": "Tyler, The Creator",
+  "matchNames": ["Tyler, The Creator"],
+  "spotifyArtistID": "4V8LLVI7PbaPR0K2TGSxFF",
+  "logo": {
+    "file": "logo.svg",
+    "fill": "evenOdd",
+    "solid": true
+  },
+  "menuBar": {
+    "height": 16,
+    "outlineWeight": 0,
+    "outlinedPaths": []
+  },
+  "player": {
+    "markSize": [13.5, 12.5]
+  },
+  "colors": {
+    "accent": "#ECB4CC",
+    "highlight": [1, 0.9, 0.95],
+    "knob": "#F8DCE6",
+    "background": [0.06, 0.04, 0.05],
+    "ambient": [0.9254902, 0.7058824, 0.8, 0.14]
+  }
+}

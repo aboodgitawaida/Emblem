@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    # The player uses macOS 26 APIs (glass), so it needs the macOS 26 SDK.
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build
+        run: swift build -c release
+
+      - name: Artist matcher tests
+        run: .build/release/Emblem --selftest
+
+      - name: Artist folders load
+        run: .build/release/Emblem --check-artists
+
+      - name: Render every artist
+        run: |
+          .build/release/Emblem --render-frames renders
+          for id in $(ls Artists); do
+            test -s renders/player_$id.png || { echo "no player render for $id"; exit 1; }
+          done
+
+      - name: Measuring tools compile
+        run: |
+          for t in compare axat axdump; do swiftc -O tools/$t.swift -o /tmp/$t; done
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: renders
+          path: renders/

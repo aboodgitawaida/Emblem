@@ -117,18 +117,18 @@ enum ArtistMatcher {
             print("FAIL: artist=\(a) title=\(t) expected \(want ?? "none")"); ok = false
         }
         // Full credits from Spotify, when the notification only names the first artist.
-        let drake = SpotifyCredits.Artist(name: "Drake", uri: Brand.ovo.spotifyURI)
-        let kanye = SpotifyCredits.Artist(name: "Kanye West", uri: Brand.kanye.spotifyURI)
+        let drake = SpotifyCredits.Artist(name: "Drake", uri: (Brand.named("ovo")?.spotifyURI ?? ""))
+        let kanye = SpotifyCredits.Artist(name: "Kanye West", uri: (Brand.named("kanye")?.spotifyURI ?? ""))
         let other = SpotifyCredits.Artist(name: "¥$", uri: "spotify:artist:other")
         let creditCases: [(String, [SpotifyCredits.Artist], String?)] = [
             ("Lil Wayne", [other, drake], "ovo"),
             ("¥$", [other, kanye], "kanye"),
             ("Someone", [other, kanye, drake], "kanye"),
             ("Kanye West", [kanye, drake], "kanye"),
-            ("Kali Uchis", [other, SpotifyCredits.Artist(name: "Tyler, The Creator", uri: Brand.tyler.spotifyURI)], "tyler"),
-            ("Dreamville", [other, SpotifyCredits.Artist(name: "J. Cole", uri: Brand.cole.spotifyURI)], "cole"),
-            ("JACKBOYS", [other, SpotifyCredits.Artist(name: "Travis Scott", uri: Brand.travis.spotifyURI)], "travis"),
-            ("Ariana Grande", [other, SpotifyCredits.Artist(name: "The Weeknd", uri: Brand.xo.spotifyURI)], "xo"),
+            ("Kali Uchis", [other, SpotifyCredits.Artist(name: "Tyler, The Creator", uri: (Brand.named("tyler")?.spotifyURI ?? ""))], "tyler"),
+            ("Dreamville", [other, SpotifyCredits.Artist(name: "J. Cole", uri: (Brand.named("cole")?.spotifyURI ?? ""))], "cole"),
+            ("JACKBOYS", [other, SpotifyCredits.Artist(name: "Travis Scott", uri: (Brand.named("travis")?.spotifyURI ?? ""))], "travis"),
+            ("Ariana Grande", [other, SpotifyCredits.Artist(name: "The Weeknd", uri: (Brand.named("xo")?.spotifyURI ?? ""))], "xo"),
             ("Someone", [other], nil),
         ]
         for (a, credits, want) in creditCases where brand(artist: a, title: "Song", credits: credits)?.id != want {

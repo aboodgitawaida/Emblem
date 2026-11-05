@@ -1,0 +1,26 @@
+{
+  "name": "J. Cole",
+  "matchNames": ["J. Cole", "J Cole"],
+  "spotifyArtistID": "6l3HvQ5sa6mXTsMTB19rO5",
+  "logo": {
+    "file": "logo.svg",
+    "fill": "evenOdd",
+    "solid": false
+  },
+  "menuBar": {
+    "height": 17,
+    "outlineWeight": 0.3,
+    "outlinedPaths": "all"
+  },
+  "player": {
+    "markSize": [12, 12.5],
+    "markWeight": 0.4
+  },
+  "colors": {
+    "accent": "#DBC74C",
+    "highlight": [1, 0.97, 0.8],
+    "knob": [0.97, 0.93, 0.72],
+    "background": [0.04, 0.04, 0.04],
+    "ambient": [0.8588235, 0.7803922, 0.2980392, 0.12]
+  }
+}

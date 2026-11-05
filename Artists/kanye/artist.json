@@ -1,0 +1,25 @@
+{
+  "name": "Kanye West",
+  "matchNames": ["Kanye West", "Kanye", "Ye"],
+  "spotifyArtistID": "5K4W6rqBFWDnAN6FQUkS6x",
+  "logo": {
+    "file": "logo.svg",
+    "fill": "evenOdd",
+    "solid": true
+  },
+  "menuBar": {
+    "height": 17,
+    "outlineWeight": 0,
+    "outlinedPaths": []
+  },
+  "player": {
+    "markSize": [12.5, 12]
+  },
+  "colors": {
+    "accent": "#D9A441",
+    "highlight": [1, 0.92, 0.74],
+    "knob": [0.96, 0.86, 0.62],
+    "background": [0.075, 0.025, 0.03],
+    "ambient": [0.62, 0.12, 0.18, 0.28]
+  }
+}
