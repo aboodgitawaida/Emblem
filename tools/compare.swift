@@ -292,22 +292,26 @@ let regions: [(name: String, rect: CGRect, flat: Bool)] = [
     ("previous", CGRect(x: 149, y: 64, width: 26, height: 26), false),
     ("play/pause", CGRect(x: 205, y: 64, width: 26, height: 26), false),
     ("next", CGRect(x: 261, y: 64, width: 26, height: 26), false),
+    ("meter", CGRect(x: 281, y: 24, width: 15, height: 14), false),
+    ("empty bar", CGRect(x: 291, y: 107, width: 3, height: 2), true),
 ]
-func level(_ img: (w: Int, h: Int, px: [UInt8]), _ r: CGRect, flat: Bool) -> Int {
+/// Text and symbols are the brightest pixels on a dark card and the darkest on a light one.
+func level(_ img: (w: Int, h: Int, px: [UInt8]), _ r: CGRect, flat: Bool, lightCard: Bool = false) -> Int {
     var v: [Int] = []
     for y in Int(r.minY * 2)..<Int(r.maxY * 2) { for x in Int(r.minX * 2)..<Int(r.maxX * 2) where x < img.w && y < img.h {
         let i = (y * img.w + x) * 4
         v.append((Int(img.px[i]) + Int(img.px[i + 1]) + Int(img.px[i + 2])) / 3)
     } }
     v.sort()
-    return v.isEmpty ? 0 : v[Int(Double(v.count - 1) * (flat ? 0.5 : 0.97))]
+    return v.isEmpty ? 0 : v[Int(Double(v.count - 1) * (flat ? 0.5 : (lightCard ? 0.03 : 0.97)))]
 }
 func drawnReport(_ outDir: String) -> Int {
     var problems = 0
     for s in states {
         guard let a = rgba("\(outDir)/system-\(s.name).png"), let b = rgba("\(outDir)/emblem-\(s.name).png") else { continue }
+        let light = level(a, CGRect(x: 135, y: 52, width: 10, height: 8), flat: true) > 128
         for r in regions {
-            let la = level(a, r.rect, flat: r.flat), lb = level(b, r.rect, flat: r.flat)
+            let la = level(a, r.rect, flat: r.flat, lightCard: light), lb = level(b, r.rect, flat: r.flat, lightCard: light)
             let ok = abs(la - lb) <= 4
             if !ok { problems += 1 }
             print("\(ok ? "✓" : "•") \(s.name) \(r.name): system \(la)  emblem \(lb)")
