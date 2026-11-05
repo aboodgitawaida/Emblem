@@ -86,6 +86,16 @@ private enum Layout {
     static let buttonX: [CGFloat] = [148, 204, 260]
     static let slider = CGRect(x: 140, y: 101, width: 154, height: 12)   // track drawn ~1pt above the AX frame centre
     static let timesY: CGFloat = 113.2, timesHeight: CGFloat = 13
+
+    /// The system player's controls column is 2pt wider (156) whenever the title or the artist line is
+    /// too long and scrolls: the bar and times stretch, and the buttons, centred in it, move 1pt right.
+    /// Checked on five tracks (two that fit, three that scroll).
+    static func columnExtra(for info: NowPlayingInfo) -> CGFloat {
+        func width(_ s: String, _ font: NSFont) -> CGFloat { (s as NSString).size(withAttributes: [.font: font]).width }
+        let scrolls = width(info.title, .systemFont(ofSize: 13, weight: .semibold)) > text.width
+            || width(TitleBlock.subtitle(for: info), .systemFont(ofSize: 11)) > text.width
+        return scrolls ? 2 : 0
+    }
 }
 
 private struct FullPlayer: View {
@@ -97,6 +107,7 @@ private struct FullPlayer: View {
     @State private var pointer: CGPoint?
 
     var body: some View {
+        let extra = Layout.columnExtra(for: info)
         ZStack(alignment: .topLeading) {
             Color.clear
             Artwork(info: info, theme: theme, size: Layout.art.width, glow: glow)
@@ -129,18 +140,19 @@ private struct FullPlayer: View {
             }
 
             ControlButton(symbol: info.isWebVideo ? "15.arrow.trianglehead.counterclockwise" : "backward.fill", size: info.isWebVideo ? 19 : 16,
-                          theme: theme) { model.send(info.isWebVideo ? .skipBack15 : .previous) }
-                .offset(x: Layout.buttonX[0], y: Layout.buttonY)
-            ControlButton(symbol: info.isPlaying ? "pause.fill" : "play.fill", size: 23.5, theme: theme) {
+                          theme: theme, label: info.isWebVideo ? nil : "previous") { model.send(info.isWebVideo ? .skipBack15 : .previous) }
+                .offset(x: extra / 2 + Layout.buttonX[0], y: Layout.buttonY)
+            ControlButton(symbol: info.isPlaying ? "pause.fill" : "play.fill", size: 23.5, theme: theme,
+                          label: info.isPlaying ? "pause" : "play") {
                 model.send(.togglePlayPause)
             }
-            .offset(x: Layout.buttonX[1], y: Layout.buttonY)
+            .offset(x: extra / 2 + Layout.buttonX[1], y: Layout.buttonY)
             ControlButton(symbol: info.isWebVideo ? "15.arrow.trianglehead.clockwise" : "forward.fill", size: info.isWebVideo ? 19 : 16,
-                          theme: theme) { model.send(info.isWebVideo ? .skipForward15 : .next) }
-                .offset(x: Layout.buttonX[2], y: Layout.buttonY)
+                          theme: theme, label: info.isWebVideo ? nil : "next") { model.send(info.isWebVideo ? .skipForward15 : .next) }
+                .offset(x: extra / 2 + Layout.buttonX[2], y: Layout.buttonY)
 
             Scrubber(info: info, theme: theme) { model.seek(to: $0) }
-                .frame(width: Layout.slider.width)
+                .frame(width: Layout.slider.width + extra)
                 .offset(x: Layout.slider.minX, y: Layout.slider.minY)
         }
         .frame(width: Layout.size.width, height: Layout.size.height)
@@ -268,7 +280,9 @@ private struct TitleBlock: View {
     let info: NowPlayingInfo
     let theme: Theme
 
-    var subtitle: String {
+    var subtitle: String { Self.subtitle(for: info) }
+
+    static func subtitle(for info: NowPlayingInfo) -> String {
         let artist = info.artist.isEmpty ? info.appName : info.artist
         // Like the system player: "Artist – Album", and "Artist – " when the source sends an empty album.
         return info.album.isEmpty && !info.hasAlbum ? artist : "\(artist) – \(info.album)"
@@ -376,6 +390,11 @@ private struct Scrubber: View {
                         })
                     .onHover { hover = $0 }
                     .animation(.easeInOut(duration: 0.2), value: showKnob)
+                    // For VoiceOver it's a slider in seconds, like the system bar.
+                    .accessibilityRepresentation {
+                        Slider(value: Binding(get: { elapsed }, set: { if canSeek { onSeek($0) } }),
+                               in: 0...max(info.duration, 1))
+                    }
                 }
                 .frame(height: Layout.slider.height)
                 HStack {
@@ -502,6 +521,8 @@ private struct ControlButton: View {
     let symbol: String
     let size: CGFloat
     let theme: Theme
+    /// The system player's VoiceOver name ("previous", "pause", "play", "next"); nil keeps the symbol's.
+    var label: String? = nil
     let action: () -> Void
     @State private var hover = false
 
@@ -517,6 +538,7 @@ private struct ControlButton: View {
         .buttonStyle(PressStyle())
         .brightness(hover ? (theme.branded ? 0.12 : 0.08) : 0)
         .onHover { hover = $0 }
+        .accessibilityLabel(label.map { Text($0) } ?? Text(Image(systemName: symbol)))
     }
 }
 

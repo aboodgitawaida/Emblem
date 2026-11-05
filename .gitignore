@@ -5,3 +5,4 @@ tools/axdump
 tools/axat
 tools/axcheck
 reference/
+tools/compare
