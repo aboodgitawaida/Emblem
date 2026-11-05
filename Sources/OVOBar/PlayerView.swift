@@ -78,6 +78,8 @@ private enum Layout {
     static let column: CGFloat = 140, columnWidth: CGFloat = 154
     static let text = CGRect(x: 140, y: 15, width: 136, height: 31.5)
     static let meter = CGRect(x: 281.5, y: 26, width: 13.5, height: 8.5)
+    /// Brand tracks only: the artist's logo, ending at the meter's right edge, centred on the text block.
+    static let mark = CGRect(x: 295 - 20, y: 30.75 - 10, width: 20, height: 20)
     static let buttonY: CGFloat = 63.5, button: CGFloat = 26
     static let buttonX: [CGFloat] = [148, 204, 260]
     static let slider = CGRect(x: 140, y: 101, width: 154, height: 12)   // track drawn ~1pt above the AX frame centre
@@ -102,20 +104,24 @@ private struct FullPlayer: View {
                 .offset(x: Layout.art.minX, y: Layout.art.minY)
 
             TitleBlock(info: info, theme: theme)
-                .frame(width: Layout.text.width, height: Layout.text.height, alignment: .leading)
+                // Brand tracks: stop the text 4pt short of the bigger logo.
+                .frame(width: theme.branded ? Layout.mark.minX - 4 - Layout.text.minX : Layout.text.width,
+                       height: Layout.text.height, alignment: .leading)
                 .offset(x: Layout.text.minX, y: Layout.text.minY)
 
-            Group {
-                if let brand = theme.brand, let palette = theme.palette {
-                    FoilMark(logo: brand.logo, palette: palette, weight: brand.markWeight, pointer: pointer)
-                        .frame(width: brand.markSize.width, height: brand.markSize.height)
-                } else {
-                    LevelMeter(playing: info.isPlaying, color: theme.meter)
-                }
+            if let brand = theme.brand, let palette = theme.palette {
+                // The artist's logo takes a bigger spot than Apple's audio bars: a 20pt box in the top-right
+                // corner, right-aligned with the controls and centred on the title and artist lines.
+                FoilMark(logo: brand.logo, palette: palette, weight: brand.markWeight * 1.4, pointer: pointer)
+                    .frame(width: Layout.mark.width, height: Layout.mark.height)
+                    .offset(x: Layout.mark.minX, y: Layout.mark.minY)
+                    .transition(.opacity)
+            } else {
+                LevelMeter(playing: info.isPlaying, color: theme.meter)
+                    .frame(width: Layout.meter.width, height: 12.5)
+                    .offset(x: Layout.meter.minX, y: Layout.meter.midY - 6.25)
+                    .transition(.opacity)
             }
-            .frame(width: Layout.meter.width, height: 12.5)
-            .offset(x: Layout.meter.minX, y: Layout.meter.midY - 6.25)
-            .transition(.opacity)
 
             ControlButton(symbol: info.isWebVideo ? "15.arrow.trianglehead.counterclockwise" : "backward.fill", size: info.isWebVideo ? 19 : 16,
                           theme: theme) { model.send(info.isWebVideo ? .skipBack15 : .previous) }
