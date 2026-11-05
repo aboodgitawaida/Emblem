@@ -10,6 +10,8 @@ name: Release
 on:
   push:
     tags: ["v*"]
+    # Temporary: publishes the first release (v1.0.0) from this branch. Remove after it runs.
+    branches: ["claude/gifted-johnson-jpp0uh"]
   workflow_dispatch:
     inputs:
       version:
@@ -30,7 +32,9 @@ jobs:
 
       - name: Work out the version
         run: |
-          if [[ -n "${{ inputs.version }}" ]]; then V="${{ inputs.version }}"; else V="${GITHUB_REF_NAME}"; fi
+          if [[ -n "${{ inputs.version }}" ]]; then V="${{ inputs.version }}"
+          elif [[ "$GITHUB_REF_TYPE" == "tag" ]]; then V="$GITHUB_REF_NAME"
+          else V="1.0.0"; fi
           V="${V#v}"
           echo "VERSION=$V" >> "$GITHUB_ENV"
           echo "TAG=v$V" >> "$GITHUB_ENV"
