@@ -94,6 +94,13 @@ enum StatusIconRenderer {
             for i in brand.weightedPaths where paths.indices.contains(i) { ctx.addPath(paths[i]) }
             ctx.strokePath()
         }
+        for (i, weight) in brand.pathWeights where weight > 0 && paths.indices.contains(i) {
+            ctx.setStrokeColor(NSColor.black.cgColor)
+            ctx.setLineWidth(weight)
+            ctx.setLineJoin(.round)
+            ctx.addPath(paths[i])
+            ctx.strokePath()
+        }
         ctx.restoreGState()
     }
 
