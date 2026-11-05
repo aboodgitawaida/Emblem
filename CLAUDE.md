@@ -9,7 +9,7 @@ A personal macOS menu bar app that replaces the system Now Playing item. It work
 - **Log:** `~/Library/Logs/Emblem.log`.
 - **Checks:** `.build/release/Emblem --selftest` runs the artist matcher cases. `--check-artists` loads every artist folder and explains any problem. `--render-frames <dir>` writes the morph strip and player previews. `--fit-logo <svg>` crops a logo's viewBox. CI runs the first three on every push (`.github/workflows/ci.yml`).
 - **Login item:** registered via SMAppService on first launch.
-- **Idle:** like the system item's default "Show When Active", the icon hides while nothing is playing (Spotify quit or stopped) and comes back with the next track. Opening the app again shows it, so its menu stays reachable.
+- **Idle:** like the system item, the icon stays while nothing is playing and opens a "Not Playing" card (measured with Spotify quit, dark mode): 308 × 76pt; a blank 40pt square at (14, 18), 10% white, continuous corners 10.5pt; "Not Playing" at x 68, 12pt semibold in the title's colour (it reports itself as Regular 13); a 30pt play button at x 234 (play.fill 24pt) and a dimmed next at x 264 (forward.fill 16.75pt, 73% opacity: 112 vs 137). Play starts Spotify. Light mode isn't measured.
 
 ## Design rules
 

@@ -74,6 +74,10 @@ final class NowPlayingModel: ObservableObject {
         if currentIsSpotify { spotify.seek(to: seconds) } else { system?.seek(to: seconds) }
     }
 
+    /// The Not Playing card's play button: start Spotify (opening it if needed), like the system
+    /// player resuming the last app.
+    func resumeSpotify() { spotify.play() }
+
     private var positionWatch: Timer?
 
     /// Spotify posts no notification when its position jumps (scrubbed in Spotify, the system player,

@@ -157,6 +157,9 @@ final class SpotifyMonitor: NSObject {
         runScript("tell application \"Spotify\" to set player position to \(String(format: "%.2f", seconds))")
     }
 
+    /// Starts playback, opening Spotify if it isn't running.
+    func play() { runScript("tell application \"Spotify\" to play") }
+
     func send(_ command: PlaybackCommand) {
         guard isRunning else { return }
         let verb: String

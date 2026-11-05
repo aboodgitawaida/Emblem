@@ -22,7 +22,7 @@ struct PlayerView: View {
         Group {
             if let info = model.current {
                 FullPlayer(info: info, theme: theme, model: model, glow: theme.branded ? (swell ? 0.7 : 0.38) : 0)
-            } else { NotPlaying(theme: theme) }
+            } else { NotPlaying(theme: theme, model: model) }
         }
         .frame(width: Self.width)
         .background { PanelBackground(theme: theme) }
@@ -263,18 +263,35 @@ private struct FoilMark: View {
     }
 }
 
+/// The system's Not Playing card, measured via Accessibility and pixels (macOS 27, dark mode, 2×):
+/// 308×76, a blank 40pt square at (14, 18) that's 10% white, "Not Playing" at x 68 (13pt, the title's
+/// colour), and 30pt play and next buttons at x 234 and 264, next dimmed (112 vs 137) since there's
+/// nothing to skip to.
 private struct NotPlaying: View {
     let theme: Theme
+    let model: NowPlayingModel
+    static let height: CGFloat = 76
+
     var body: some View {
-        HStack(spacing: 12) {
-            RoundedRectangle(cornerRadius: 10, style: .continuous).fill(theme.placeholder)
-                .frame(width: 46, height: 46)
-                .overlay(Image(systemName: "music.note").font(.system(size: 18)).foregroundStyle(theme.tertiary))
-            Text("Not Playing").font(.system(size: 14, weight: .semibold)).foregroundStyle(theme.secondary)
-            Spacer()
+        ZStack(alignment: .topLeading) {
+            Color.clear
+            RoundedRectangle(cornerRadius: 10.5, style: .continuous).fill(theme.emptyArtwork)
+                .frame(width: 40, height: 40)
+                .offset(x: 14, y: 18)
+            Text("Not Playing")
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundStyle(theme.primary)
+                .frame(height: 15)
+                .offset(x: 68, y: 30.5)
+            ControlButton(symbol: "play.fill", size: 24, theme: theme, label: "play", box: 30) { model.resumeSpotify() }
+                .brightness(0.02)
+                .offset(x: 234, y: 23)
+            ControlButton(symbol: "forward.fill", size: 16.75, theme: theme, label: "next", box: 30) {}
+                .opacity(0.73)
+                .disabled(true)
+                .offset(x: 264, y: 23)
         }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 12)
+        .frame(width: Layout.size.width, height: Self.height)
     }
 }
 
@@ -531,6 +548,8 @@ private struct ControlButton: View {
     let theme: Theme
     /// The system player's VoiceOver name ("previous", "pause", "play", "next"); nil keeps the symbol's.
     var label: String? = nil
+    /// Hit area: 26pt in the player, 30pt in the Not Playing card.
+    var box: CGFloat = 26
     let action: () -> Void
     @State private var hover = false
 
@@ -539,7 +558,7 @@ private struct ControlButton: View {
             Image(systemName: symbol)
                 .font(.system(size: size, weight: .regular))
                 .foregroundStyle(theme.control)
-                .frame(width: 26, height: 26)
+                .frame(width: box, height: box)
                 .contentShape(Rectangle())
                 .contentTransition(.symbolEffect(.replace))
         }
@@ -654,6 +673,8 @@ struct Theme {
     var progress: Color { p?.accent ?? Color(nsColor: .controlAccentColor) }
     var knob: Color { p?.knob ?? Self.measured(dark: NSColor(white: 0.882, alpha: 1), light: .white) }   // system knob peaks at 225
     var meter: Color { p.map { $0.accent.opacity(0.55) } ?? Self.measured(dark: NSColor(white: 1, alpha: 0.22), light: NSColor(white: 0, alpha: 0.20)) }
+    /// The Not Playing card's blank square: 10% white over the dark card (75 on 55).
+    var emptyArtwork: Color { Self.measured(dark: NSColor(white: 1, alpha: 0.10), light: NSColor(white: 0, alpha: 0.06)) }
     var placeholder: Color { branded ? Color(white: 0.1) : Color.primary.opacity(0.08) }
 }
 
