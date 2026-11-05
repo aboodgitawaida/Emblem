@@ -21,6 +21,18 @@ enum DebugRender {
             write(strip, to: dir.appendingPathComponent(brand.id == "ovo" ? "morph.png" : "morph_\(brand.id).png"))
         }
 
+        // The glint sweeping across the finished owl.
+        let glint = NSImage(size: NSSize(width: w * CGFloat(steps + 1), height: h))
+        glint.lockFocus()
+        NSColor.white.setFill(); NSRect(origin: .zero, size: glint.size).fill()
+        for i in 0...steps {
+            let g = CGFloat(i) / CGFloat(steps)
+            StatusIconRenderer.image(progress: 1, brand: .ovo, glint: g == 0 || g == 1 ? nil : g)
+                .draw(in: NSRect(x: CGFloat(i) * w, y: 0, width: w, height: h))
+        }
+        glint.unlockFocus()
+        write(glint, to: dir.appendingPathComponent("glint.png"))
+
         // The normal player (light and dark), and each brand's look.
         let art = NSImage(size: NSSize(width: 120, height: 120), flipped: false) { r in
             NSGradient(colors: [.systemPurple, .systemOrange])!.draw(in: r, angle: 45); return true

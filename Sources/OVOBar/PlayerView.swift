@@ -89,11 +89,14 @@ private struct FullPlayer: View {
     let theme: Theme
     let model: NowPlayingModel
     var glow: Double = 0
+    /// Where the pointer is over the player (0…1), for the foil logo's highlight. nil when it's away.
+    @State private var pointer: CGPoint?
 
     var body: some View {
         ZStack(alignment: .topLeading) {
             Color.clear
             Artwork(info: info, theme: theme, size: Layout.art.width, glow: glow)
+                .modifier(TiltCard(enabled: theme.branded, size: Layout.art.width))
                 .contentShape(Rectangle())
                 .onTapGesture { model.openSource() }
                 .offset(x: Layout.art.minX, y: Layout.art.minY)
@@ -103,8 +106,8 @@ private struct FullPlayer: View {
                 .offset(x: Layout.text.minX, y: Layout.text.minY)
 
             Group {
-                if let brand = theme.brand {
-                    LogoMark(logo: brand.logo, color: theme.accent, weight: brand.markWeight)
+                if let brand = theme.brand, let palette = theme.palette {
+                    FoilMark(logo: brand.logo, palette: palette, weight: brand.markWeight, pointer: pointer)
                         .frame(width: brand.markSize.width, height: brand.markSize.height)
                 } else {
                     LevelMeter(playing: info.isPlaying, color: theme.meter)
@@ -130,6 +133,87 @@ private struct FullPlayer: View {
                 .offset(x: Layout.slider.minX, y: Layout.slider.minY)
         }
         .frame(width: Layout.size.width, height: Layout.size.height)
+        .onContinuousHover(coordinateSpace: .local) { phase in
+            guard theme.branded else { return }
+            switch phase {
+            case .active(let p):
+                pointer = CGPoint(x: p.x / Layout.size.width, y: p.y / Layout.size.height)
+            case .ended:
+                pointer = nil
+            }
+        }
+    }
+}
+
+/// For brand tracks, the cover tilts toward the pointer and a soft sheen slides across it,
+/// like the posters on Apple TV. It springs back flat when the pointer leaves.
+private struct TiltCard: ViewModifier {
+    let enabled: Bool
+    let size: CGFloat
+    @State private var tilt: CGPoint = .zero    // -1…1 on each axis
+    @State private var hovering = false
+    private let maxDegrees: Double = 9
+
+    func body(content: Content) -> some View {
+        if enabled {
+            content
+                .overlay {
+                    // The sheen: a soft diagonal band of light that follows the pointer.
+                    let c = 0.5 + tilt.x * 0.45
+                    LinearGradient(stops: [
+                        .init(color: .white.opacity(0), location: max(0, c - 0.32)),
+                        .init(color: .white.opacity(0.2), location: c),
+                        .init(color: .white.opacity(0), location: min(1, c + 0.32)),
+                    ], startPoint: UnitPoint(x: 0, y: 0.15 - tilt.y * 0.3), endPoint: UnitPoint(x: 1, y: 0.85 + tilt.y * 0.3))
+                    .blendMode(.plusLighter)
+                    .opacity(hovering ? 1 : 0)
+                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                    .allowsHitTesting(false)
+                }
+                .rotation3DEffect(.degrees(-Double(tilt.y) * maxDegrees), axis: (x: 1, y: 0, z: 0), perspective: 0.55)
+                .rotation3DEffect(.degrees(Double(tilt.x) * maxDegrees), axis: (x: 0, y: 1, z: 0), perspective: 0.55)
+                .scaleEffect(hovering ? 1.025 : 1)
+                .onContinuousHover(coordinateSpace: .local) { phase in
+                    withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
+                        switch phase {
+                        case .active(let p):
+                            hovering = true
+                            tilt = CGPoint(x: min(max(p.x / size * 2 - 1, -1), 1), y: min(max(p.y / size * 2 - 1, -1), 1))
+                        case .ended:
+                            hovering = false
+                            tilt = .zero
+                        }
+                    }
+                }
+        } else {
+            content
+        }
+    }
+}
+
+/// The player's small logo, foil-stamped in the album's colour: a metallic gradient whose highlight
+/// follows the pointer across the player, and drifts slowly on its own when the pointer is away.
+private struct FoilMark: View {
+    let logo: Logo
+    let palette: Brand.Palette
+    var weight: CGFloat = 0
+    var pointer: CGPoint?
+
+    var body: some View {
+        TimelineView(.animation(minimumInterval: 1.0 / 30, paused: pointer != nil)) { ctx in
+            let drift = 0.5 + 0.4 * sin(ctx.date.timeIntervalSinceReferenceDate * 0.55)
+            let c = pointer.map { Double($0.x) } ?? drift
+            let foil = LinearGradient(stops: [
+                .init(color: palette.accent.opacity(0.62), location: 0),
+                .init(color: palette.accent, location: max(0, c - 0.3)),
+                .init(color: palette.highlight, location: c),
+                .init(color: palette.accent, location: min(1, c + 0.3)),
+                .init(color: palette.accent.opacity(0.62), location: 1),
+            ], startPoint: .topLeading, endPoint: .bottomTrailing)
+            LogoShape(logo: logo).fill(foil, style: FillStyle(eoFill: logo.evenOdd))
+                .overlay { if weight > 0 { LogoShape(logo: logo).stroke(foil, style: StrokeStyle(lineWidth: weight, lineJoin: .round)) } }
+                .shadow(color: palette.accent.opacity(0.35), radius: 2)
+        }
     }
 }
 
@@ -404,9 +488,20 @@ private struct PanelBackground: View {
         let shape = RoundedRectangle(cornerRadius: PanelMetrics.cornerRadius, style: .continuous)
         ZStack {
             if let p = theme.palette {
-                shape.fill(p.background)
-                if #available(macOS 15.0, *), p.mesh.count >= 4 {
-                    LivingBackground(colors: p.mesh).clipShape(shape)
+                if #available(macOS 26.0, *) {
+                    // Real glass tinted with the album's colour, so the panel catches light at its edges like
+                    // native macOS panels; the album's colours flow inside it, slightly see-through.
+                    Color.clear.glassEffect(.regular.tint(p.accent.opacity(0.22)), in: shape)
+                    if p.mesh.count >= 4 {
+                        LivingBackground(colors: p.mesh).opacity(0.86).clipShape(shape)
+                    } else {
+                        shape.fill(p.background.opacity(0.86))
+                    }
+                } else {
+                    shape.fill(p.background)
+                    if #available(macOS 15.0, *), p.mesh.count >= 4 {
+                        LivingBackground(colors: p.mesh).clipShape(shape)
+                    }
                 }
                 // A faint glow from the top corner, like light catching a black OVO box.
                 shape.fill(RadialGradient(colors: [p.ambient, .clear],
