@@ -1,0 +1,25 @@
+{
+  "name": "Wu-Tang Clan",
+  "matchNames": ["Wu-Tang Clan"],
+  "spotifyArtistID": "34EP7KEpOjXcM2TCat1ISk",
+  "logo": {
+    "file": "logo.svg",
+    "fill": "evenOdd",
+    "solid": true
+  },
+  "menuBar": {
+    "height": 16,
+    "outlineWeight": 0,
+    "outlinedPaths": []
+  },
+  "player": {
+    "markSize": [13.5, 12]
+  },
+  "colors": {
+    "accent": "#FFC400",
+    "highlight": [1, 0.95, 0.72],
+    "knob": "#FFE27A",
+    "background": [0.045, 0.04, 0.02],
+    "ambient": [1, 0.77, 0, 0.14]
+  }
+}

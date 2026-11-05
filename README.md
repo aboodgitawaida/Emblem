@@ -2,7 +2,7 @@
 
 **A macOS menu bar Now Playing item that morphs into the artist's logo.**
 
-Emblem replaces the system Now Playing item in the menu bar. When Spotify plays a track by one of its artists, as lead or featured artist, the icon traces itself into their logo: the OVO owl for Drake, the College Dropout bear for Kanye, the XO for The Weeknd, the Cactus Jack face for Travis Scott, the GOLF le FLEUR* flower for Tyler, the Creator, and the Born Sinner crown for J. Cole. For everything else it behaves like Apple's own player.
+Emblem replaces the system Now Playing item in the menu bar. When Spotify plays a track by one of its artists, as lead or featured artist, the icon traces itself into their logo: the OVO owl for Drake, the College Dropout bear for Kanye, the XO for The Weeknd, the Cactus Jack face for Travis Scott, the GOLF le FLEUR* flower for Tyler, the Creator, the Born Sinner crown for J. Cole, the metal mask for MF DOOM, the W for Wu-Tang Clan, the dagger for 21 Savage, the Blohsh figure for Billie Eilish, and the broken heart for Lil Peep. For everything else it behaves like Apple's own player.
 
 ![The menu bar icon morphing from the play button into the OVO owl](docs/morph.png)
 
@@ -50,7 +50,7 @@ tools/compare                                 # Emblem's player vs the system's,
 
 - **Spotify** (`SpotifyMonitor`): listens to the `com.spotify.client.PlaybackStateChanged` distributed notification. AppleScript is used only for artwork, the initial state and controls.
 - **Everything else** (`MediaRemoteMonitor`): uses the mediaremote-adapter stream via `/usr/bin/perl`. If its self-test fails, only non-Spotify sources are lost.
-- **Artists** (`Artists/<id>/`): each artist is a folder with `artist.json` (names, Spotify artist ID, sizes, fallback palette) and `logo.svg`, loaded at launch by `ArtistLibrary`. The player's colours come from the playing album's art (`ArtworkPalette`). Drake → OVO owl, Kanye → College Dropout bear, The Weeknd → XO, Travis Scott → Cactus Jack face, Tyler, the Creator → GOLF le FLEUR* flower, J. Cole → Born Sinner crown.
+- **Artists** (`Artists/<id>/`): each artist is a folder with `artist.json` (names, Spotify artist ID, sizes, fallback palette) and `logo.svg`, loaded at launch by `ArtistLibrary`. The player's colours come from the playing album's art (`ArtworkPalette`). Drake → OVO owl, Kanye → College Dropout bear, The Weeknd → XO, Travis Scott → Cactus Jack face, Tyler, the Creator → GOLF le FLEUR* flower, J. Cole → Born Sinner crown, MF DOOM → his mask, Wu-Tang Clan → the W, 21 Savage → the dagger, Billie Eilish → the Blohsh figure, Lil Peep → the broken heart.
 - **Artist detection** has two checks:
   - `ArtistMatcher`: the artist must be a whole credit in the artist field, or after feat./ft./featuring/with in the title. "Drake Bell" doesn't count. The lead artist wins when several brands are credited.
   - `SpotifyCredits`: Spotify's notification only names the first artist, so the full artist list comes from the track's public embed page (`open.spotify.com/embed/track/<id>`), matched by artist ID.

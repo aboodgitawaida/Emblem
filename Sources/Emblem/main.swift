@@ -39,7 +39,8 @@ if let i = args.firstIndex(of: "--fit-logo"), i + 1 < args.count {
         let (paths, _) = try ArtistLibrary.svgPaths(svg, folder: url.lastPathComponent)
         var box = CGRect.null
         for d in paths { box = box.union(SVGPath.parse(d).boundingRect) }
-        let vb = String(format: "%g %g %g %g", box.minX, box.minY, box.width, box.height)
+        let r = { (v: CGFloat) in (v * 100).rounded() / 100 + 0 }   // two decimals, and no "-0"
+        let vb = String(format: "%g %g %g %g", r(box.minX), r(box.minY), r(box.width), r(box.height))
         svg = svg.replacingOccurrences(of: #"viewBox\s*=\s*"[^"]*""#, with: "viewBox=\"\(vb)\"", options: .regularExpression)
         try svg.write(to: url, atomically: true, encoding: .utf8)
         print("viewBox is now \(vb) (\(paths.count) paths)")

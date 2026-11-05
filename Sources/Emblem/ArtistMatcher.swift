@@ -108,9 +108,25 @@ enum ArtistMatcher {
             ("J. Cole", "No Role Modelz", "cole"),
             ("J. Cole, Lil Baby", "pride.is.the.devil", "cole"),
             ("Drake", "First Person Shooter (feat. J. Cole)", "ovo"),
-            ("21 Savage", "a lot (feat. J. Cole)", "cole"),
+            ("21 Savage", "a lot (feat. J. Cole)", "savage"),      // the lead artist wins
             ("Kendrick Lamar", "Like That", nil),
             ("Cole Swindell", "Song", nil),
+            // MF DOOM, Wu-Tang Clan, 21 Savage, Billie Eilish, Lil Peep
+            ("MF DOOM", "Doomsday", "doom"),
+            ("DOOM", "Gazzillion Ear", "doom"),
+            ("Madvillain", "Accordion", nil),                        // a group, not the DOOM credit
+            ("Danger Doom", "Sofa King", nil),
+            ("Wu-Tang Clan", "C.R.E.A.M.", "wutang"),
+            ("Wu-Tang Clan, Method Man", "Song", "wutang"),
+            ("21 Savage", "redrum", "savage"),
+            ("21 Savage, Metro Boomin", "Runnin", "savage"),
+            ("Drake", "Rich Flex (with 21 Savage)", "ovo"),
+            ("Metro Boomin", "Song (feat. 21 Savage)", "savage"),
+            ("Billie Eilish", "BIRDS OF A FEATHER", "billie"),
+            ("Khalid", "lovely (with Billie Eilish)", "billie"),
+            ("Lil Peep", "Star Shopping", "peep"),
+            ("Lil Peep, XXXTENTACION", "Falling Down", "peep"),
+            ("Lil Peeps", "Song", nil),
         ]
         var ok = true
         for (a, t, want) in cases where brand(artist: a, title: t)?.id != want {

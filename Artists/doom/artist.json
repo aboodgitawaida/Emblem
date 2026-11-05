@@ -1,0 +1,25 @@
+{
+  "name": "MF DOOM",
+  "matchNames": ["MF DOOM", "DOOM"],
+  "spotifyArtistID": "2pAWfrd7WFF3XhVt9GooDL",
+  "logo": {
+    "file": "logo.svg",
+    "fill": "evenOdd",
+    "solid": true
+  },
+  "menuBar": {
+    "height": 17,
+    "outlineWeight": 0,
+    "outlinedPaths": []
+  },
+  "player": {
+    "markSize": [10, 13]
+  },
+  "colors": {
+    "accent": "#C3C7CC",
+    "highlight": [1, 1, 1],
+    "knob": "#E4E7EA",
+    "background": [0.05, 0.05, 0.055],
+    "ambient": [0.76, 0.78, 0.8, 0.12]
+  }
+}
