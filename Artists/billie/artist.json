@@ -1,0 +1,25 @@
+{
+  "name": "Billie Eilish",
+  "matchNames": ["Billie Eilish"],
+  "spotifyArtistID": "6qqNVTkY8uBg9cP3Jd7DAH",
+  "logo": {
+    "file": "logo.svg",
+    "fill": "evenOdd",
+    "solid": true
+  },
+  "menuBar": {
+    "height": 17,
+    "outlineWeight": 0,
+    "outlinedPaths": []
+  },
+  "player": {
+    "markSize": [6, 13]
+  },
+  "colors": {
+    "accent": "#A6E33C",
+    "highlight": [0.93, 1, 0.8],
+    "knob": "#D9F7A6",
+    "background": [0.03, 0.04, 0.02],
+    "ambient": [0.65, 0.89, 0.24, 0.14]
+  }
+}

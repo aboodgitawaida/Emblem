@@ -1,0 +1,25 @@
+{
+  "name": "21 Savage",
+  "matchNames": ["21 Savage"],
+  "spotifyArtistID": "1URnnhqYAYcrqrcwql10ft",
+  "logo": {
+    "file": "logo.svg",
+    "fill": "evenOdd",
+    "solid": true
+  },
+  "menuBar": {
+    "height": 17,
+    "outlineWeight": 0,
+    "outlinedPaths": []
+  },
+  "player": {
+    "markSize": [8, 13]
+  },
+  "colors": {
+    "accent": "#D64545",
+    "highlight": [1, 0.86, 0.86],
+    "knob": "#F2C4C4",
+    "background": [0.055, 0.03, 0.03],
+    "ambient": [0.84, 0.27, 0.27, 0.14]
+  }
+}
