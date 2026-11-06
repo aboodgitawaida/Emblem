@@ -144,7 +144,7 @@ enum ArtistLibrary {
         }
         guard ["evenOdd", "nonZero"].contains(spec.logo.fill) else { throw fail("logo.fill is \"evenOdd\" or \"nonZero\"") }
         guard spec.player.markSize.count == 2 else { throw fail("player.markSize is [width, height]") }
-        guard (8...18).contains(spec.menuBar.height) else { throw fail("menuBar.height should be 8–18pt (the icon is 18pt)") }
+        guard (8...21.5).contains(spec.menuBar.height) else { throw fail("menuBar.height should be 8–21.5pt (the icon is 22pt tall)") }
 
         let svgURL = folder.appendingPathComponent(spec.logo.file)
         guard let svg = try? String(contentsOf: svgURL, encoding: .utf8) else { throw fail("no \(spec.logo.file)") }
