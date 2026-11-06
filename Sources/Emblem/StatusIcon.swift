@@ -31,13 +31,27 @@ enum StatusIconRenderer {
         return p
     }
 
+    /// The play circle centred on the full logo canvas. The icon is always canvas-sized, even at rest, so the
+    /// status item never changes width: when it did (the bare symbol is narrower than the 24pt canvas), macOS
+    /// re-centred the item and it jumped left and right whenever a song with a logo followed one without, or
+    /// the other way round.
+    static let restingCircle: NSImage = {
+        let img = NSImage(size: canvas, flipped: true) { _ in
+            let s = circleSymbol.size
+            circleSymbol.draw(in: NSRect(x: (canvas.width - s.width) / 2, y: (canvas.height - s.height) / 2,
+                                         width: s.width, height: s.height),
+                              from: .zero, operation: .sourceOver, fraction: 1, respectFlipped: true, hints: nil)
+            return true
+        }
+        img.isTemplate = true
+        img.accessibilityDescription = "Now Playing"
+        return img
+    }()
+
     /// `glint` (0…1) is a streak of light passing across the finished logo; nil for none.
-    /// `settled` is false while the icon is animating: the circle is then drawn on the full logo canvas,
-    /// so the status item keeps one width for the whole switch. Its width changing mid-animation (the bare
-    /// symbol is narrower than the canvas) made macOS re-centre it, and the icon jittered left and right.
-    @MainActor static func image(progress raw: CGFloat, brand: Brand?, glint: CGFloat? = nil, settled: Bool = true) -> NSImage {
+    @MainActor static func image(progress raw: CGFloat, brand: Brand?, glint: CGFloat? = nil) -> NSImage {
         let p = min(max(raw, 0), 1)
-        guard p > 0 || !settled, let brand else { return circleSymbol }
+        guard p > 0, let brand else { return restingCircle }
         let paths = iconPaths(brand)
         let img = NSImage(size: canvas, flipped: true) { _ in
             guard let ctx = NSGraphicsContext.current?.cgContext else { return false }
@@ -238,8 +252,6 @@ final class StatusIconAnimator {
 
     private func redraw() {
         let g = glintT.flatMap { $0 > 0 ? $0 : nil }
-        // Only the resting circle (nothing to trace in) uses the symbol's own, narrower size.
-        let settled = progress == 0 && target == 0 && wanted == nil
-        button?.image = StatusIconRenderer.image(progress: progress, brand: shown, glint: g, settled: settled)
+        button?.image = StatusIconRenderer.image(progress: progress, brand: shown, glint: g)
     }
 }
