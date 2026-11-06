@@ -63,10 +63,10 @@ Build the tools first, e.g. `swiftc -O tools/axat.swift -o tools/axat`.
 
 ## Brand images
 
-`docs/banner.png`, `docs/lineup.png` and the app icon are drawn from the artist folders, so they pick up new artists:
+The banner (its row of logos comes from the artist folders, its players from `docs/player-*.png`) and the app icon:
 
 ```bash
-node tools/brand/render.mjs        # banner, lineup and build/icon-1024.png (needs Playwright and the Inter font)
+node tools/brand/render.mjs        # banner and build/icon-1024.png (needs Playwright and the Inter font)
 python3 tools/brand/make-icns.py   # build/icon-1024.png → Resources/AppIcon.icns (needs Pillow)
 ```
 
