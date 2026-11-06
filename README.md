@@ -31,8 +31,6 @@ curl -fsSL https://github.com/aboodgitawaida/Emblem/releases/latest/download/ins
 
 Emblem installs, opens in your menu bar and starts at login. Play something in Spotify, and when macOS asks whether Emblem may control Spotify, click **Allow**.
 
-**Without Terminal:** download **Emblem.dmg** from the [latest release](https://github.com/aboodgitawaida/Emblem/releases/latest), open it and drag Emblem into Applications. The first time you open it, macOS says it can't check the app for malware, because Emblem isn't notarized by Apple. Click **Done**, then open System Settings → Privacy & Security, scroll down and click **Open Anyway**. You only need to do this once.
-
 Needs a Mac with Apple silicon (M1 or later), macOS 14 or later, and Spotify. To update, run the same command again. To uninstall, quit Emblem (right-click its icon → Quit) and drag it from Applications to the Bin.
 
 ## Build from source

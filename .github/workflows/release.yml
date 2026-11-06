@@ -1,9 +1,8 @@
 name: Release
 
-# Builds Emblem.app and publishes it as a GitHub Release with three downloads:
-#   Emblem.dmg  - open it and drag Emblem into Applications
-#   Emblem.zip  - the app on its own
-#   install.sh  - the one-line Terminal installer (see README)
+# Builds Emblem.app and publishes it as a GitHub Release with:
+#   install.sh  - the one-line Terminal installer (see README), the only supported way to install
+#   Emblem.zip  - the app, which install.sh downloads
 # Start it by pushing a version tag (git tag v1.0.0 && git push origin v1.0.0),
 # or from the Actions tab with "Run workflow".
 
@@ -54,11 +53,6 @@ jobs:
         run: |
           mkdir -p dist
           ditto -c -k --sequesterRsrc --keepParent build/Emblem.app dist/Emblem.zip
-          # Disk image with an Applications shortcut, so installing is one drag.
-          mkdir -p dmg
-          cp -R build/Emblem.app dmg/
-          ln -s /Applications dmg/Applications
-          hdiutil create -volname Emblem -srcfolder dmg -ov -format UDZO dist/Emblem.dmg
           cp scripts/install.sh dist/install.sh
 
       - name: Publish the release
@@ -68,21 +62,20 @@ jobs:
           cat > notes.md <<NOTES
           ## Install
 
-          **Easiest:** open Terminal and paste:
+          Open Terminal (press ⌘ Space, type "Terminal", press Return), paste this and press Return:
 
           \`\`\`bash
           curl -fsSL https://github.com/${{ github.repository }}/releases/latest/download/install.sh | bash
           \`\`\`
 
-          **Or by hand:** download **Emblem.dmg**, open it and drag Emblem into Applications. The first time you open it, macOS says it can't check the app for malware: click Done, then go to System Settings → Privacy & Security, scroll down and click **Open Anyway**.
 
           Needs a Mac with Apple silicon (M1 or later), macOS 14 or later, and Spotify.
           NOTES
           # A release made on the website already exists: add the files to it instead.
           if gh release view "$TAG" >/dev/null 2>&1; then
-            gh release upload "$TAG" dist/Emblem.dmg dist/Emblem.zip dist/install.sh --clobber
+            gh release upload "$TAG" dist/Emblem.zip dist/install.sh --clobber
             gh release edit "$TAG" --title "Emblem $VERSION" --notes-file notes.md
           else
-            gh release create "$TAG" dist/Emblem.dmg dist/Emblem.zip dist/install.sh \
+            gh release create "$TAG" dist/Emblem.zip dist/install.sh \
               --title "Emblem $VERSION" --notes-file notes.md --target "$GITHUB_SHA"
           fi
