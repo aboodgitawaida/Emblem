@@ -8,6 +8,7 @@ set -euo pipefail
 URL="https://github.com/aboodgitawaida/Emblem/releases/latest/download/Emblem.zip"
 BUNDLE_ID="io.github.aboodgitawaida.Emblem"
 
+header() { printf '\n  \033[1mEmblem\033[0m  \033[2myour music, in your menu bar\033[0m\n\n'; }
 step() { printf '\033[1m→ %s\033[0m\n' "$*"; }
 done_() { printf '\033[32m✓ %s\033[0m\n' "$*"; }
 fail() { printf '\033[31m✗ %s\033[0m\n' "$*" >&2; exit 1; }
@@ -28,6 +29,7 @@ remove_copies() {
 }
 
 uninstall() {
+  header
   step "Removing Emblem…"
   quit_running
   remove_copies
@@ -38,6 +40,7 @@ uninstall() {
 }
 
 install() {
+  header
   [[ "$(uname -s)" == "Darwin" ]] || fail "Emblem is a Mac app."
   [[ "$(uname -m)" == "arm64" ]] || fail "Emblem needs a Mac with Apple silicon (M1 or later)."
   local major
@@ -70,12 +73,13 @@ install() {
   open "$dest/Emblem.app"
 
   echo
-  done_ "Emblem${version:+ $version} is installed and running in your menu bar. It starts by itself when you log in."
+  done_ "Emblem${version:+ $version} is in your menu bar. It starts by itself when you log in."
   if [[ -d /Applications/Spotify.app || -d "$HOME/Applications/Spotify.app" ]]; then
-    echo "  Play a song in Spotify. When macOS asks whether Emblem may control Spotify, click Allow."
+    echo "  Play a song in Spotify. When your Mac asks if Emblem can control Spotify, click OK."
   else
     echo "  Spotify isn't installed on this Mac. Emblem's logos only appear for Spotify, so get it from spotify.com/download."
   fi
+  printf '\n  \033[2mWant an artist added? github.com/aboodgitawaida/Emblem\033[0m\n\n'
 }
 
 # Everything runs from here, so a half-downloaded script never runs halfway.

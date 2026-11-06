@@ -1,0 +1,34 @@
+name: Request an artist
+description: Want your favourite artist's logo in the menu bar?
+title: "Artist request: "
+labels: ["artist request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thumbs-up 👍 an existing request instead of opening a new one; the most-wanted artists get added first.
+        Logos that work best are bold and simple (the OVO owl, the XO, the Blohsh), since the icon is tiny.
+  - type: input
+    id: artist
+    attributes:
+      label: Artist
+      placeholder: e.g. Playboi Carti
+    validations:
+      required: true
+  - type: input
+    id: logo
+    attributes:
+      label: Which logo or symbol?
+      description: The mark you'd want to see, and where it's from (an album cover, merch, a tattoo).
+      placeholder: e.g. the Opium logo
+    validations:
+      required: true
+  - type: input
+    id: link
+    attributes:
+      label: Link to a picture of it (optional)
+  - type: input
+    id: album
+    attributes:
+      label: Favourite album of theirs (optional)
+      description: Helps pick the player's colours.

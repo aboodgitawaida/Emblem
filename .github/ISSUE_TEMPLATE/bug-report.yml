@@ -1,0 +1,33 @@
+name: Something's not working
+description: Tell us what went wrong
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What you expected, and what you saw instead. Screenshots help a lot.
+    validations:
+      required: true
+  - type: input
+    id: song
+    attributes:
+      label: Song that was playing (if any)
+      placeholder: e.g. SICKO MODE, Travis Scott
+  - type: input
+    id: macos
+    attributes:
+      label: macOS version
+      description: Apple menu → About This Mac
+      placeholder: e.g. macOS 15.2
+    validations:
+      required: true
+  - type: dropdown
+    id: install
+    attributes:
+      label: How did you install Emblem?
+      options:
+        - The one-line Terminal command
+        - Built it myself
+    validations:
+      required: true
