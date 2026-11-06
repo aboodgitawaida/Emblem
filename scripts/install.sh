@@ -74,10 +74,9 @@ install() {
 
   echo
   done_ "Emblem${version:+ $version} is in your menu bar. It starts by itself when you log in."
+  echo "  Play a song in Spotify or Apple Music."
   if [[ -d /Applications/Spotify.app || -d "$HOME/Applications/Spotify.app" ]]; then
-    echo "  Play a song in Spotify. When your Mac asks if Emblem can control Spotify, click OK."
-  else
-    echo "  Spotify isn't installed on this Mac. Emblem's logos only appear for Spotify, so get it from spotify.com/download."
+    echo "  Using Spotify? When your Mac asks if Emblem can control it, click OK."
   fi
   printf '\n  \033[2mWant an artist added? github.com/aboodgitawaida/Emblem\033[0m\n\n'
 }
