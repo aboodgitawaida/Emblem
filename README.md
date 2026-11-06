@@ -30,12 +30,36 @@ If you use Spotify, the first time a song plays your Mac asks if Emblem can cont
 
 ## The player
 
-Every album gets its own look. The colours come from the cover, so *ASTROWORLD* is gold, *IGOR* is pink and *After Hours* is red.
+Every album gets its own look. The colours come straight from the cover, so *ASTROWORLD* is gold, *IGOR* is pink and *Graduation* is purple. Black-and-white covers like *Scorpion* get a silver player.
 
 <p align="center">
-  <img src="docs/player-travis.png" alt="The player during SICKO MODE by Travis Scott, tinted gold from the ASTROWORLD cover" width="32%">
-  <img src="docs/player-weeknd.png" alt="The player during Blinding Lights by The Weeknd, tinted from the After Hours cover" width="32%">
-  <img src="docs/player-drake.png" alt="The player during Passionfruit by Drake, tinted from the More Life cover" width="32%">
+  <img src="docs/player-travis.png" alt="The player during SICKO MODE by Travis Scott, tinted gold from ASTROWORLD" width="32%">
+  <img src="docs/player-weeknd.png" alt="The player during Blinding Lights by The Weeknd, tinted from After Hours" width="32%">
+  <img src="docs/player-drake.png" alt="The player during Passionfruit by Drake, tinted from More Life" width="32%">
+</p>
+
+<p align="center">
+  <img src="docs/player-tyler.png" alt="The player during EARFQUAKE by Tyler, The Creator, tinted pink from IGOR" width="32%">
+  <img src="docs/player-kanye.png" alt="The player during Stronger by Kanye West, tinted purple from Graduation" width="32%">
+  <img src="docs/player-drake-scorpion.png" alt="The player during God's Plan by Drake, silver from the black-and-white Scorpion cover" width="32%">
+</p>
+
+<p align="center">
+  <img src="docs/player-cole.png" alt="The player during No Role Modelz by J. Cole, tinted blue from 2014 Forest Hills Drive" width="32%">
+  <img src="docs/player-kendrick.png" alt="The player during Money Trees by Kendrick Lamar, tinted from good kid, m.A.A.d city" width="32%">
+  <img src="docs/player-billie.png" alt="The player during BIRDS OF A FEATHER by Billie Eilish, tinted blue from HIT ME HARD AND SOFT" width="32%">
+</p>
+
+<p align="center">
+  <img src="docs/player-savage.png" alt="The player during a lot by 21 Savage, silver from i am > i was" width="32%">
+  <img src="docs/player-peep.png" alt="The player during Awful Things by Lil Peep, tinted pink from Come Over When You're Sober, Pt. 1" width="32%">
+  <img src="docs/player-yachty.png" alt="The player during the BLACK seminole. by Lil Yachty, tinted from Let's Start Here." width="32%">
+</p>
+
+<p align="center">
+  <img src="docs/player-doom.png" alt="The player during Rhymes Like Dimes by MF DOOM, tinted red from Operation: Doomsday" width="32%">
+  <img src="docs/player-wutang.png" alt="The player during C.R.E.A.M. by Wu-Tang Clan, tinted gold from Enter the Wu-Tang (36 Chambers)" width="32%">
+  <img src="docs/player-pop-smoke.png" alt="The player during Dior by Pop Smoke, tinted blue from Meet The Woo" width="32%">
 </p>
 
 - **The morph.** Each logo draws itself line by line as the play button fades out, then a streak of light glints across it.
