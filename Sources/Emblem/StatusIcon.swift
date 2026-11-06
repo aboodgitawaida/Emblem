@@ -32,9 +32,12 @@ enum StatusIconRenderer {
     }
 
     /// `glint` (0…1) is a streak of light passing across the finished logo; nil for none.
-    @MainActor static func image(progress raw: CGFloat, brand: Brand?, glint: CGFloat? = nil) -> NSImage {
+    /// `settled` is false while the icon is animating: the circle is then drawn on the full logo canvas,
+    /// so the status item keeps one width for the whole switch. Its width changing mid-animation (the bare
+    /// symbol is narrower than the canvas) made macOS re-centre it, and the icon jittered left and right.
+    @MainActor static func image(progress raw: CGFloat, brand: Brand?, glint: CGFloat? = nil, settled: Bool = true) -> NSImage {
         let p = min(max(raw, 0), 1)
-        guard p > 0, let brand else { return circleSymbol }
+        guard p > 0 || !settled, let brand else { return circleSymbol }
         let paths = iconPaths(brand)
         let img = NSImage(size: canvas, flipped: true) { _ in
             guard let ctx = NSGraphicsContext.current?.cgContext else { return false }
@@ -235,6 +238,8 @@ final class StatusIconAnimator {
 
     private func redraw() {
         let g = glintT.flatMap { $0 > 0 ? $0 : nil }
-        button?.image = StatusIconRenderer.image(progress: progress, brand: shown, glint: g)
+        // Only the resting circle (nothing to trace in) uses the symbol's own, narrower size.
+        let settled = progress == 0 && target == 0 && wanted == nil
+        button?.image = StatusIconRenderer.image(progress: progress, brand: shown, glint: g, settled: settled)
     }
 }

@@ -1,0 +1,31 @@
+name: Render players
+# One-off: renders the README's player images with real album art and commits them. Delete after it runs.
+on:
+  push:
+    branches: ["claude/gifted-johnson-jpp0uh"]
+permissions:
+  contents: write
+jobs:
+  render:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+      - run: swift build -c release
+      - name: Render
+        run: |
+          python3 tools/brand/covers.py /tmp/covers > /tmp/specs.txt
+          cat /tmp/specs.txt
+          specs=()
+          while IFS= read -r line; do specs+=("$line"); done < /tmp/specs.txt
+          .build/release/Emblem --render-covers /tmp/players "${specs[@]}"
+          for f in /tmp/players/cover_*.png; do
+            n=$(basename "$f" .png); cp "$f" "docs/player-${n#cover_}.png"
+          done
+          ls -la docs/player-*.png
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/player-*.png
+          git commit -m "Render the README's players with real album art" || echo "nothing new"
+          git push
