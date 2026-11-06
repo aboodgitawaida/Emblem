@@ -4,17 +4,16 @@
   "spotifyArtistID": "0eDvMgVFoNV3TpwtrVCoTj",
   "logo": {
     "file": "logo.svg",
-    "fill": "evenOdd",
-    "solid": false
+    "fill": "nonZero",
+    "solid": true
   },
   "menuBar": {
-    "height": 19.6,
-    "outlineWeight": 0.45,
-    "outlinedPaths": "all"
+    "height": 20.8,
+    "outlineWeight": 0,
+    "outlinedPaths": []
   },
   "player": {
-    "markSize": [13.5, 12.5],
-    "markWeight": 0.35
+    "markSize": [12, 13.3]
   },
   "colors": {
     "accent": "#8DB4D5",
