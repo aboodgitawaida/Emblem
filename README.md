@@ -48,7 +48,10 @@ Every album gets its own look. The colours come from the cover, so *ASTROWORLD* 
 </p>
 
 <p align="center">
-  <img src="docs/morph.png" alt="The menu bar icon morphing from the play button into the OVO owl" width="80%">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/morph-dark.png">
+    <img src="docs/morph.png" alt="The menu bar icon morphing from the play button into the OVO owl" width="80%">
+  </picture>
 </p>
 
 - **The morph.** Each logo draws itself line by line as the play button fades out, then a streak of light glints across it.
