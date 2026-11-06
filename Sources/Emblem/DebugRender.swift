@@ -69,15 +69,21 @@ enum DebugRender {
     }
 
     /// The player with real album art, each as `<brand-id>=<image path>`, to check the art-derived colours.
+    /// Add `|<title>|<artist>|<album>` to show a real song, e.g. `travis=a.jpg|SICKO MODE|Travis Scott|ASTROWORLD`.
     static func covers(to dir: URL, _ specs: [String]) {
         try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         for spec in specs {
             let parts = spec.split(separator: "=", maxSplits: 1).map(String.init)
-            guard parts.count == 2, let brand = Brand.all.first(where: { $0.id == parts[0] }),
-                  let art = NSImage(contentsOfFile: parts[1]) else { print("skip \(spec)"); continue }
-            let name = ((parts[1] as NSString).lastPathComponent as NSString).deletingPathExtension
-            var info = NowPlayingInfo(bundleID: SpotifyMonitor.bundleID, title: name, artist: parts[0], album: "",
-                                      isPlaying: true, duration: 237, elapsed: 151, elapsedAt: Date())
+            guard parts.count == 2 else { print("skip \(spec)"); continue }
+            let fields = parts[1].components(separatedBy: "|")
+            guard let brand = Brand.all.first(where: { $0.id == parts[0] }),
+                  let art = NSImage(contentsOfFile: fields[0]) else { print("skip \(spec)"); continue }
+            let name = ((fields[0] as NSString).lastPathComponent as NSString).deletingPathExtension
+            let title = fields.count > 1 ? fields[1] : name
+            let artist = fields.count > 2 ? fields[2] : parts[0]
+            let album = fields.count > 3 ? fields[3] : ""
+            var info = NowPlayingInfo(bundleID: SpotifyMonitor.bundleID, title: title, artist: artist, album: album,
+                                      hasAlbum: !album.isEmpty, isPlaying: true, duration: 237, elapsed: 151, elapsedAt: Date())
             info.artwork = art
             let model = NowPlayingModel()
             model.preview(info, brand: brand)
