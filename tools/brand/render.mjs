@@ -96,7 +96,7 @@ const bannerHTML = `<!doctype html><html><head><style>${base}
   <div class="content">
     <div class="brand"><div class="m">${mark()}</div><span>Emblem</span></div>
     <h1>Your music,<br><em>in your menu bar.</em></h1>
-    <p>The Now Playing icon that turns into the logo of whoever's on in Spotify.</p>
+    <p>The Now Playing icon that turns into the logo of whoever's playing.</p>
   </div>
   <div class="players">
     <img src="${shot("player-drake")}" style="right:0;top:52px;opacity:.9;transform:scale(.94)">

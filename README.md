@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/banner.png" alt="Emblem: your music, in your menu bar. The Now Playing icon that turns into the logo of whoever's on in Spotify, shown next to Emblem's player for Drake, The Weeknd and Travis Scott." width="100%">
+  <img src="docs/banner.png" alt="Emblem: your music, in your menu bar. The Now Playing icon that turns into the logo of whoever's on in Spotify or Apple Music, shown next to Emblem's player for Drake, The Weeknd and Travis Scott." width="100%">
 </p>
 
 <p align="center">
@@ -7,6 +7,7 @@
   <img src="https://img.shields.io/badge/macOS-14%2B-111111?style=flat-square&logo=apple&logoColor=white" alt="macOS 14 or later">
   <img src="https://img.shields.io/badge/Apple%20silicon-M1%20and%20later-111111?style=flat-square" alt="Apple silicon">
   <img src="https://img.shields.io/badge/works%20with-Spotify-111111?style=flat-square&logo=spotify&logoColor=1DB954" alt="Works with Spotify">
+  <img src="https://img.shields.io/badge/and-Apple%20Music-111111?style=flat-square&logo=applemusic&logoColor=FA243C" alt="and Apple Music">
 </p>
 
 <p align="center"><b>Play a song. Watch your menu bar become the artist.</b></p>
@@ -23,9 +24,9 @@ curl -fsSL https://github.com/aboodgitawaida/Emblem/releases/latest/download/ins
 
 That's it. Emblem shows up in your menu bar a few seconds later and starts on its own every time you log in.
 
-The first time a song plays, your Mac asks if Emblem can control Spotify. Click **OK** (or **Allow**) so the play, pause and skip buttons work.
+If you use Spotify, the first time a song plays your Mac asks if Emblem can control Spotify. Click **OK** (or **Allow**) so the play, pause and skip buttons work. Apple Music just works.
 
-> **Needs:** a Mac with Apple silicon (M1 or newer), macOS 14 Sonoma or newer, and the Spotify app.
+> **Needs:** a Mac with Apple silicon (M1 or newer), macOS 14 Sonoma or newer, and Spotify or Apple Music.
 
 ## The player
 
@@ -69,7 +70,7 @@ That's how the play, pause and skip buttons work, and how Emblem gets the album 
 <details>
 <summary><b>Does it work with Apple Music or YouTube?</b></summary>
 <br>
-Yes, as a normal Now Playing player. The artist logos are Spotify-only for now.
+Apple Music, yes, logos and all. YouTube and other music in your browser get the normal Now Playing player, without logos.
 </details>
 
 <details>
