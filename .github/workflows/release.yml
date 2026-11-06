@@ -72,7 +72,7 @@ jobs:
 
           Already have Emblem? Run the same command to update.
 
-          > **Needs:** a Mac with Apple silicon (M1 or newer), macOS 14 Sonoma or newer, and the Spotify app.
+          > **Needs:** a Mac with Apple silicon (M1 or newer), macOS 14 Sonoma or newer, and Spotify or Apple Music.
 
           [Request an artist](https://github.com/${{ github.repository }}/issues/new?template=artist-request.yml)
           NOTES
