@@ -22,7 +22,8 @@ SONGS = [
     ("drake", "ovo", "Champagne Poetry", "Drake", "Certified Lover Boy", "Certified Lover Boy"),
     ("kanye", "kanye", "Stronger", "Kanye West", "Graduation", "Graduation"),
     ("tyler", "tyler", "See You Again (feat. Kali Uchis)", "Tyler, The Creator", "Flower Boy", "Flower Boy"),
-    ("cole", "cole", "Power Trip (feat. Miguel)", "J. Cole", "Born Sinner", "Born Sinner"),
+    # Born Sinner's well-known cover (the chrome head and gold crown) is filed as the deluxe edition on iTunes.
+    ("cole", "cole", "Power Trip (feat. Miguel)", "J. Cole", "Born Sinner (Deluxe Version)", "Born Sinner"),
     ("kendrick", "kendrick", "Money Trees", "Kendrick Lamar", "good kid, m.A.A.d city", "good kid, m.A.A.d city"),
     ("billie", "billie", "WILDFLOWER", "Billie Eilish", "HIT ME HARD AND SOFT", "HIT ME HARD AND SOFT"),
     ("savage", "savage", "Brand New Draco", "21 Savage", "SAVAGE MODE II", "SAVAGE MODE II"),
