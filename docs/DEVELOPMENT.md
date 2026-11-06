@@ -70,6 +70,18 @@ node tools/brand/render.mjs        # banner and build/icon-1024.png (needs Playw
 python3 tools/brand/make-icns.py   # build/icon-1024.png → Resources/AppIcon.icns (needs Pillow)
 ```
 
+## Player screenshots
+
+The README's `docs/player-*.png` are the app's own renders with real album art. `tools/brand/covers.py` lists the songs and downloads their covers from the iTunes catalogue; on a Mac:
+
+```bash
+swift build -c release
+specs=(); while IFS= read -r l; do specs+=("$l"); done < <(python3 tools/brand/covers.py /tmp/covers)
+.build/release/Emblem --render-covers /tmp/players "${specs[@]}"   # writes cover_<name>.png
+```
+
+Copy each `cover_<name>.png` to `docs/player-<name>.png`.
+
 ## Releases
 
 Push a version tag (`git tag v1.2.0 && git push origin v1.2.0`) or use **Run workflow** on the Release action. `.github/workflows/release.yml` builds on macOS 26 and publishes `install.sh` and `Emblem.zip`.
