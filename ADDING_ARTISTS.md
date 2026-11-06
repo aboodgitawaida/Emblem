@@ -94,5 +94,5 @@ The logos belong to their owners; see the disclaimer in the README before shippi
 
 ## Updating the README images
 
-The banner and lineup in the README are drawn from the artist folders. After adding an artist, run
+The row of logos in the README banner is drawn from the artist folders. After adding an artist, run
 `node tools/brand/render.mjs` to redraw them.
