@@ -91,3 +91,8 @@ run `.build/release/Emblem --selftest`.
 Play one of their songs on Spotify: the icon traces into the logo.
 
 The logos belong to their owners; see the disclaimer in the README before shipping one in the repo.
+
+## Updating the README images
+
+The banner and lineup in the README are drawn from the artist folders. After adding an artist, run
+`node tools/brand/render.mjs` to redraw them.
