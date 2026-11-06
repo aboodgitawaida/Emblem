@@ -30,7 +30,7 @@ If you use Spotify, the first time a song plays your Mac asks if Emblem can cont
 
 ## The player
 
-Every album gets its own look. The colours come straight from the cover, so *ASTROWORLD* is gold, *Flower Boy* is warm yellow and *Graduation* is purple. Black-and-white covers get a silver player.
+Every album gets its own look. The colours come straight from the cover, so *ASTROWORLD* is gold, *Flower Boy* is orange and *Graduation* is purple. Black-and-white covers get a silver player.
 
 <p align="center">
   <img src="docs/player-travis.png" alt="The player during SICKO MODE by Travis Scott, from ASTROWORLD" width="32%">
