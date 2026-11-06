@@ -1,6 +1,5 @@
 // Renders Emblem's brand images from the artist folders:
 //   docs/banner.png     README header
-//   docs/lineup.png     every artist's logo, name and colour
 //   build/icon-1024.png the app icon (scripts/make-icon.py turns it into Resources/AppIcon.icns)
 // Run from the repo root: node tools/brand/render.mjs  (needs Playwright and the Inter font).
 import { createRequire } from "node:module";
@@ -13,7 +12,7 @@ import path from "node:path";
 const root = process.cwd();
 const artistsDir = path.join(root, "Artists");
 
-// Order the lineup by how recognisable the mark is, then anything new alphabetically.
+// Order the banner's logo row by how recognisable the mark is, then anything new alphabetically.
 const preferred = ["ovo", "travis", "xo", "kanye", "tyler", "cole", "kendrick", "billie",
   "savage", "peep", "yachty", "doom", "wutang", "pop-smoke"];
 const ids = fs.readdirSync(artistsDir).filter((d) => fs.existsSync(path.join(artistsDir, d, "artist.json")));
@@ -74,6 +73,8 @@ const iconHTML = `<!doctype html><html><head><style>${base}
 </body></html>`;
 
 // ---------- Banner (1280 × 640) ----------
+// The players are the app's own renders (docs/player-*.png, 2× of the 308 × 140pt player), shown at 1:1.
+const shot = (name) => "data:image/png;base64," + fs.readFileSync(path.join(root, "docs", name + ".png")).toString("base64");
 const ring = artists.slice(0, 14);
 const bannerHTML = `<!doctype html><html><head><style>${base}
   body{width:1280px;height:640px;position:relative;overflow:hidden;background:#060608}
@@ -84,23 +85,8 @@ const bannerHTML = `<!doctype html><html><head><style>${base}
   h1{font-size:84px;line-height:.98;font-weight:800;letter-spacing:-.045em}
   h1 em{font-style:normal;background:linear-gradient(90deg,#F4D58A,#F28C8C 55%,#E9A8D6);-webkit-background-clip:text;color:transparent}
   p{margin-top:28px;font-size:23px;line-height:1.4;color:rgba(255,255,255,.62);font-weight:500;letter-spacing:-.01em;max-width:560px}
-  .bar{position:absolute;right:72px;top:118px;width:400px;height:44px;border-radius:14px;
-       background:rgba(255,255,255,.08);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.1);
-       display:flex;align-items:center;justify-content:flex-end;gap:22px;padding:0 20px;font-size:17px;font-weight:600;color:rgba(255,255,255,.9)}
-  .bar .pill{width:52px;height:32px;border-radius:10px;background:rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center}
-  .bar .pill div{width:24px;height:24px}
-  .bar .dim{color:rgba(255,255,255,.55);font-weight:500}
-  .card{position:absolute;right:72px;top:178px;width:400px;height:150px;border-radius:22px;overflow:hidden;
-        background:linear-gradient(135deg,rgba(215,181,99,.35),rgba(80,60,20,.35));border:1px solid rgba(255,255,255,.12);
-        box-shadow:0 30px 60px rgba(0,0,0,.45)}
-  .card .cover{position:absolute;left:18px;top:18px;width:114px;height:114px;border-radius:12px;
-        background:radial-gradient(circle at 40% 35%,#f1d58a,#9c7a2c 45%,#3b2b0e);box-shadow:0 8px 20px rgba(0,0,0,.35)}
-  .card .cover div{position:absolute;inset:22px;opacity:.9}
-  .card .t{position:absolute;left:150px;top:26px;font-size:19px;font-weight:700}
-  .card .a{position:absolute;left:150px;top:52px;font-size:15px;font-weight:500;color:#E9C97A}
-  .card .track{position:absolute;left:150px;right:22px;top:104px;height:5px;border-radius:3px;background:rgba(0,0,0,.35)}
-  .card .track i{position:absolute;left:0;top:0;bottom:0;width:62%;border-radius:3px;background:#E9C97A}
-  .card .fm{position:absolute;right:18px;top:20px;width:26px;height:26px}
+  .players{position:absolute;right:64px;top:0;bottom:120px;width:420px}
+  .players img{position:absolute;width:308px;height:140px;filter:drop-shadow(0 24px 40px rgba(0,0,0,.55))}
   .logos{position:absolute;left:0;right:0;bottom:56px;display:flex;justify-content:center;gap:34px;padding:0 60px;
          -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
   .logos div{width:40px;height:40px;opacity:.5}
@@ -112,44 +98,12 @@ const bannerHTML = `<!doctype html><html><head><style>${base}
     <h1>Your music,<br><em>in your menu bar.</em></h1>
     <p>The Now Playing icon that turns into the logo of whoever's on in Spotify.</p>
   </div>
-  <div class="bar"><div class="pill"><div>${logo(artists.find((a) => a.id === "travis") ?? artists[0])}</div></div><span class="dim">Fri 9:41 PM</span></div>
-  <div class="card">
-    <div class="cover"><div>${logo(artists.find((a) => a.id === "travis") ?? artists[0], "rgba(60,40,8,.55)")}</div></div>
-    <div class="t">SICKO MODE</div><div class="a">Travis Scott</div>
-    <div class="fm">${logo(artists.find((a) => a.id === "travis") ?? artists[0], "#E9C97A")}</div>
-    <div class="track"><i></i></div>
+  <div class="players">
+    <img src="${shot("player-drake")}" style="right:0;top:52px;opacity:.9;transform:scale(.94)">
+    <img src="${shot("player-weeknd")}" style="right:96px;top:196px;opacity:.95;transform:scale(.97)">
+    <img src="${shot("player-travis")}" style="right:16px;top:340px">
   </div>
   <div class="logos">${ring.map((a) => `<div class="${a.id === "travis" ? "on" : ""}">${logo(a)}</div>`).join("")}</div>
-</body></html>`;
-
-// ---------- Lineup (1280 wide, 5 columns) ----------
-const tiles = artists.map((a) => `
-  <div class="tile" style="--a:${a.accent}">
-    <div class="tint"></div>
-    <div class="lg">${logo(a)}</div>
-    <div class="nm">${a.name}</div>
-  </div>`).join("") + `
-  <div class="tile add"><div class="plus">+</div><div class="nm">Add your own</div></div>`;
-const rows = Math.ceil((artists.length + 1) / 5);
-const lineupHTML = `<!doctype html><html><head><style>${base}
-  body{width:1280px;height:${150 + rows * 228}px;position:relative;overflow:hidden;background:#060608}
-  .head{position:absolute;left:64px;top:52px;right:64px;display:flex;align-items:baseline;justify-content:space-between}
-  .head h2{font-size:40px;font-weight:800;letter-spacing:-.035em}
-  .head span{font-size:18px;color:rgba(255,255,255,.5);font-weight:500}
-  .grid{position:absolute;left:64px;right:64px;top:128px;display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
-  .tile{position:relative;height:212px;border-radius:24px;overflow:hidden;background:#101014;border:1px solid rgba(255,255,255,.07)}
-  .tint{position:absolute;inset:0;background:radial-gradient(120% 90% at 50% 0%,color-mix(in srgb,var(--a) 38%,transparent),transparent 70%)}
-  .lg{position:absolute;left:50%;top:40px;width:96px;height:96px;transform:translateX(-50%);filter:drop-shadow(0 6px 18px rgba(0,0,0,.4))}
-  .nm{position:absolute;left:0;right:0;bottom:24px;text-align:center;font-size:17px;font-weight:600;letter-spacing:-.01em}
-  .tile::after{content:"";position:absolute;left:50%;bottom:12px;width:18px;height:3px;margin-left:-9px;border-radius:2px;background:var(--a)}
-  .add{background:transparent;border:1.5px dashed rgba(255,255,255,.18)}
-  .add::after{display:none}
-  .plus{position:absolute;left:50%;top:44px;transform:translateX(-50%);font-size:76px;font-weight:300;line-height:88px;color:rgba(255,255,255,.4)}
-  .add .nm{color:rgba(255,255,255,.55)}
-</style></head><body>
-  ${aurora(0.6)}<div class="grain"></div>
-  <div class="head"><h2>The lineup</h2><span>${artists.length} artists · more on the way</span></div>
-  <div class="grid">${tiles}</div>
 </body></html>`;
 
 const browser = await chromium.launch();
@@ -163,6 +117,5 @@ const shoot = async (html, out, w, h, scale, transparent = false) => {
   console.log("wrote", path.relative(root, out));
 };
 await shoot(bannerHTML, path.join(root, "docs/banner.png"), 1280, 640, 2);
-await shoot(lineupHTML, path.join(root, "docs/lineup.png"), 1280, 150 + rows * 228, 2);
 await shoot(iconHTML, path.join(root, "build/icon-1024.png"), 1024, 1024, 1, true);
 await browser.close();

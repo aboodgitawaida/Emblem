@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/banner.png" alt="Emblem: your music, in your menu bar. The Now Playing icon that turns into the logo of whoever's on in Spotify." width="100%">
+  <img src="docs/banner.png" alt="Emblem: your music, in your menu bar. The Now Playing icon that turns into the logo of whoever's on in Spotify, shown next to Emblem's player for Drake, The Weeknd and Travis Scott." width="100%">
 </p>
 
 <p align="center">
@@ -27,16 +27,6 @@ The first time a song plays, your Mac asks if Emblem can control Spotify. Click 
 
 > **Needs:** a Mac with Apple silicon (M1 or newer), macOS 14 Sonoma or newer, and the Spotify app.
 
-## The lineup
-
-<p align="center">
-  <img src="docs/lineup.png" alt="The artists in Emblem: Drake, Travis Scott, The Weeknd, Kanye West, Tyler, The Creator, J. Cole, Kendrick Lamar, Billie Eilish, 21 Savage, Lil Peep, Lil Yachty, MF DOOM, Wu-Tang Clan and Pop Smoke" width="100%">
-</p>
-
-It works on features too: if your artist is on someone else's track, you'll see their logo.
-
-**Want someone added?** [Request an artist →](https://github.com/aboodgitawaida/Emblem/issues/new?template=artist-request.yml)
-
 ## The player
 
 Every album gets its own look. The colours come from the cover, so *ASTROWORLD* is gold, *IGOR* is pink and *After Hours* is red.
@@ -47,17 +37,14 @@ Every album gets its own look. The colours come from the cover, so *ASTROWORLD* 
   <img src="docs/player-drake.png" alt="The player during Passionfruit by Drake, tinted from the More Life cover" width="32%">
 </p>
 
-<p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/morph-dark.png">
-    <img src="docs/morph.png" alt="The menu bar icon morphing from the play button into the OVO owl" width="80%">
-  </picture>
-</p>
-
 - **The morph.** Each logo draws itself line by line as the play button fades out, then a streak of light glints across it.
 - **Living colour.** The player's background slowly flows in the album's colours (on macOS 26 it's real glass).
 - **Tilt and shine.** The cover tilts toward your cursor, and the corner logo has a foil shine that follows it.
 - **Everything else, untouched.** For other artists, Apple Music or YouTube in your browser, Emblem looks and works exactly like Apple's own player.
+
+It works on features too: if one of your artists is on someone else's track, you'll see their logo.
+
+**Want someone added?** [Request an artist →](https://github.com/aboodgitawaida/Emblem/issues/new?template=artist-request.yml)
 
 ## Questions
 

@@ -74,7 +74,7 @@ jobs:
 
           > **Needs:** a Mac with Apple silicon (M1 or newer), macOS 14 Sonoma or newer, and the Spotify app.
 
-          [See the lineup](https://github.com/${{ github.repository }}#the-lineup) · [Request an artist](https://github.com/${{ github.repository }}/issues/new?template=artist-request.yml)
+          [Request an artist](https://github.com/${{ github.repository }}/issues/new?template=artist-request.yml)
           NOTES
           # A release made on the website already exists: add the files to it instead.
           if gh release view "$TAG" >/dev/null 2>&1; then
