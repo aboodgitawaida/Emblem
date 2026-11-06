@@ -11,7 +11,7 @@ rm -rf $APP
 mkdir -p $APP/Contents/MacOS $APP/Contents/Resources/adapter
 cp $BIN $APP/Contents/MacOS/Emblem
 cp Resources/Info.plist $APP/Contents/Info.plist
-cp Resources/owl_gold.svg Resources/owl_template.svg $APP/Contents/Resources/
+cp Resources/owl_gold.svg Resources/owl_template.svg Resources/AppIcon.icns $APP/Contents/Resources/
 cp -R Artists $APP/Contents/Resources/Artists
 cp -R build/adapter/MediaRemoteAdapter.framework build/adapter/MediaRemoteAdapterTestClient \
       build/adapter/mediaremote-adapter.pl $APP/Contents/Resources/adapter/

@@ -1,115 +1,136 @@
-# Emblem
+<p align="center">
+  <img src="docs/banner.png" alt="Emblem: your music, in your menu bar. The Now Playing icon that turns into the logo of whoever's on in Spotify." width="100%">
+</p>
 
-**A macOS menu bar Now Playing item that morphs into the artist's logo.**
+<p align="center">
+  <a href="https://github.com/aboodgitawaida/Emblem/releases/latest"><img src="https://img.shields.io/github/v/release/aboodgitawaida/Emblem?style=flat-square&label=version&color=111111" alt="Latest version"></a>
+  <img src="https://img.shields.io/badge/macOS-14%2B-111111?style=flat-square&logo=apple&logoColor=white" alt="macOS 14 or later">
+  <img src="https://img.shields.io/badge/Apple%20silicon-M1%20and%20later-111111?style=flat-square" alt="Apple silicon">
+  <img src="https://img.shields.io/badge/works%20with-Spotify-111111?style=flat-square&logo=spotify&logoColor=1DB954" alt="Works with Spotify">
+</p>
 
-Emblem replaces the system Now Playing item in the menu bar. When Spotify plays a track by one of its artists, as lead or featured artist, the icon traces itself into their logo: the OVO owl for Drake, the College Dropout bear for Kanye, the XO for The Weeknd, the Cactus Jack face for Travis Scott, the GOLF le FLEUR* flower for Tyler, the Creator, the Born Sinner crown for J. Cole, the metal mask for MF DOOM, the W for Wu-Tang Clan, the dagger for 21 Savage, the Blohsh figure for Billie Eilish, the broken heart for Lil Peep, the crown of thorns for Kendrick Lamar, and the Concrete Boys stick figure for Lil Yachty. For everything else it behaves like Apple's own player.
+<p align="center"><b>Play a song. Watch your menu bar become the artist.</b></p>
 
-![The menu bar icon morphing from the play button into the OVO owl](docs/morph.png)
+Emblem replaces your Mac's Now Playing icon. Put on Drake and it traces itself into the OVO owl. Skip to Travis and it morphs into the Cactus Jack face. Click it and you get a player tinted in the colours of whatever album is on, with a background that flows in colours pulled straight from the cover art.
 
-| Drake | Travis Scott | The Weeknd |
-| --- | --- | --- |
-| ![The player during Passionfruit by Drake, tinted from the More Life cover, with the OVO owl in the corner](docs/player-drake.png) | ![The player during SICKO MODE by Travis Scott, tinted gold from the ASTROWORLD cover, with the Cactus Jack face in the corner](docs/player-travis.png) | ![The player during Blinding Lights by The Weeknd, tinted from the After Hours cover, with the XO in the corner](docs/player-weeknd.png) |
+## Get Emblem
 
-<sub>Rendered by the app itself (`Emblem --render-covers`). Each player takes its colours from the album cover.</sub>
-
-**Built with:** Swift, SwiftUI and AppKit, Swift Package Manager (no Xcode), AppleScript and distributed notifications for Spotify, a vendored MediaRemote adapter for other sources.
-
-## Highlights
-
-- **Logos drawn as paths and animated stroke by stroke.** Each logo was traced to vector path data, so the morph can shrink the play circle while revealing the logo's lines along their outlines, at any menu bar scale.
-- **Careful artist matching.** "Drake Bell" isn't Drake. Artists must be a whole credit or appear after feat./ft./with, the lead artist wins, and because Spotify's notification names only the first artist, full credits come from the track's public embed page and are matched by Spotify artist ID.
-- **Colours from the album, not the artist.** The player picks the cover's dominant colour (a hue histogram weighted by saturation, brightness and closeness to the centre) and builds a flowing mesh-gradient background from it.
-- **A pixel-matched copy of Apple's player.** Layout, fonts, timings and the marquee were measured from the live system module through the Accessibility API, with small tools in `tools/`.
-
-## Download
-
-Open Terminal (press ⌘ Space, type "Terminal", press Return), paste this and press Return:
+Open **Terminal** (press **⌘ Space**, type `Terminal`, press **Return**), paste this, and press **Return**:
 
 ```bash
 curl -fsSL https://github.com/aboodgitawaida/Emblem/releases/latest/download/install.sh | bash
 ```
 
-Emblem installs, opens in your menu bar and starts at login. Play something in Spotify, and when macOS asks whether Emblem may control Spotify, click **Allow**.
+That's it. Emblem shows up in your menu bar a few seconds later and starts on its own every time you log in.
 
-Needs a Mac with Apple silicon (M1 or later), macOS 14 or later, and Spotify.
+The first time a song plays, your Mac asks if Emblem can control Spotify. Click **OK** (or **Allow**) so the play, pause and skip buttons work.
 
-**To update**, run the same command again. **To uninstall**, run:
+> **Needs:** a Mac with Apple silicon (M1 or newer), macOS 14 Sonoma or newer, and the Spotify app.
+
+## The lineup
+
+<p align="center">
+  <img src="docs/lineup.png" alt="The artists in Emblem: Drake, Travis Scott, The Weeknd, Kanye West, Tyler, The Creator, J. Cole, Kendrick Lamar, Billie Eilish, 21 Savage, Lil Peep, Lil Yachty, MF DOOM, Wu-Tang Clan and Pop Smoke" width="100%">
+</p>
+
+It works on features too: if your artist is on someone else's track, you'll see their logo.
+
+**Want someone added?** [Request an artist →](https://github.com/aboodgitawaida/Emblem/issues/new?template=artist-request.yml)
+
+## The player
+
+Every album gets its own look. The colours come from the cover, so *ASTROWORLD* is gold, *IGOR* is pink and *After Hours* is red.
+
+<p align="center">
+  <img src="docs/player-travis.png" alt="The player during SICKO MODE by Travis Scott, tinted gold from the ASTROWORLD cover" width="32%">
+  <img src="docs/player-weeknd.png" alt="The player during Blinding Lights by The Weeknd, tinted from the After Hours cover" width="32%">
+  <img src="docs/player-drake.png" alt="The player during Passionfruit by Drake, tinted from the More Life cover" width="32%">
+</p>
+
+<p align="center">
+  <img src="docs/morph.png" alt="The menu bar icon morphing from the play button into the OVO owl" width="80%">
+</p>
+
+- **The morph.** Each logo draws itself line by line as the play button fades out, then a streak of light glints across it.
+- **Living colour.** The player's background slowly flows in the album's colours (on macOS 26 it's real glass).
+- **Tilt and shine.** The cover tilts toward your cursor, and the corner logo has a foil shine that follows it.
+- **Everything else, untouched.** For other artists, Apple Music or YouTube in your browser, Emblem looks and works exactly like Apple's own player.
+
+## Questions
+
+<details>
+<summary><b>Is it safe to paste a command into Terminal?</b></summary>
+<br>
+Good instinct to ask. The command downloads the <a href="scripts/install.sh">install script</a> from this repo and runs it. It's short and readable: it checks your Mac, downloads Emblem, puts it in Applications and opens it. It doesn't ask for your password and doesn't touch anything else.
+</details>
+
+<details>
+<summary><b>Why Terminal and not a normal download?</b></summary>
+<br>
+Emblem isn't distributed through Apple, so a downloaded copy gets a "can't be checked for malware" warning that sends you digging through System Settings. The one-line install skips all of that.
+</details>
+
+<details>
+<summary><b>Why does it ask to control Spotify?</b></summary>
+<br>
+That's how the play, pause and skip buttons work, and how Emblem gets the album art. It only talks to Spotify on your Mac.
+</details>
+
+<details>
+<summary><b>Does it work with Apple Music or YouTube?</b></summary>
+<br>
+Yes, as a normal Now Playing player. The artist logos are Spotify-only for now.
+</details>
+
+<details>
+<summary><b>Does it work on Intel Macs?</b></summary>
+<br>
+Not yet. It needs an M1 or newer.
+</details>
+
+<details>
+<summary><b>How do I update it?</b></summary>
+<br>
+Run the same install command again. It replaces the old version.
+</details>
+
+<details>
+<summary><b>How do I remove it?</b></summary>
+<br>
+Paste this into Terminal:
 
 ```bash
 curl -fsSL https://github.com/aboodgitawaida/Emblem/releases/latest/download/install.sh | bash -s uninstall
 ```
+</details>
 
-## Build from source
+<details>
+<summary><b>Something's not working</b></summary>
+<br>
+<a href="https://github.com/aboodgitawaida/Emblem/issues/new?template=bug-report.yml">Report it here</a>. It helps to include your macOS version and the song that was playing.
+</details>
 
-```bash
-./scripts/build-app.sh --install    # builds, installs to ~/Applications, launches
-```
+## For developers
 
-- Built with Swift Package Manager and Command Line Tools (Xcode isn't required).
-- `scripts/build-adapter.sh` builds `vendor/mediaremote-adapter` without CMake. It's bundled into `Contents/Resources/adapter`.
-
-## Adding an artist
-
-Each artist is a folder in `Artists/` with an `artist.json` and a `logo.svg`, so adding one needs no code. You can
-also drop folders into `~/Library/Application Support/Emblem/Artists/` without rebuilding. See
-[ADDING_ARTISTS.md](ADDING_ARTISTS.md).
-
-## Debug
-
-```bash
-.build/release/Emblem --selftest              # artist matcher cases
-.build/release/Emblem --check-artists         # loads every artist folder and explains any problem
-.build/release/Emblem --render-frames <dir>   # morph strip + player PNGs
-.build/release/Emblem --fit-logo <svg>        # crops a logo's viewBox tight
-tools/compare                                 # Emblem's player vs the system's, element by element
-```
-
-## How it works
-
-- **Spotify** (`SpotifyMonitor`): listens to the `com.spotify.client.PlaybackStateChanged` distributed notification. AppleScript is used only for artwork, the initial state and controls.
-- **Everything else** (`MediaRemoteMonitor`): uses the mediaremote-adapter stream via `/usr/bin/perl`. This includes Apple Music and browser players such as YouTube Music, SoundCloud, and TIDAL; Apple Music uses the same standard previous/play/next controls as the system Now Playing item, while browser video uses 15-second skip controls. If the adapter self-test fails, only non-Spotify sources are lost.
-- **Artists** (`Artists/<id>/`): each artist is a folder with `artist.json` (names, Spotify artist ID, sizes, fallback palette) and `logo.svg`, loaded at launch by `ArtistLibrary`. The player's colours come from the playing album's art (`ArtworkPalette`). Drake → OVO owl, Kanye → College Dropout bear, The Weeknd → XO, Travis Scott → Cactus Jack face, Tyler, the Creator → GOLF le FLEUR* flower, J. Cole → Born Sinner crown, MF DOOM → his mask, Wu-Tang Clan → the W, 21 Savage → the dagger, Billie Eilish → the Blohsh figure, Lil Peep → the broken heart, Kendrick Lamar → a crown of thorns (drawn for Emblem), Lil Yachty → the Concrete Boys stick figure.
-- **Artist detection** has two checks:
-  - `ArtistMatcher`: the artist must be a whole credit in the artist field, or after feat./ft./featuring/with in the title. "Drake Bell" doesn't count. The lead artist wins when several brands are credited.
-  - `SpotifyCredits`: Spotify's notification only names the first artist, so the full artist list comes from the track's public embed page (`open.spotify.com/embed/track/<id>`), matched by artist ID.
-- **Log**: `~/Library/Logs/Emblem.log`.
-- **Morph** (`StatusIcon`): renders template images frame by frame. The circle shrinks and fades while the logo's lines are revealed along their outlines.
-- **Menu**: right-click the icon for Open at Login and Quit.
-
-## Signing
-
-`build-app.sh` signs with the self-signed **Emblem Local Signing** certificate in your login Keychain, so macOS permissions such as controlling Spotify survive rebuilds. To make one, open Keychain Access, choose Certificate Assistant → Create a Certificate, pick the "Code Signing" type and name it exactly that. If no such certificate exists, it falls back to ad-hoc signing, and macOS will ask for Spotify access again after every rebuild.
-
-## Layout reference
-
-The player copies the system Now Playing module's measured layout (see `Layout` in `PlayerView.swift`). To re-measure, give your terminal Accessibility access (System Settings → Privacy & Security), then:
-- **Find menu bar items:** `tools/axat scan`
-- **Open Apple's player:** `tools/axat press <x> <y>`
-- **Dump its layout:** `tools/axat ccdump`
-- **Dump Emblem's player:** `tools/axdump emblem`
-
-Build the tools first, e.g. `swiftc -O tools/axat.swift -o tools/axat`.
-
-## Requirements
-
-- macOS 14 or later. Some effects need newer systems: the flowing background needs macOS 15, and the glass panel needs macOS 26. Older systems fall back to a flat panel.
-- Command Line Tools only (no Xcode). Clone with `git clone --recursive` so the `mediaremote-adapter` submodule comes along.
-- Spotify. The first time you play a track, macOS asks whether Emblem may control Spotify; allow it.
+Emblem is a native Swift app built with SwiftUI and AppKit. The player was measured against Apple's own through the Accessibility API, so it matches to the point. Artists are plain folders with a JSON file and an SVG, so [adding one](ADDING_ARTISTS.md) needs no code. Building, debugging and how it all works: **[docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)**.
 
 ## Disclaimer
 
-Emblem is an unofficial fan project. It is not affiliated with, endorsed by or sponsored by Apple, Spotify, OVO, or any of the artists or labels it shows. All logos, album artwork and names are the property of their respective owners (album covers in the screenshots are shown only to illustrate the app), and the logo files in `Resources/` and `Artists/` are redrawn from publicly circulated images for personal, non-commercial use. If you are a rights holder and want something removed, open an issue.
+Emblem is an independent fan project. It is **not** affiliated with, endorsed by or sponsored by Apple, Spotify, OVO, or any of the artists or labels it shows. All logos, album artwork and names belong to their respective owners (album covers in the screenshots are shown only to illustrate the app), and the logo files in `Resources/` and `Artists/` are redrawn from publicly circulated images for personal, non-commercial use. If you are a rights holder and want something removed, [open an issue](https://github.com/aboodgitawaida/Emblem/issues) and it will be taken down.
 
-## Author
+## Made by
 
 **Abood Awaida** · [GitHub](https://github.com/aboodgitawaida) · [LinkedIn](https://www.linkedin.com/in/abood-awaida/)
 
-## More of my work
+<details>
+<summary>More of my work</summary>
+<br>
 
 - **[Courseflix](https://github.com/aboodgitawaida/Courseflix)**: Netflix-style course discovery for UTM students, with reviews, recommendations and 2,600+ courses. [courseflix.ca](https://www.courseflix.ca)
 - **[Vitals](https://github.com/aboodgitawaida/Vitals)**: heart rate from an ordinary webcam, measured entirely in the browser. [vitals-track.vercel.app](https://vitals-track.vercel.app)
 - **[LotPulse](https://github.com/aboodgitawaida/LotPulse)**: live, student-reported parking enforcement alerts for UTM campus lots. [lotpulse-utm.vercel.app](https://lotpulse-utm.vercel.app)
 - **[Basil](https://github.com/aboodgitawaida/Basil)**: a cosy pixel-art kitchen game that suggests recipes from what's in your fridge. [basil-cat.vercel.app](https://basil-cat.vercel.app)
+</details>
 
 ## License
 

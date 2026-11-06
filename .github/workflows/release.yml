@@ -60,16 +60,21 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           cat > notes.md <<NOTES
-          ## Install
+          <img src="https://raw.githubusercontent.com/${{ github.repository }}/main/docs/banner.png" alt="Emblem" width="100%">
 
-          Open Terminal (press ⌘ Space, type "Terminal", press Return), paste this and press Return:
+          ## Get Emblem
+
+          Open **Terminal** (press **⌘ Space**, type \`Terminal\`, press **Return**), paste this, and press **Return**:
 
           \`\`\`bash
           curl -fsSL https://github.com/${{ github.repository }}/releases/latest/download/install.sh | bash
           \`\`\`
 
+          Already have Emblem? Run the same command to update.
 
-          Needs a Mac with Apple silicon (M1 or later), macOS 14 or later, and Spotify.
+          > **Needs:** a Mac with Apple silicon (M1 or newer), macOS 14 Sonoma or newer, and the Spotify app.
+
+          [See the lineup](https://github.com/${{ github.repository }}#the-lineup) · [Request an artist](https://github.com/${{ github.repository }}/issues/new?template=artist-request.yml)
           NOTES
           # A release made on the website already exists: add the files to it instead.
           if gh release view "$TAG" >/dev/null 2>&1; then
