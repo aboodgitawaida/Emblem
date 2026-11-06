@@ -41,13 +41,22 @@ final class NowPlayingModel: ObservableObject {
             pick = sp
         }
         currentIsSpotify = pick?.bundleID == SpotifyMonitor.bundleID
-        let newBrand = currentIsSpotify ? spotify.brand : nil
+        let newBrand = currentIsSpotify ? spotify.brand : Self.brand(forOther: pick)
         if pick != current { current = pick }
         if newBrand != brand {
             Log.write("Brand \(newBrand?.id ?? "off") — \(pick?.artist ?? "-") / \(pick?.title ?? "-")")
             brand = newBrand
         }
         updateArtworkPalette()
+    }
+
+    /// Apple Music gets logos too, matched from its artist and title fields. It has no Spotify-style
+    /// credits page, but Apple Music lists features in the artist field ("Future & Drake") or the
+    /// title ("(feat. Drake)"), which the matcher already reads. Browsers stay off: their "artist"
+    /// is often a channel name, which would give false matches.
+    private static func brand(forOther info: NowPlayingInfo?) -> Brand? {
+        guard let info, info.isAppleMusic else { return nil }
+        return ArtistMatcher.brand(artist: info.artist, title: info.title)
     }
 
     /// For DebugRender only.
