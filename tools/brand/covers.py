@@ -18,20 +18,19 @@ import urllib.request
 # file name, brand id, song, artist line, album as the iTunes catalogue names it, album as shown
 SONGS = [
     ("travis", "travis", "SICKO MODE", "Travis Scott", "ASTROWORLD", "ASTROWORLD"),
-    ("weeknd", "xo", "Blinding Lights", "The Weeknd", "After Hours", "After Hours"),
-    ("drake", "ovo", "Passionfruit", "Drake", "More Life", "More Life"),
-    ("drake-scorpion", "ovo", "God's Plan", "Drake", "Scorpion", "Scorpion"),
+    ("weeknd", "xo", "Starboy", "The Weeknd", "Starboy", "Starboy"),
+    ("drake", "ovo", "Champagne Poetry", "Drake", "Certified Lover Boy", "Certified Lover Boy"),
     ("kanye", "kanye", "Stronger", "Kanye West", "Graduation", "Graduation"),
-    ("tyler", "tyler", "EARFQUAKE", "Tyler, The Creator", "IGOR", "IGOR"),
-    ("cole", "cole", "No Role Modelz", "J. Cole", "2014 Forest Hills Drive", "2014 Forest Hills Drive"),
+    ("tyler", "tyler", "See You Again (feat. Kali Uchis)", "Tyler, The Creator", "Flower Boy", "Flower Boy"),
+    ("cole", "cole", "Power Trip (feat. Miguel)", "J. Cole", "Born Sinner", "Born Sinner"),
     ("kendrick", "kendrick", "Money Trees", "Kendrick Lamar", "good kid, m.A.A.d city", "good kid, m.A.A.d city"),
-    ("billie", "billie", "BIRDS OF A FEATHER", "Billie Eilish", "HIT ME HARD AND SOFT", "HIT ME HARD AND SOFT"),
-    ("savage", "savage", "a lot", "21 Savage", "i am > i was", "i am > i was"),
-    ("peep", "peep", "Awful Things", "Lil Peep", "Come Over When You're Sober, Pt. 1", "Come Over When You're Sober, Pt. 1"),
-    ("yachty", "yachty", "the BLACK seminole.", "Lil Yachty", "Let's Start Here.", "Let's Start Here."),
-    ("doom", "doom", "Rhymes Like Dimes", "MF DOOM", "Operation: Doomsday", "Operation: Doomsday"),
+    ("billie", "billie", "WILDFLOWER", "Billie Eilish", "HIT ME HARD AND SOFT", "HIT ME HARD AND SOFT"),
+    ("savage", "savage", "Brand New Draco", "21 Savage", "SAVAGE MODE II", "SAVAGE MODE II"),
+    ("peep", "peep", "Falling Down - Bonus Track", "Lil Peep", "Come Over When You're Sober, Pt. 2", "Come Over When You're Sober, Pt. 2"),
+    ("yachty", "yachty", "Lil Mega Minion", "Lil Yachty", "Lil Mega Minion", "Lil Mega Minion"),
+    ("doom", "doom", "Doomsday", "MF DOOM", "Operation: Doomsday", "Operation: Doomsday"),
     ("wutang", "wutang", "C.R.E.A.M.", "Wu-Tang Clan", "Enter the Wu-Tang (36 Chambers)", "Enter the Wu-Tang (36 Chambers)"),
-    ("pop-smoke", "pop-smoke", "Dior", "Pop Smoke", "Meet The Woo", "Meet The Woo"),
+    ("pop-smoke", "pop-smoke", "The Woo (feat. 50 Cent & Roddy Ricch)", "Pop Smoke", "Shoot For The Stars Aim For The Moon", "Shoot For The Stars Aim For The Moon"),
 ]
 
 
