@@ -25,7 +25,7 @@ SONGS = [
     ("cole", "cole", "Power Trip (feat. Miguel)", "J. Cole", "Born Sinner", "Born Sinner"),
     ("kendrick", "kendrick", "Money Trees", "Kendrick Lamar", "good kid, m.A.A.d city", "good kid, m.A.A.d city"),
     ("billie", "billie", "WILDFLOWER", "Billie Eilish", "HIT ME HARD AND SOFT", "HIT ME HARD AND SOFT"),
-    ("savage", "savage", "a lot", "21 Savage", "i am > i was", "i am > i was"),
+    ("savage", "savage", "Brand New Draco", "21 Savage", "SAVAGE MODE II", "SAVAGE MODE II"),
     ("peep", "peep", "Falling Down - Bonus Track", "Lil Peep", "Come Over When You're Sober, Pt. 2", "Come Over When You're Sober, Pt. 2"),
     ("yachty", "yachty", "Lil Mega Minion", "Lil Yachty", "Lil Mega Minion", "Lil Mega Minion"),
     ("doom", "doom", "Doomsday", "MF DOOM", "Operation: Doomsday", "Operation: Doomsday"),

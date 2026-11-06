@@ -47,7 +47,7 @@ Every album gets its own look. The colours come straight from the cover, so *AST
 <p align="center">
   <img src="docs/player-kendrick.png" alt="The player during Money Trees by Kendrick Lamar, from good kid, m.A.A.d city" width="32%">
   <img src="docs/player-billie.png" alt="The player during WILDFLOWER by Billie Eilish, from HIT ME HARD AND SOFT" width="32%">
-  <img src="docs/player-savage.png" alt="The player during a lot by 21 Savage, from i am > i was" width="32%">
+  <img src="docs/player-savage.png" alt="The player during Brand New Draco by 21 Savage, from SAVAGE MODE II" width="32%">
 </p>
 
 <p align="center">
