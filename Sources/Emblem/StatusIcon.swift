@@ -4,7 +4,9 @@ import SwiftUI
 /// Draws the menu bar icon at any point of the circle → logo morph.
 /// progress 0 = play.circle, 1 = the brand's logo. Images are templates, so macOS tints them for light/dark menu bars.
 enum StatusIconRenderer {
-    static let canvas = NSSize(width: 18, height: 18)
+    /// 24 × 22pt: room for logos ~22% bigger than the original 18pt square, so their details read at a glance.
+    /// Wide logos (Cactus Jack, the flower, the W) get the extra width. The idle play.circle keeps its own size.
+    static let canvas = NSSize(width: 24, height: 22)
 
     static let circleSymbol: NSImage = {
         let config = NSImage.SymbolConfiguration(pointSize: 15, weight: .regular)
@@ -63,7 +65,7 @@ enum StatusIconRenderer {
         guard trace > 0 else { return }
         ctx.saveGState()
         // The logo springs into place as it traces in: it grows from 90% with a small overshoot
-        // (~1%, so it still fits the 18pt icon) and settles, like Apple's spring animations.
+        // (~1%, so it still fits the 22pt icon) and settles, like Apple's spring animations.
         let x = min(max((p - 0.15) / 0.85, 0), 1)
         let scale = x >= 1 ? 1 : 0.9 + 0.1 * spring(x)   // exactly 100% at rest
         ctx.translateBy(x: canvas.width / 2, y: canvas.height / 2)

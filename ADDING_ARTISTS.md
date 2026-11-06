@@ -40,7 +40,7 @@ Copy one from an existing artist and change it:
   "matchNames": ["Travis Scott"],
   "spotifyArtistID": "0Y5tJX1MQlPlqiwlOH1tJY",
   "logo": { "file": "logo.svg", "fill": "evenOdd", "solid": false },
-  "menuBar": { "height": 16, "outlineWeight": 0.5, "outlinedPaths": "all" },
+  "menuBar": { "height": 19.5, "outlineWeight": 0.5, "outlinedPaths": "all" },
   "player": { "markSize": [13.5, 12.5], "markWeight": 0.6 },
   "colors": {
     "accent": "#D7B563",
@@ -59,7 +59,7 @@ Copy one from an existing artist and change it:
 | `spotifyArtistID` | From their Spotify page: `open.spotify.com/artist/`**`0Y5tJX1MQlPlqiwlOH1tJY`**. It catches features Spotify's notification doesn't name. |
 | `logo.fill` | `"evenOdd"` cuts holes where shapes overlap (most logos); `"nonZero"` fills them. |
 | `logo.solid` | `true` for solid shapes (the bear, the flower): the menu bar traces the outline, then fades the fill in. `false` for line drawings, which draw stroke by stroke. |
-| `menuBar.height` | Logo height in the 18pt icon, usually 16–17.2. Wide logos are limited by the width instead. |
+| `menuBar.height` | Logo height in the 24 × 22pt icon, usually 19.5–21. Wide logos are limited by the 24pt width instead. |
 | `menuBar.outlineWeight` | Extra line weight (pt) so thin lines don't fade at menu bar size: 0.3–0.65 for line art, 0 for solid logos. |
 | `menuBar.outlinedPaths` | Which paths get that weight: `"all"`, or path numbers (`0` first, `-1` last). |
 | `menuBar.extraWeights` | Optional extra weight for single paths, e.g. `{"2": 0.15}`. |
