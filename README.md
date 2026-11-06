@@ -150,3 +150,5 @@ Emblem is an independent fan project. It is **not** affiliated with, endorsed by
 ## License
 
 The code is [MIT](LICENSE). The artist logos, names and album artwork are not covered by that licence; they belong to their respective owners (see the disclaimer above).
+
+Pop Smoke's rose is ["Rose" by Lorc](https://game-icons.net/1x1/lorc/rose.html) from game-icons.net, used under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/).
