@@ -5,15 +5,15 @@
   "logo": {
     "file": "logo.svg",
     "fill": "evenOdd",
-    "solid": false
+    "solid": true
   },
   "menuBar": {
-    "height": 15.9,
-    "outlineWeight": 0,
-    "outlinedPaths": []
+    "height": 21.5,
+    "outlineWeight": 0.35,
+    "outlinedPaths": "all"
   },
   "player": {
-    "markSize": [15, 10.5]
+    "markSize": [12.6, 13.5]
   },
   "colors": {
     "accent": "#D8352B",
