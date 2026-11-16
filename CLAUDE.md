@@ -99,6 +99,10 @@ Pasted screenshots are usually scaled. Calibrate pixel measurements against a kn
   - **Tyler:** near-black with IGOR pink `#ECB4CC`, sampled from the cover.
   - **J. Cole:** near-black with the crown's gold `#DBC74C`.
 
+## Concepts in progress
+
+- **CN Tower background:** a looping night drone video of the CN Tower with Drake symbols glowing in the bottom middle (owl, 6 God hands, For All The Dogs dog). Signed off as previews, not yet in the app. Everything needed to rebuild or change it, and the plan for building it in, is in `concepts/cn-tower-background/README.md`.
+
 ## Open ideas, not done
 
 - **Other menu bars:** on a 24pt bar (non-notch Macs, external displays) the pill is capped 1pt short of the bar's top and bottom; Apple's size there isn't measured. The player's position already follows the real bar.
